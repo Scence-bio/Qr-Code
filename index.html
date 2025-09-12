@@ -774,15 +774,50 @@
                 return;
             }
             
-            // For mobile compatibility, use simpler download method
-            if (currentQRUrl) {
+            // Create canvas to capture QR with icon
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = frameContainer.querySelector('img');
+            const icon = frameContainer.querySelector('.qr-icon-overlay');
+            
+            // Set canvas size
+            const scale = 2;
+            canvas.width = img.naturalWidth * scale;
+            canvas.height = img.naturalHeight * scale;
+            ctx.scale(scale, scale);
+            
+            // Draw QR code
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+                
+                // Draw icon if exists
+                if (icon) {
+                    const iconSize = parseInt(document.getElementById('icon-size').value);
+                    const centerX = img.naturalWidth / 2;
+                    const centerY = img.naturalHeight / 2;
+                    
+                    // Draw white background for icon
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(centerX - iconSize/2 - 4, centerY - iconSize/2 - 4, iconSize + 8, iconSize + 8);
+                    
+                    // Draw icon text
+                    ctx.font = `${iconSize}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(icon.textContent, centerX, centerY);
+                }
+                
+                // Download
                 const link = document.createElement('a');
-                link.href = currentQRUrl;
                 link.download = `qr-code-${document.getElementById('frame-type').value}-${Date.now()}.png`;
-                link.target = '_blank';
+                link.href = canvas.toDataURL('image/png');
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+            };
+            
+            if (img.complete) {
+                img.onload();
             }
         }
         
