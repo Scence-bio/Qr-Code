@@ -868,11 +868,6 @@
             generateBtn.textContent = '🔄 دروستکردن...';
             
             try {
-                // Check if QRCode library is available
-                if (typeof QRCode === 'undefined' || !QRCode.toCanvas) {
-                    throw new Error('QR کتێبخانەکە بارنەکراوە');
-                }
-                
                 const size = parseInt(document.getElementById('size-slider').value);
                 const darkColor = document.getElementById('dark-color').value;
                 const lightColor = document.getElementById('light-color').value;
@@ -885,78 +880,32 @@
                 const ctx = canvas.getContext('2d');
                 
                 if (!ctx) {
-                    throw new Error('نەتوانرا Canvas دروست بکرێت');
+                    throw new Error('نەتوانرا Canvas دروست بکرێت - وێبگەڕەکەت پشتگیری ناکات');
                 }
                 
                 canvas.width = size;
                 canvas.height = size;
                 
-                // Try multiple QR generation approaches
-                let qrGenerated = false;
+                // Generate QR code using our built-in generator
                 const qrOptions = {
                     width: size,
                     color: {
                         dark: darkColor,
                         light: lightColor
-                    },
-                    errorCorrectionLevel: 'H',
-                    margin: 1
+                    }
                 };
                 
-                try {
-                    // Method 1: Direct toCanvas
-                    await QRCode.toCanvas(canvas, text, qrOptions);
-                    qrGenerated = true;
-                } catch (canvasError) {
-                    console.warn('Method 1 failed:', canvasError);
-                    
-                    try {
-                        // Method 2: Generate to data URL then draw
-                        const dataUrl = await QRCode.toDataURL(text, qrOptions);
-                        const img = new Image();
-                        
-                        await new Promise((resolve, reject) => {
-                            img.onload = function() {
-                                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                                ctx.drawImage(img, 0, 0, size, size);
-                                qrGenerated = true;
-                                resolve();
-                            };
-                            img.onerror = reject;
-                            img.src = dataUrl;
-                        });
-                    } catch (dataUrlError) {
-                        console.warn('Method 2 failed:', dataUrlError);
-                        
-                        try {
-                            // Method 3: Simple QR with basic options
-                            await QRCode.toCanvas(canvas, text, {
-                                width: size,
-                                margin: 2,
-                                color: {
-                                    dark: '#000000',
-                                    light: '#ffffff'
-                                }
-                            });
-                            qrGenerated = true;
-                        } catch (simpleError) {
-                            console.error('All QR generation methods failed:', simpleError);
-                            throw new Error('نەتوانرا QR کۆد دروست بکرێت');
-                        }
-                    }
-                }
-                
-                if (!qrGenerated) {
-                    throw new Error('هیچ ڕێگەیەک سەرکەوتوو نەبوو');
-                }
+                console.log('Generating QR with built-in generator...');
+                await QRCode.toCanvas(canvas, text, qrOptions);
+                console.log('QR generated successfully!');
                 
                 // Add logo if available
                 if (currentLogoImage || selectedIcon) {
                     try {
                         await addLogoToCanvas(canvas, ctx, logoSize, logoStyle);
+                        console.log('Logo added successfully!');
                     } catch (logoError) {
                         console.error('Logo Error:', logoError);
-                        // Continue without logo
                         console.log('بەردەوام دەبین بەبێ لۆگۆ');
                     }
                 }
@@ -986,15 +935,15 @@
                     frameContainer.style.transform = 'scale(1)';
                 }, 100);
                 
+                console.log('QR display completed!');
+                
             } catch (error) {
                 console.error('QR generation error:', error);
                 
                 // Show specific error messages
                 let errorMessage = 'هەڵەیەک ڕوویدا! تکایە دووبارە تاقی بکەرەوە';
                 
-                if (error.message.includes('بارنەکراوە')) {
-                    errorMessage = 'کێشە لە ئینتەرنێت - QR کتێبخانەکە بارنەکراوە';
-                } else if (error.message.includes('Canvas')) {
+                if (error.message.includes('Canvas')) {
                     errorMessage = 'وێبگەڕەکەت Canvas پشتگیری ناکات';
                 } else if (error.message.includes('دروست بکرێت')) {
                     errorMessage = 'نەتوانرا QR کۆد دروست بکرێت - تێکستەکە پشکنین بکە';
@@ -1002,9 +951,9 @@
                 
                 showError(errorMessage);
                 
-                // Try fallback method with simple text display
-                if (text.length < 100) {
-                    showFallbackQR(text);
+                // Show fallback method with simple text display
+                if (text.length < 200) {
+                    setTimeout(() => showFallbackQR(text), 1000);
                 }
             }
             
