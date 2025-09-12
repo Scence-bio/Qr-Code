@@ -21,7 +21,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -118,6 +118,73 @@
             border-color: #4facfe;
         }
         
+        .design-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8faff;
+            border-radius: 15px;
+        }
+        
+        .design-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .design-card {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .design-card:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+        }
+        
+        .design-card.active {
+            border-color: #4facfe;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .design-preview {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px auto;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .color-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .color-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .color-input {
+            width: 50px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
         .generate-btn {
             width: 100%;
             padding: 18px;
@@ -181,7 +248,7 @@
         }
         
         @media (max-width: 768px) {
-            .wifi-fields {
+            .wifi-fields, .color-controls, .design-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -272,6 +339,40 @@
                     <textarea id="sms-message" placeholder="نامەکەت لێرە بنووسە..."></textarea>
                 </div>
                 
+                <!-- Design Section -->
+                <div class="design-section">
+                    <label>🎨 دیزاینی QR کۆد:</label>
+                    <div class="design-grid">
+                        <div class="design-card active" data-design="classic">
+                            <div class="design-preview" style="background: #000;">⬛</div>
+                            <div>کلاسیک</div>
+                        </div>
+                        <div class="design-card" data-design="rounded">
+                            <div class="design-preview" style="background: #4facfe;">🔲</div>
+                            <div>گۆشە خڕ</div>
+                        </div>
+                        <div class="design-card" data-design="dots">
+                            <div class="design-preview" style="background: #667eea;">⚫</div>
+                            <div>خاڵ خاڵ</div>
+                        </div>
+                        <div class="design-card" data-design="gradient">
+                            <div class="design-preview" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4);">🌈</div>
+                            <div>ڕەنگ تێکەڵ</div>
+                        </div>
+                    </div>
+                    
+                    <div class="color-controls">
+                        <div class="color-input-group">
+                            <label>ڕەنگی پێش:</label>
+                            <input type="color" id="dark-color" class="color-input" value="#000000">
+                        </div>
+                        <div class="color-input-group">
+                            <label>ڕەنگی پاش:</label>
+                            <input type="color" id="light-color" class="color-input" value="#ffffff">
+                        </div>
+                    </div>
+                </div>
+                
                 <button class="generate-btn" onclick="generateQR()">🎯 QR کۆد دروست بکە</button>
             </div>
             
@@ -287,23 +388,29 @@
 
     <script>
         let currentQR = null;
+        let currentDesign = 'classic';
         
         // Type selector functionality
         document.querySelectorAll('.type-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                // Remove active class from all buttons
                 document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-                // Add active class to clicked button
                 this.classList.add('active');
                 
-                // Hide all input groups
                 document.querySelectorAll('[id$="-input"]').forEach(group => {
                     group.classList.add('hidden');
                 });
                 
-                // Show selected input group
                 const type = this.dataset.type;
                 document.getElementById(type + '-input').classList.remove('hidden');
+            });
+        });
+        
+        // Design selector functionality
+        document.querySelectorAll('.design-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.design-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                currentDesign = this.dataset.design;
             });
         });
         
@@ -345,25 +452,105 @@
                 return;
             }
             
+            // Get colors
+            const darkColor = document.getElementById('dark-color').value;
+            const lightColor = document.getElementById('light-color').value;
+            
             // Clear previous QR code
             document.getElementById('qrcode').innerHTML = '';
             
-            // Generate new QR code
-            QRCode.toCanvas(document.getElementById('qrcode'), content, {
+            // Create canvas element
+            const canvas = document.createElement('canvas');
+            document.getElementById('qrcode').appendChild(canvas);
+            
+            // QR Code options based on design
+            let options = {
                 width: 300,
                 height: 300,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
+                colorDark: darkColor,
+                colorLight: lightColor,
                 correctLevel: QRCode.CorrectLevel.M
-            }, function (error) {
+            };
+            
+            // Apply design styles
+            switch(currentDesign) {
+                case 'rounded':
+                    options.margin = 4;
+                    break;
+                case 'dots':
+                    options.margin = 2;
+                    break;
+                case 'gradient':
+                    // We'll handle gradient after generation
+                    break;
+            }
+            
+            // Generate QR code
+            QRCode.toCanvas(canvas, content, options, function (error) {
                 if (error) {
                     alert('هەڵەیەک ڕوویدا لە دروستکردنی QR کۆد!');
                     console.error(error);
                 } else {
+                    // Apply post-processing effects
+                    applyDesignEffects(canvas);
                     document.getElementById('qr-result').classList.remove('hidden');
                     currentQR = content;
                 }
             });
+        }
+        
+        function applyDesignEffects(canvas) {
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            
+            switch(currentDesign) {
+                case 'rounded':
+                    applyRoundedCorners(ctx, canvas);
+                    break;
+                case 'dots':
+                    applyDotsEffect(ctx, canvas);
+                    break;
+                case 'gradient':
+                    applyGradientEffect(ctx, canvas);
+                    break;
+            }
+        }
+        
+        function applyRoundedCorners(ctx, canvas) {
+            // Add subtle shadow and rounded effect
+            ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            ctx.shadowBlur = 5;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+        }
+        
+        function applyDotsEffect(ctx, canvas) {
+            // This would require more complex pixel manipulation
+            // For now, we'll add a subtle texture
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            
+            // Add dot pattern
+            for(let x = 0; x < canvas.width; x += 10) {
+                for(let y = 0; y < canvas.height; y += 10) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            ctx.globalCompositeOperation = 'source-over';
+        }
+        
+        function applyGradientEffect(ctx, canvas) {
+            // Create gradient overlay
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, document.getElementById('dark-color').value + '80');
+            gradient.addColorStop(1, '#4ecdc4' + '80');
+            
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.globalCompositeOperation = 'source-over';
         }
         
         function downloadQR(format) {
@@ -378,14 +565,17 @@
                 link.href = canvas.toDataURL();
                 link.click();
             } else if (format === 'svg') {
-                // For SVG, we'll regenerate as SVG
+                // Get colors and options
+                const darkColor = document.getElementById('dark-color').value;
+                const lightColor = document.getElementById('light-color').value;
+                
                 QRCode.toString(currentQR, {
                     type: 'svg',
                     width: 300,
                     height: 300,
                     color: {
-                        dark: '#000000',
-                        light: '#ffffff'
+                        dark: darkColor,
+                        light: lightColor
                     }
                 }, function (err, svg) {
                     if (err) throw err;
@@ -407,6 +597,15 @@
                 e.preventDefault();
                 generateQR();
             }
+        });
+        
+        // Color change auto-regenerate
+        document.getElementById('dark-color').addEventListener('change', function() {
+            if (currentQR) generateQR();
+        });
+        
+        document.getElementById('light-color').addEventListener('change', function() {
+            if (currentQR) generateQR();
         });
     </script>
 </body>
