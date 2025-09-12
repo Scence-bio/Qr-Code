@@ -53,29 +53,12 @@
             overflow: hidden;
         }
         
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
         .header h1 {
             font-size: clamp(1.5rem, 4vw, 2.5rem);
             margin-bottom: 8px;
             font-weight: 800;
             position: relative;
             z-index: 2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         
         .header p {
@@ -114,8 +97,6 @@
             font-weight: 700;
             font-size: clamp(0.8rem, 2vw, 0.95rem);
             color: #2c3e50;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
         }
         
         input, textarea, select {
@@ -133,7 +114,6 @@
             outline: none;
             border-color: #4facfe;
             box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15);
-            transform: translateY(-1px);
         }
         
         textarea {
@@ -146,7 +126,6 @@
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 15px;
-            border: 1px solid rgba(79, 172, 254, 0.1);
         }
         
         .control-row {
@@ -161,7 +140,6 @@
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 15px;
-            border: 1px solid rgba(255, 99, 132, 0.1);
         }
         
         .logo-upload {
@@ -182,7 +160,7 @@
             background: rgba(255, 107, 107, 0.05);
         }
         
-        .upload-zone:hover, .upload-zone.dragover {
+        .upload-zone:hover {
             border-color: #e74c3c;
             background: rgba(255, 107, 107, 0.1);
         }
@@ -216,14 +194,12 @@
         .icon-btn:hover, .icon-btn.active {
             border-color: #4facfe;
             background: rgba(79, 172, 254, 0.1);
-            transform: scale(1.1);
         }
         
         .logo-preview {
             max-width: 80px;
             max-height: 80px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             margin: 10px 0;
         }
         
@@ -257,13 +233,6 @@
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .color-input:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
         .generate-btn {
@@ -277,8 +246,6 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
         .generate-btn:hover:not(:disabled) {
@@ -299,52 +266,30 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             margin-bottom: 15px;
             position: relative;
-            overflow: hidden;
             min-height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .qr-container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #4facfe, #00f2fe, #4facfe);
-            border-radius: 17px;
-            z-index: -1;
-            animation: borderGlow 3s ease-in-out infinite;
-        }
-        
-        @keyframes borderGlow {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-        
         .qr-with-frame {
             position: relative;
             display: inline-block;
             max-width: 100%;
-            max-height: 100%;
         }
         
         .qr-with-frame canvas {
             display: block;
             max-width: 100%;
             height: auto;
+            border-radius: 8px;
         }
         
-        /* Frame Styles */
         .frame-modern {
             padding: 15px;
             background: linear-gradient(145deg, #ffffff, #f8f9fa);
             border-radius: 20px;
-            box-shadow: 
-                0 8px 25px rgba(0, 0, 0, 0.1),
-                inset 0 2px 8px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
         
         .frame-elegant {
@@ -352,7 +297,6 @@
             background: linear-gradient(145deg, #f8f9fa, #ffffff);
             border-radius: 12px;
             border: 3px solid #4facfe;
-            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.3);
         }
         
         .frame-classic {
@@ -360,23 +304,6 @@
             background: #ffffff;
             border: 6px solid #333;
             border-radius: 4px;
-            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #333;
-        }
-        
-        .frame-rounded {
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 40px;
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-        }
-        
-        .frame-shadow {
-            padding: 12px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 
-                0 15px 50px rgba(0, 0, 0, 0.2),
-                0 0 0 1px rgba(0, 0, 0, 0.05);
         }
         
         .placeholder {
@@ -396,8 +323,7 @@
         
         .download-section {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
             justify-content: center;
             margin-bottom: 15px;
         }
@@ -413,17 +339,10 @@
             font-weight: 600;
             transition: all 0.3s ease;
             flex: 1;
-            min-width: 100px;
-            max-width: 150px;
         }
         
         .download-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-        
-        .download-btn.svg-btn {
-            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
         }
         
         .api-info {
@@ -432,7 +351,6 @@
             border-radius: 8px;
             font-size: clamp(0.7rem, 1.8vw, 0.85rem);
             color: #155724;
-            border: 1px solid #c3e6cb;
             text-align: center;
         }
         
@@ -451,7 +369,7 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Mobile Optimizations */
+        /* Desktop Layout */
         @media (min-width: 768px) {
             body {
                 padding: 20px;
@@ -474,20 +392,11 @@
             
             .input-section, .output-section {
                 padding: 30px;
-                border-radius: 20px;
-            }
-            
-            .header {
-                padding: 40px 20px;
             }
             
             .qr-container {
                 min-height: 300px;
                 padding: 25px;
-            }
-            
-            .control-row {
-                margin-bottom: 20px;
             }
             
             .preset-icons {
@@ -498,21 +407,6 @@
         @media (max-width: 480px) {
             .control-row {
                 grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            
-            .color-input {
-                width: 35px;
-                height: 35px;
-            }
-            
-            .download-section {
-                flex-direction: column;
-            }
-            
-            .download-btn {
-                min-width: auto;
-                max-width: none;
             }
             
             .preset-icons {
@@ -525,30 +419,28 @@
             display: none;
         }
     </style>
-    <!-- QR Code generation library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎯 دروستکەری QR کۆد</h1>
-            <p>QR کۆدی ڕاستەقینە دروست بکە لەگەڵ لۆگۆ - گەرەنتیکراو!</p>
+            <h1>دروستکەری QR کۆد</h1>
+            <p>QR کۆدی ڕاستەقینە دروست بکە لەگەڵ لۆگۆ</p>
         </div>
         
         <div class="content">
             <div class="sections-container">
                 <div class="input-section">
                     <div class="form-group">
-                        <label>📝 تێکستەکەت یان بەستەرەکەت بنووسە</label>
+                        <label>تێکستەکەت یان بەستەرەکەت بنووسە</label>
                         <textarea id="qr-text" placeholder="تێکستەکەت یان https://example.com بنووسە...">سڵاو! ئەمە تاقیکردنەوەی QR کۆدە بە لۆگۆی جوان.</textarea>
                     </div>
                     
                     <div class="logo-section">
-                        <label>🖼️ لۆگۆ/ئایکۆن زیاد بکە</label>
+                        <label>لۆگۆ/ئایکۆن زیاد بکە</label>
                         <div class="logo-upload">
                             <div class="upload-zone" onclick="document.getElementById('logo-file').click()">
                                 <div id="upload-text">
-                                    📁 کلیک بکە بۆ هەڵبژاردنی وێنە<br>
+                                    کلیک بکە بۆ هەڵبژاردنی وێنە<br>
                                     <small>یان ڕایکێشە بۆ ناوەوە</small>
                                 </div>
                                 <img id="logo-preview" class="logo-preview" style="display: none;" alt="Logo Preview">
@@ -560,22 +452,18 @@
                             </div>
                             
                             <div class="preset-icons">
-                                <div class="icon-btn" onclick="selectIcon('❤️')" title="دڵ">❤️</div>
-                                <div class="icon-btn" onclick="selectIcon('⭐')" title="ئەستێرە">⭐</div>
-                                <div class="icon-btn" onclick="selectIcon('🏠')" title="ماڵ">🏠</div>
-                                <div class="icon-btn" onclick="selectIcon('📱')" title="مۆبایل">📱</div>
-                                <div class="icon-btn" onclick="selectIcon('💼')" title="کار">💼</div>
-                                <div class="icon-btn" onclick="selectIcon('🎯')" title="ئامانج">🎯</div>
-                                <div class="icon-btn" onclick="selectIcon('🌟')" title="کەشف">🌟</div>
-                                <div class="icon-btn" onclick="selectIcon('🔥')" title="ئاگر">🔥</div>
-                                <div class="icon-btn" onclick="selectIcon('💎')" title="ئەڵماس">💎</div>
-                                <div class="icon-btn" onclick="selectIcon('🚀')" title="موشەک">🚀</div>
-                                <div class="icon-btn" onclick="selectIcon('⚡')" title="برووسک">⚡</div>
-                                <div class="icon-btn" onclick="selectIcon('🌈')" title="کەوانی باران">🌈</div>
+                                <div class="icon-btn" onclick="selectIcon('❤️')">❤️</div>
+                                <div class="icon-btn" onclick="selectIcon('⭐')">⭐</div>
+                                <div class="icon-btn" onclick="selectIcon('🏠')">🏠</div>
+                                <div class="icon-btn" onclick="selectIcon('📱')">📱</div>
+                                <div class="icon-btn" onclick="selectIcon('💼')">💼</div>
+                                <div class="icon-btn" onclick="selectIcon('🎯')">🎯</div>
+                                <div class="icon-btn" onclick="selectIcon('🌟')">🌟</div>
+                                <div class="icon-btn" onclick="selectIcon('🔥')">🔥</div>
                             </div>
                             
                             <button type="button" onclick="clearLogo()" style="margin-top: 10px; padding: 5px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                🗑️ سڕینەوە
+                                سڕینەوە
                             </button>
                         </div>
                     </div>
@@ -583,20 +471,18 @@
                     <div class="design-controls">
                         <div class="control-row">
                             <div>
-                                <label>📏 قەبارەی QR کۆد</label>
+                                <label>قەبارەی QR کۆد</label>
                                 <input type="range" id="size-slider" class="size-slider" min="200" max="400" value="300">
                                 <div style="text-align: center; margin-top: 3px; font-weight: bold; font-size: 0.8rem;" id="size-display">300px</div>
                             </div>
                             
                             <div>
-                                <label>🎨 جۆری چوارچێوە</label>
+                                <label>جۆری چوارچێوە</label>
                                 <select id="frame-type">
                                     <option value="none">بەبێ چوارچێوە</option>
                                     <option value="modern" selected>مۆدێرن</option>
                                     <option value="elegant">جوان</option>
                                     <option value="classic">کلاسیک</option>
-                                    <option value="rounded">خولاوی</option>
-                                    <option value="shadow">سێبەر</option>
                                 </select>
                             </div>
                         </div>
@@ -614,12 +500,12 @@
                         
                         <div class="control-row">
                             <div>
-                                <label>📐 قەبارەی لۆگۆ</label>
+                                <label>قەبارەی لۆگۆ</label>
                                 <input type="range" id="logo-size-slider" class="size-slider" min="10" max="30" value="20">
                                 <div style="text-align: center; margin-top: 3px; font-weight: bold; font-size: 0.8rem;" id="logo-size-display">20%</div>
                             </div>
                             <div>
-                                <label>🔲 شێوازی لۆگۆ</label>
+                                <label>شێوازی لۆگۆ</label>
                                 <select id="logo-style">
                                     <option value="circle">خولاوی</option>
                                     <option value="square">چوارگۆشە</option>
@@ -630,7 +516,7 @@
                     </div>
                     
                     <button class="generate-btn" id="generate-btn" onclick="generateQR()">
-                        ⚡ QR کۆد دروست بکە
+                        QR کۆد دروست بکە
                     </button>
                 </div>
                 
@@ -643,79 +529,36 @@
                     
                     <div id="download-section" class="download-section" style="display: none;">
                         <button class="download-btn" onclick="downloadQR('png')">
-                            📥 PNG داگرە
+                            PNG داگرە
                         </button>
-                        <button class="download-btn svg-btn" onclick="downloadQR('jpg')">
-                            📄 JPG داگرە
+                        <button class="download-btn" onclick="downloadQR('jpg')">
+                            JPG داگرە
                         </button>
                     </div>
                     
                     <div class="api-info">
-                        <strong>🔥 QR کۆدی بە لۆگۆ و چوارچێوەی جوان</strong><br>
-                        لە هەموو ئامێرەکانی سکانەر کار دەکات - باشترین جۆرایەتی!
+                        <strong>QR کۆدی بە لۆگۆ و چوارچێوەی جوان</strong><br>
+                        لە هەموو ئامێرەکانی سکانەر کار دەکات
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <script>
         // Global variables
         let currentQRCanvas = null;
         let currentLogoImage = null;
         let selectedIcon = null;
         
-        // Canvas roundRect polyfill - بەرەوپێش دابنێ
-        function addRoundRectPolyfill() {
-            if (!CanvasRenderingContext2D.prototype.roundRect) {
-                CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
-                    if (typeof radius === 'number') {
-                        radius = {tl: radius, tr: radius, br: radius, bl: radius};
-                    } else {
-                        const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
-                        for (let side in defaultRadius) {
-                            radius[side] = radius[side] || defaultRadius[side];
-                        }
-                    }
-                    
-                    this.beginPath();
-                    this.moveTo(x + radius.tl, y);
-                    this.lineTo(x + width - radius.tr, y);
-                    this.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-                    this.lineTo(x + width, y + height - radius.br);
-                    this.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-                    this.lineTo(x + radius.bl, y + height);
-                    this.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-                    this.lineTo(x, y + radius.tl);
-                    this.quadraticCurveTo(x, y, x + radius.tl, y);
-                    this.closePath();
-                    return this;
-                };
-            }
-        }
-        
-        // Initialize polyfill
-        addRoundRectPolyfill();
-        
         // Update size displays
         document.getElementById('size-slider').addEventListener('input', function() {
             document.getElementById('size-display').textContent = this.value + 'px';
-            if (currentQRCanvas) generateQR();
         });
         
         document.getElementById('logo-size-slider').addEventListener('input', function() {
             document.getElementById('logo-size-display').textContent = this.value + '%';
-            if (currentQRCanvas) generateQR();
-        });
-        
-        // Auto-regenerate on changes
-        ['dark-color', 'light-color', 'frame-type', 'logo-style'].forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('change', function() {
-                    if (currentQRCanvas) generateQR();
-                });
-            }
         });
         
         // File upload handling
@@ -729,60 +572,45 @@
                         currentLogoImage = img;
                         selectedIcon = null;
                         updateLogoPreview();
-                        if (currentQRCanvas) generateQR();
-                    };
-                    img.onerror = function() {
-                        console.error('خەتا لە بارکردنی وێنەکە');
-                        showError('خەتا لە بارکردنی وێنەکە. تکایە وێنەیەکی تر هەڵبژێرە.');
                     };
                     img.src = e.target.result;
                 };
-                reader.onerror = function() {
-                    showError('خەتا لە خوێندنەوەی فایلەکە');
-                };
                 reader.readAsDataURL(file);
-            } else if (file) {
-                showError('تکایە وێنەیەک هەڵبژێرە (PNG, JPG, GIF)');
             }
         });
         
         // Drag and drop for logo upload
         const uploadZone = document.querySelector('.upload-zone');
         
-        uploadZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('dragover');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, preventDefaults, false);
         });
         
-        uploadZone.addEventListener('dragleave', function(e) {
+        function preventDefaults(e) {
             e.preventDefault();
-            this.classList.remove('dragover');
-        });
+            e.stopPropagation();
+        }
         
         uploadZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-            
             const files = e.dataTransfer.files;
             if (files.length > 0 && files[0].type.startsWith('image/')) {
-                const file = files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        currentLogoImage = img;
-                        selectedIcon = null;
-                        updateLogoPreview();
-                        if (currentQRCanvas) generateQR();
-                    };
-                    img.onerror = function() {
-                        showError('خەتا لە بارکردنی وێنەکە');
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                handleImageFile(files[0]);
             }
         });
+        
+        function handleImageFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    currentLogoImage = img;
+                    selectedIcon = null;
+                    updateLogoPreview();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
         
         function selectIcon(icon) {
             // Remove active class from all icons
@@ -794,8 +622,6 @@
             selectedIcon = icon;
             currentLogoImage = null;
             updateLogoPreview();
-            
-            if (currentQRCanvas) generateQR();
         }
         
         function clearLogo() {
@@ -804,8 +630,6 @@
             document.querySelectorAll('.icon-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('logo-file').value = '';
             updateLogoPreview();
-            
-            if (currentQRCanvas) generateQR();
         }
         
         function updateLogoPreview() {
@@ -823,7 +647,7 @@
                 logoPreview.style.display = 'none';
                 uploadZone.classList.add('has-image');
             } else {
-                uploadText.innerHTML = '📁 کلیک بکە بۆ هەڵبژاردنی وێنە<br><small>یان ڕایکێشە بۆ ناوەوە</small>';
+                uploadText.innerHTML = 'کلیک بکە بۆ هەڵبژاردنی وێنە<br><small>یان ڕایکێشە بۆ ناوەوە</small>';
                 logoPreview.style.display = 'none';
                 uploadZone.classList.remove('has-image');
             }
@@ -865,7 +689,7 @@
             // Disable button during generation
             const generateBtn = document.getElementById('generate-btn');
             generateBtn.disabled = true;
-            generateBtn.textContent = '🔄 دروستکردن...';
+            generateBtn.textContent = 'دروستکردن...';
             
             try {
                 const size = parseInt(document.getElementById('size-slider').value);
@@ -877,37 +701,25 @@
                 
                 // Create canvas
                 const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                if (!ctx) {
-                    throw new Error('نەتوانرا Canvas دروست بکرێت - وێبگەڕەکەت پشتگیری ناکات');
-                }
-                
                 canvas.width = size;
                 canvas.height = size;
                 
-                // Generate QR code using our built-in generator
+                // Generate QR code
                 const qrOptions = {
                     width: size,
+                    height: size,
                     color: {
                         dark: darkColor,
                         light: lightColor
-                    }
+                    },
+                    margin: 1
                 };
                 
-                console.log('Generating QR with built-in generator...');
                 await QRCode.toCanvas(canvas, text, qrOptions);
-                console.log('QR generated successfully!');
                 
                 // Add logo if available
                 if (currentLogoImage || selectedIcon) {
-                    try {
-                        await addLogoToCanvas(canvas, ctx, logoSize, logoStyle);
-                        console.log('Logo added successfully!');
-                    } catch (logoError) {
-                        console.error('Logo Error:', logoError);
-                        console.log('بەردەوام دەبین بەبێ لۆگۆ');
-                    }
+                    await addLogoToCanvas(canvas, logoSize, logoStyle);
                 }
                 
                 currentQRCanvas = canvas;
@@ -926,7 +738,7 @@
                 document.getElementById('qr-display').appendChild(frameContainer);
                 document.getElementById('download-section').style.display = 'flex';
                 
-                // Add success animation
+                // Success animation
                 frameContainer.style.opacity = '0';
                 frameContainer.style.transform = 'scale(0.8)';
                 setTimeout(() => {
@@ -935,103 +747,18 @@
                     frameContainer.style.transform = 'scale(1)';
                 }, 100);
                 
-                console.log('QR display completed!');
-                
             } catch (error) {
                 console.error('QR generation error:', error);
-                
-                // Show specific error messages
-                let errorMessage = 'هەڵەیەک ڕوویدا! تکایە دووبارە تاقی بکەرەوە';
-                
-                if (error.message.includes('Canvas')) {
-                    errorMessage = 'وێبگەڕەکەت Canvas پشتگیری ناکات';
-                } else if (error.message.includes('دروست بکرێت')) {
-                    errorMessage = 'نەتوانرا QR کۆد دروست بکرێت - تێکستەکە پشکنین بکە';
-                }
-                
-                showError(errorMessage);
-                
-                // Show fallback method with simple text display
-                if (text.length < 200) {
-                    setTimeout(() => showFallbackQR(text), 1000);
-                }
+                showError('هەڵەیەک ڕوویدا! تکایە دووبارە تاقی بکەرەوە');
             }
             
-            resetButton();
+            // Reset button
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'QR کۆد دروست بکە';
         }
         
-        function showFallbackQR(text) {
-            const fallbackDiv = document.createElement('div');
-            fallbackDiv.style.cssText = `
-                background: white;
-                border: 2px solid #ccc;
-                border-radius: 10px;
-                padding: 20px;
-                text-align: center;
-                max-width: 300px;
-                margin: 20px auto;
-            `;
-            
-            fallbackDiv.innerHTML = `
-                <div style="font-size: 14px; color: #666; margin-bottom: 15px;">
-                    QR کۆد دروستنەکرا - بەڵام دەتوانیت تێکستەکە بەکار بهێنیت:
-                </div>
-                <div style="
-                    background: #f8f9fa;
-                    border: 1px solid #dee2e6;
-                    border-radius: 5px;
-                    padding: 15px;
-                    word-break: break-all;
-                    font-family: monospace;
-                    font-size: 12px;
-                    line-height: 1.4;
-                ">${text}</div>
-                <div style="margin-top: 15px;">
-                    <button onclick="copyToClipboard('${text.replace(/'/g, "\\'")}')" 
-                            style="
-                                background: #007bff;
-                                color: white;
-                                border: none;
-                                padding: 8px 15px;
-                                border-radius: 5px;
-                                cursor: pointer;
-                            ">
-                        📋 کۆپی بکە
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('qr-display').innerHTML = '';
-            document.getElementById('qr-display').appendChild(fallbackDiv);
-        }
-        
-        function copyToClipboard(text) {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('تێکستەکە کۆپی کرا!');
-                }).catch(() => {
-                    fallbackCopy(text);
-                });
-            } else {
-                fallbackCopy(text);
-            }
-        }
-        
-        function fallbackCopy(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                alert('تێکستەکە کۆپی کرا!');
-            } catch (err) {
-                alert('نەتوانرا کۆپی بکرێت');
-            }
-            document.body.removeChild(textarea);
-        }
-        
-        async function addLogoToCanvas(canvas, ctx, logoSize, logoStyle) {
+        async function addLogoToCanvas(canvas, logoSize, logoStyle) {
+            const ctx = canvas.getContext('2d');
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const logoPixelSize = (canvas.width * logoSize) / 100;
@@ -1040,28 +767,11 @@
             const bgSize = logoPixelSize * 1.2;
             ctx.fillStyle = '#ffffff';
             
-            try {
-                if (logoStyle === 'circle') {
-                    ctx.beginPath();
-                    ctx.arc(centerX, centerY, bgSize / 2, 0, 2 * Math.PI);
-                    ctx.fill();
-                } else if (logoStyle === 'rounded') {
-                    const radius = bgSize * 0.15;
-                    // Use manual rounded rectangle if roundRect is not available
-                    if (ctx.roundRect) {
-                        ctx.beginPath();
-                        ctx.roundRect(centerX - bgSize/2, centerY - bgSize/2, bgSize, bgSize, radius);
-                        ctx.fill();
-                    } else {
-                        // Fallback to square
-                        ctx.fillRect(centerX - bgSize/2, centerY - bgSize/2, bgSize, bgSize);
-                    }
-                } else { // square
-                    ctx.fillRect(centerX - bgSize/2, centerY - bgSize/2, bgSize, bgSize);
-                }
-            } catch (bgError) {
-                console.error('Background drawing error:', bgError);
-                // Use simple square as fallback
+            if (logoStyle === 'circle') {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, bgSize / 2, 0, 2 * Math.PI);
+                ctx.fill();
+            } else {
                 ctx.fillRect(centerX - bgSize/2, centerY - bgSize/2, bgSize, bgSize);
             }
             
@@ -1069,47 +779,31 @@
                 // Draw uploaded image
                 ctx.save();
                 
-                try {
-                    if (logoStyle === 'circle') {
-                        ctx.beginPath();
-                        ctx.arc(centerX, centerY, logoPixelSize / 2, 0, 2 * Math.PI);
-                        ctx.clip();
-                    }
-                    
-                    ctx.drawImage(
-                        currentLogoImage,
-                        centerX - logoPixelSize/2,
-                        centerY - logoPixelSize/2,
-                        logoPixelSize,
-                        logoPixelSize
-                    );
-                } catch (imgError) {
-                    console.error('Image drawing error:', imgError);
-                    throw new Error('خەتا لە کێشانی وێنەکە');
+                if (logoStyle === 'circle') {
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, logoPixelSize / 2, 0, 2 * Math.PI);
+                    ctx.clip();
                 }
+                
+                ctx.drawImage(
+                    currentLogoImage,
+                    centerX - logoPixelSize/2,
+                    centerY - logoPixelSize/2,
+                    logoPixelSize,
+                    logoPixelSize
+                );
                 
                 ctx.restore();
                 
             } else if (selectedIcon) {
                 // Draw emoji icon
-                try {
-                    const fontSize = logoPixelSize * 0.8;
-                    ctx.font = `${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillStyle = '#333333';
-                    ctx.fillText(selectedIcon, centerX, centerY);
-                } catch (iconError) {
-                    console.error('Icon drawing error:', iconError);
-                    throw new Error('خەتا لە کێشانی ئایکۆنەکە');
-                }
+                const fontSize = logoPixelSize * 0.8;
+                ctx.font = `${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#333333';
+                ctx.fillText(selectedIcon, centerX, centerY);
             }
-        }
-        
-        function resetButton() {
-            const generateBtn = document.getElementById('generate-btn');
-            generateBtn.disabled = false;
-            generateBtn.textContent = '⚡ QR کۆد دروست بکە';
         }
         
         function downloadQR(format = 'png') {
@@ -1127,7 +821,20 @@
                 link.download = fileName;
                 
                 if (format === 'jpg') {
-                    link.href = currentQRCanvas.toDataURL('image/jpeg', 0.9);
+                    // For JPG, we need to create a new canvas with white background
+                    const jpgCanvas = document.createElement('canvas');
+                    jpgCanvas.width = currentQRCanvas.width;
+                    jpgCanvas.height = currentQRCanvas.height;
+                    const jpgCtx = jpgCanvas.getContext('2d');
+                    
+                    // Fill with white background
+                    jpgCtx.fillStyle = '#ffffff';
+                    jpgCtx.fillRect(0, 0, jpgCanvas.width, jpgCanvas.height);
+                    
+                    // Draw the QR code on top
+                    jpgCtx.drawImage(currentQRCanvas, 0, 0);
+                    
+                    link.href = jpgCanvas.toDataURL('image/jpeg', 0.9);
                 } else {
                     link.href = currentQRCanvas.toDataURL('image/png');
                 }
@@ -1140,7 +847,17 @@
                 setTimeout(() => {
                     if (currentQRCanvas) {
                         // Restore QR display
-                        generateQR();
+                        const frameContainer = document.createElement('div');
+                        frameContainer.className = 'qr-with-frame';
+                        const frameType = document.getElementById('frame-type').value;
+                        
+                        if (frameType !== 'none') {
+                            frameContainer.classList.add('frame-' + frameType);
+                        }
+                        
+                        frameContainer.appendChild(currentQRCanvas);
+                        document.getElementById('qr-display').innerHTML = '';
+                        document.getElementById('qr-display').appendChild(frameContainer);
                     }
                 }, 1500);
                 
@@ -1150,11 +867,30 @@
             }
         }
         
-        // Event listeners
-        document.getElementById('qr-text').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) {
-                e.preventDefault();
-                generateQR();
+        // Event listeners for auto-regeneration
+        ['dark-color', 'light-color', 'frame-type', 'logo-style'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', function() {
+                    if (currentQRCanvas) {
+                        generateQR();
+                    }
+                });
+            }
+        });
+        
+        ['size-slider', 'logo-size-slider'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', function() {
+                    if (currentQRCanvas) {
+                        // Debounce the regeneration
+                        clearTimeout(element.regenerateTimeout);
+                        element.regenerateTimeout = setTimeout(() => {
+                            generateQR();
+                        }, 500);
+                    }
+                });
             }
         });
         
@@ -1164,58 +900,38 @@
         });
         
         // Real-time text change with debouncing
-        let timeout;
+        let textTimeout;
         document.getElementById('qr-text').addEventListener('input', function() {
-            clearTimeout(timeout);
-            const delay = window.innerWidth <= 768 ? 3000 : 2000;
-            timeout = setTimeout(() => {
-                if (this.value.trim() && currentQRCanvas) {
+            clearTimeout(textTimeout);
+            textTimeout = setTimeout(() => {
+                if (this.value.trim()) {
                     generateQR();
                 }
-            }, delay);
+            }, 1500);
         });
         
-        // Touch-friendly interactions for mobile
-        if ('ontouchstart' in window) {
-            document.querySelectorAll('button, .color-input, .icon-btn').forEach(element => {
-                element.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.95)';
-                });
-                
-                element.addEventListener('touchend', function() {
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 150);
-                });
-            });
-        }
-        
-        // Handle orientation change
-        window.addEventListener('orientationchange', function() {
-            setTimeout(() => {
-                if (currentQRCanvas) {
-                    generateQR();
-                }
-            }, 500);
+        // Enter key to generate
+        document.getElementById('qr-text').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                generateQR();
+            }
         });
         
-        // Global error handler
+        // Error handling
         window.addEventListener('error', function(e) {
             console.error('Global error:', e.error);
-            showError('هەڵەیەکی گشتی ڕوویدا');
+            if (document.getElementById('qr-display').innerHTML.includes('spinner')) {
+                showError('هەڵەیەکی نەخوازراو ڕوویدا');
+            }
         });
         
-        // Performance optimization for low-end devices
-        function isLowEndDevice() {
-            return navigator.hardwareConcurrency <= 2 || 
-                   /Android.*[0-6]\.|iPhone.*OS [0-9]_/.test(navigator.userAgent);
+        // Check if QRCode library is loaded
+        if (typeof QRCode === 'undefined') {
+            document.getElementById('qr-display').innerHTML = `
+                <div class="placeholder error">
+                    <strong>⚠️ کتێبخانەی QR کۆد بارنەبووە</strong><br>
+                    <small>تکایە پەڕەکە نوێ بکەرەوە</small>
+                </div>
+            `;
         }
-        
-        if (isLowEndDevice()) {
-            // Disable some animations for performance
-            document.body.style.animation = 'none';
-            document.body.style.background = '#667eea';
-        }
-    </script>
-</body>
-</html>
