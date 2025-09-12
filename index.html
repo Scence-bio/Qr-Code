@@ -1,1 +1,413 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دروستکەری QR کۆد</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .input-section {
+            margin-bottom: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #444;
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .type-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .type-btn {
+            padding: 12px 20px;
+            border: 2px solid #e1e8ed;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .type-btn:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+        }
+        
+        .type-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-color: #4facfe;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .qr-output {
+            text-align: center;
+            padding: 30px;
+            background: #f8faff;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        
+        #qrcode {
+            margin: 0 auto 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        
+        .download-btn {
+            padding: 12px 25px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .wifi-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .wifi-fields {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 دروستکەری QR کۆد</h1>
+            <p>QR کۆدەکانت بەخۆڕایی دروست بکە - هەمیشە بەخۆڕایی!</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="form-group">
+                    <label>جۆری QR کۆد:</label>
+                    <div class="type-selector">
+                        <button class="type-btn active" data-type="text">تێکست</button>
+                        <button class="type-btn" data-type="url">بەستەر</button>
+                        <button class="type-btn" data-type="email">ئیمەیڵ</button>
+                        <button class="type-btn" data-type="phone">تەلەفۆن</button>
+                        <button class="type-btn" data-type="wifi">WiFi</button>
+                        <button class="type-btn" data-type="sms">SMS</button>
+                    </div>
+                </div>
+                
+                <!-- Text Input -->
+                <div class="form-group" id="text-input">
+                    <label for="text-content">تێکستەکەت بنووسە:</label>
+                    <textarea id="text-content" placeholder="تێکستەکەت لێرە بنووسە..."></textarea>
+                </div>
+                
+                <!-- URL Input -->
+                <div class="form-group hidden" id="url-input">
+                    <label for="url-content">بەستەری ماڵپەڕ (URL):</label>
+                    <input type="url" id="url-content" placeholder="https://example.com">
+                </div>
+                
+                <!-- Email Input -->
+                <div class="form-group hidden" id="email-input">
+                    <label for="email-content">ناونیشانی ئیمەیڵ:</label>
+                    <input type="email" id="email-content" placeholder="example@email.com">
+                    <label for="email-subject">بابەت (ئیختیاری):</label>
+                    <input type="text" id="email-subject" placeholder="بابەتی ئیمەیڵ">
+                    <label for="email-body">نامەکە (ئیختیاری):</label>
+                    <textarea id="email-body" placeholder="نامەکەت لێرە بنووسە..."></textarea>
+                </div>
+                
+                <!-- Phone Input -->
+                <div class="form-group hidden" id="phone-input">
+                    <label for="phone-content">ژمارەی تەلەفۆن:</label>
+                    <input type="tel" id="phone-content" placeholder="+964xxxxxxxxx">
+                </div>
+                
+                <!-- WiFi Input -->
+                <div class="form-group hidden" id="wifi-input">
+                    <div class="wifi-fields">
+                        <div>
+                            <label for="wifi-ssid">ناوی تۆڕ (SSID):</label>
+                            <input type="text" id="wifi-ssid" placeholder="ناوی WiFi">
+                        </div>
+                        <div>
+                            <label for="wifi-password">تێپەڕەوشە:</label>
+                            <input type="password" id="wifi-password" placeholder="تێپەڕەوشە">
+                        </div>
+                    </div>
+                    <label for="wifi-security">جۆری ئاسایش:</label>
+                    <select id="wifi-security">
+                        <option value="WPA">WPA/WPA2</option>
+                        <option value="WEP">WEP</option>
+                        <option value="nopass">بێ تێپەڕەوشە</option>
+                    </select>
+                </div>
+                
+                <!-- SMS Input -->
+                <div class="form-group hidden" id="sms-input">
+                    <label for="sms-number">ژمارەی تەلەفۆن:</label>
+                    <input type="tel" id="sms-number" placeholder="+964xxxxxxxxx">
+                    <label for="sms-message">نامەکە:</label>
+                    <textarea id="sms-message" placeholder="نامەکەت لێرە بنووسە..."></textarea>
+                </div>
+                
+                <button class="generate-btn" onclick="generateQR()">🎯 QR کۆد دروست بکە</button>
+            </div>
+            
+            <div class="qr-output hidden" id="qr-result">
+                <div id="qrcode"></div>
+                <div>
+                    <button class="download-btn" onclick="downloadQR('png')">📥 وەک PNG داگرە</button>
+                    <button class="download-btn" onclick="downloadQR('svg')">📥 وەک SVG داگرە</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        let currentQR = null;
+        
+        // Type selector functionality
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Hide all input groups
+                document.querySelectorAll('[id$="-input"]').forEach(group => {
+                    group.classList.add('hidden');
+                });
+                
+                // Show selected input group
+                const type = this.dataset.type;
+                document.getElementById(type + '-input').classList.remove('hidden');
+            });
+        });
+        
+        function generateQR() {
+            const activeType = document.querySelector('.type-btn.active').dataset.type;
+            let content = '';
+            
+            switch(activeType) {
+                case 'text':
+                    content = document.getElementById('text-content').value;
+                    break;
+                case 'url':
+                    content = document.getElementById('url-content').value;
+                    break;
+                case 'email':
+                    const email = document.getElementById('email-content').value;
+                    const subject = document.getElementById('email-subject').value;
+                    const body = document.getElementById('email-body').value;
+                    content = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    break;
+                case 'phone':
+                    content = `tel:${document.getElementById('phone-content').value}`;
+                    break;
+                case 'wifi':
+                    const ssid = document.getElementById('wifi-ssid').value;
+                    const password = document.getElementById('wifi-password').value;
+                    const security = document.getElementById('wifi-security').value;
+                    content = `WIFI:T:${security};S:${ssid};P:${password};;`;
+                    break;
+                case 'sms':
+                    const smsNumber = document.getElementById('sms-number').value;
+                    const smsMessage = document.getElementById('sms-message').value;
+                    content = `sms:${smsNumber}?body=${encodeURIComponent(smsMessage)}`;
+                    break;
+            }
+            
+            if (!content.trim()) {
+                alert('تکایە زانیاریەکان پڕ بکەرەوە!');
+                return;
+            }
+            
+            // Clear previous QR code
+            document.getElementById('qrcode').innerHTML = '';
+            
+            // Generate new QR code
+            QRCode.toCanvas(document.getElementById('qrcode'), content, {
+                width: 300,
+                height: 300,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            }, function (error) {
+                if (error) {
+                    alert('هەڵەیەک ڕوویدا لە دروستکردنی QR کۆد!');
+                    console.error(error);
+                } else {
+                    document.getElementById('qr-result').classList.remove('hidden');
+                    currentQR = content;
+                }
+            });
+        }
+        
+        function downloadQR(format) {
+            if (!currentQR) return;
+            
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+            
+            if (format === 'png') {
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            } else if (format === 'svg') {
+                // For SVG, we'll regenerate as SVG
+                QRCode.toString(currentQR, {
+                    type: 'svg',
+                    width: 300,
+                    height: 300,
+                    color: {
+                        dark: '#000000',
+                        light: '#ffffff'
+                    }
+                }, function (err, svg) {
+                    if (err) throw err;
+                    
+                    const blob = new Blob([svg], {type: 'image/svg+xml'});
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = 'qrcode.svg';
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                });
+            }
+        }
+        
+        // Auto-generate QR on enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+                e.preventDefault();
+                generateQR();
+            }
+        });
+    </script>
+</body>
+</html>
