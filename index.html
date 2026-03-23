@@ -3,285 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دروستکردنی QR کۆد   </title>
+    <title>دروستکردنی QR کۆد</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-@font-face {
-  font-family: 'NotoKufiArabic';
-  src: url('./NotoKufiArabic-Regular/NotoKufiArabic-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-body {
-            font-family: 'NotoKufiArabic', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            min-height: 100vh;
-            padding: 5px;
-            color: #333;
-            animation: gradientShift 10s ease infinite;
-            overflow-x: hidden;
+            font-family: 'Noto Kufi Arabic', 'NotoKufiArabic', sans-serif;
         }
         
+        body {
+            direction: rtl;
+        }
+
         @keyframes gradientShift {
             0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
             50% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%); }
         }
-        
-        .container {
-            max-width: 100%;
-            width: 100%;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            overflow: hidden;
-            animation: floatUp 0.8s ease-out;
-        }
-        
+
         @keyframes floatUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
-        .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            padding: 20px 10px;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .header h1 {
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            margin-bottom: 8px;
-            font-weight: 800;
-            position: relative;
-            z-index: 2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .header p {
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            opacity: 0.95;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .content {
-            padding: 10px;
-        }
-        
-        .sections-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .input-section, .output-section {
-            background: linear-gradient(145deg, #f8faff 0%, #ffffff 100%);
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(79, 172, 254, 0.1);
-            width: 100%;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 700;
-            font-size: clamp(0.8rem, 2vw, 0.95rem);
-            color: #2c3e50;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        
-        input, textarea, select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e8ecf4;
-            border-radius: 12px;
-            font-size: clamp(0.8rem, 2vw, 0.9rem);
-            transition: all 0.3s ease;
-            background: white;
-            font-family: inherit;
-        }
-        
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15);
-            transform: translateY(-1px);
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        .design-controls {
-            background: linear-gradient(145deg, #f1f8ff 0%, #e8f4ff 100%);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(79, 172, 254, 0.1);
-        }
-        
-        .control-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        
-        .size-slider {
-            width: 100%;
-            margin: 5px 0;
-            cursor: pointer;
-            height: 6px;
-            border-radius: 3px;
-            background: #e8ecf4;
-            outline: none;
-            -webkit-appearance: none;
-        }
-        
-        .size-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4facfe;
-            cursor: pointer;
-        }
-        
-        .color-group {
-            text-align: center;
-        }
-        
-        .color-input {
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .color-input:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .generate-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .generate-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-        
-        .generate-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .qr-container {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 15px;
-            position: relative;
-            overflow: hidden;
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .qr-container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #4facfe, #00f2fe, #4facfe);
-            border-radius: 17px;
-            z-index: -1;
-            animation: borderGlow 3s ease-in-out infinite;
-        }
-        
+
         @keyframes borderGlow {
             0%, 100% { opacity: 0.5; }
             50% { opacity: 1; }
         }
-        
-        .qr-with-frame {
-            position: relative;
-            display: inline-block;
-            max-width: 100%;
-            max-height: 100%;
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        
-        .qr-with-frame img {
-            display: block;
-            max-width: 100%;
-            height: auto;
+
+        .bg-gradient-animated {
+            animation: gradientShift 10s ease infinite;
+            background-size: 400% 400%;
         }
-        
-        /* Frame Styles */
+
+        .float-up {
+            animation: floatUp 0.8s ease-out;
+        }
+
+        .border-glow {
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        .spinner {
+            border: 4px solid rgba(79, 172, 254, 0.1);
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
         .frame-modern {
             padding: 15px;
             background: linear-gradient(145deg, #ffffff, #f8f9fa);
             border-radius: 20px;
-            box-shadow: 
-                0 8px 25px rgba(0, 0, 0, 0.1),
-                inset 0 2px 8px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1), inset 0 2px 8px rgba(255, 255, 255, 0.8);
         }
-        
+
         .frame-elegant {
             padding: 20px;
             background: linear-gradient(145deg, #f8f9fa, #ffffff);
@@ -289,7 +73,7 @@ body {
             border: 3px solid #4facfe;
             box-shadow: 0 6px 20px rgba(79, 172, 254, 0.3);
         }
-        
+
         .frame-classic {
             padding: 15px;
             background: #ffffff;
@@ -297,23 +81,21 @@ body {
             border-radius: 4px;
             box-shadow: 0 0 0 3px #fff, 0 0 0 6px #333;
         }
-        
+
         .frame-rounded {
             padding: 20px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 40px;
             box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
         }
-        
+
         .frame-shadow {
             padding: 12px;
             background: white;
             border-radius: 16px;
-            box-shadow: 
-                0 15px 50px rgba(0, 0, 0, 0.2),
-                0 0 0 1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
         }
-        
+
         .frame-tech {
             padding: 15px;
             background: linear-gradient(145deg, #2c3e50, #34495e);
@@ -322,320 +104,202 @@ body {
             position: relative;
             overflow: hidden;
         }
-        
-        .frame-tech::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(79, 172, 254, 0.1) 0%, transparent 70%);
-            animation: rotate 15s linear infinite;
-        }
-        
+
         .frame-neon {
             padding: 18px;
             background: #000;
-            border-radius: 15px;
-            position: relative;
-            box-shadow: 
-                0 0 20px #4facfe,
-                0 0 40px #4facfe,
-                0 0 60px #4facfe;
-            animation: neonPulse 2s ease-in-out infinite alternate;
+            border-radius: 12px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         }
-        
-        @keyframes neonPulse {
-            from { box-shadow: 0 0 20px #4facfe, 0 0 40px #4facfe, 0 0 60px #4facfe; }
-            to { box-shadow: 0 0 10px #4facfe, 0 0 20px #4facfe, 0 0 30px #4facfe; }
-        }
-        
+
         .frame-gradient {
-            padding: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
-            background-size: 300% 300%;
-            border-radius: 25px;
-            animation: gradientMove 4s ease infinite;
-        }
-        
-        @keyframes gradientMove {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        
-        .frame-gold {
-            padding: 18px;
-            background: linear-gradient(145deg, #ffd700, #ffed4e);
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
             border-radius: 15px;
-            border: 3px solid #b8860b;
-            box-shadow: 
-                0 0 30px rgba(255, 215, 0, 0.5),
-                inset 0 2px 10px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
         }
-        
+
+        .frame-gold {
+            padding: 15px;
+            background: linear-gradient(145deg, #ffd700, #ffed4e);
+            border-radius: 12px;
+            border: 3px solid #daa520;
+            box-shadow: 0 8px 25px rgba(218, 165, 32, 0.3);
+        }
+
+        .qr-with-frame img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
         .placeholder {
-            color: #999;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
-            padding: 20px 10px;
-            text-align: center;
-        }
-        
-        .error {
-            color: #e74c3c;
-        }
-        
-        .success {
-            color: #4facfe;
-        }
-        
-        .download-section {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-        }
-        
-        .download-btn {
-            padding: 10px 15px;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            min-height: 320px;
+            color: #999;
             font-weight: 600;
-            transition: all 0.3s ease;
-            flex: 1;
-            min-width: 100px;
-            max-width: 150px;
-        }
-        
-        .download-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-        
-        .download-btn.svg-btn {
-            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
-        }
-        
-        .api-info {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: clamp(0.7rem, 1.8vw, 0.85rem);
-            color: #155724;
-            border: 1px solid #c3e6cb;
             text-align: center;
         }
-        
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #4facfe;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+
+        .placeholder.error {
+            color: #ef4444;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Mobile Optimizations */
-        @media (min-width: 768px) {
-            body {
-                padding: 20px;
-            }
-            
-            .container {
-                max-width: 1200px;
-                border-radius: 25px;
-            }
-            
-            .sections-container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 30px;
-            }
-            
-            .content {
-                padding: 40px;
-            }
-            
-            .input-section, .output-section {
-                padding: 30px;
-                border-radius: 20px;
-            }
-            
-            .header {
-                padding: 40px 20px;
-            }
-            
-            .qr-container {
-                min-height: 300px;
-                padding: 25px;
-            }
-            
-            .control-row {
-                margin-bottom: 20px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .control-row {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            
-            .color-input {
-                width: 35px;
-                height: 35px;
-            }
-            
-            .download-section {
-                flex-direction: column;
-            }
-            
-            .download-btn {
-                min-width: auto;
-                max-width: none;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            body {
-                padding: 2px;
-            }
-            
-            .container {
-                border-radius: 10px;
-            }
-            
-            .content {
-                padding: 8px;
-            }
-            
-            .input-section, .output-section {
-                padding: 12px;
-            }
-            
-            .header {
-                padding: 15px 10px;
-            }
-        }
-        
-        /* Print Styles */
-        @media print {
-            body {
-                background: white;
-                color: black;
-            }
-            
-            .header {
-                background: #4facfe;
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-            }
-            
-            .container {
-                box-shadow: none;
-                border: 1px solid #ccc;
-            }
-            
-            .download-section, .api-info {
-                display: none;
-            }
+
+        .placeholder.success {
+            color: #3b82f6;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🎯 دروستکردنی QR کۆد</h1>
-            <p> ئێستا بەئاسانی QR کۆد  دروست بکە !</p>
+<body class="bg-gradient-animated min-h-screen py-8 px-4">
+    <div class="max-w-2xl mx-auto float-up">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                🎯 دروستکردنی QR کۆد
+            </h1>
+            <p class="text-lg text-gray-600">ئێستا بەئاسانی QR کۆد دروست بکە!</p>
         </div>
-        
-        <div class="content">
-            <div class="sections-container">
-                <div class="input-section">
-                    <div class="form-group">
-                        <label>📝 تێکستەکەت یان بەستەرەکەت بنووسە</label>
-                        <textarea id="qr-text" placeholder="تێکستەکەت یان https://example.com بنووسە..."></textarea>
-                    </div>
-                    
-                    <div class="design-controls">
-                        <div class="control-row">
-                            <div>
-                                <label>📏 قەبارەی QR کۆد</label>
-                                <input type="range" id="size-slider" class="size-slider" min="150" max="350" value="220">
-                                <div style="text-align: center; margin-top: 3px; font-weight: bold; font-size: 0.8rem;" id="size-display">220px</div>
+
+        <!-- Main Container -->
+        <div class="bg-white bg-opacity-95 rounded-2xl shadow-2xl backdrop-blur-lg border border-white border-opacity-20 overflow-hidden">
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-blue-400 to-cyan-400 p-6 text-center text-white relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10 border-glow"></div>
+                <h2 class="text-2xl font-bold relative z-10">🚀 دروستکردنی QR کۆد</h2>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Input Section -->
+                    <div class="space-y-6">
+                        <!-- Text Input -->
+                        <div class="space-y-2">
+                            <label class="block text-base font-bold text-gray-800">📝 تێکستەکەت یان بەستەرەکەت بنووسە</label>
+                            <textarea
+                                id="qr-text"
+                                placeholder="تێکستەکەت یان https://example.com بنووسە..."
+                                class="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200 transition min-h-24 resize-none font-medium"
+                            ></textarea>
+                        </div>
+
+                        <!-- Size Slider -->
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <label class="text-base font-bold text-gray-800">📏 قەبارەی QR کۆد</label>
+                                <span id="size-display" class="text-sm font-bold text-white bg-blue-600 px-3 py-1 rounded-full">220px</span>
                             </div>
-                            
-                            <div>
-                                <label>🎨 جۆری چوارچێوە</label>
-                                <select id="frame-type">
-                                    <option value="none">بەبێ چوارچێوە</option>
-                                    <option value="modern" selected>مۆدێرن</option>
-                                    <option value="elegant">جوان</option>
-                                    <option value="classic">کلاسیک</option>
-                                    <option value="rounded">خولاوی</option>
-                                    <option value="shadow">سێبەر</option>
-                                    <option value="tech">تەکنەلۆجی</option>
-                                    <option value="neon">نیۆن</option>
-                                    <option value="gradient">ڕەنگاوڕەنگ</option>
-                                    <option value="gold">زێڕین</option>
-                                </select>
+                            <input
+                                type="range"
+                                id="size-slider"
+                                min="150"
+                                max="350"
+                                value="220"
+                                class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                            >
+                        </div>
+
+                        <!-- Frame Type -->
+                        <div class="space-y-2">
+                            <label class="block text-base font-bold text-gray-800">🎨 جۆری چوارچێوە</label>
+                            <select
+                                id="frame-type"
+                                class="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200 transition font-medium"
+                            >
+                                <option value="none">بەبێ چوارچێوە</option>
+                                <option value="modern" selected>مۆدێرن</option>
+                                <option value="elegant">جوان</option>
+                                <option value="classic">کلاسیک</option>
+                                <option value="rounded">خولاوی</option>
+                                <option value="shadow">سێبەر</option>
+                                <option value="tech">تەکنەلۆجی</option>
+                                <option value="neon">نیۆن</option>
+                                <option value="gradient">ڕەنگاوڕەنگ</option>
+                                <option value="gold">زێڕین</option>
+                            </select>
+                        </div>
+
+                        <!-- Colors -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-base font-bold text-gray-800">ڕەنگی QR</label>
+                                <div class="flex items-center gap-3">
+                                    <input
+                                        type="color"
+                                        id="dark-color"
+                                        value="#000000"
+                                        class="w-16 h-16 rounded-lg cursor-pointer border-2 border-gray-300"
+                                    >
+                                    <span id="dark-color-text" class="text-sm font-mono text-gray-600">#000000</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-base font-bold text-gray-800">ڕەنگی باگڕاوند</label>
+                                <div class="flex items-center gap-3">
+                                    <input
+                                        type="color"
+                                        id="light-color"
+                                        value="#ffffff"
+                                        class="w-16 h-16 rounded-lg cursor-pointer border-2 border-gray-300"
+                                    >
+                                    <span id="light-color-text" class="text-sm font-mono text-gray-600">#ffffff</span>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="control-row">
-                            <div class="color-group">
-                                <label>ڕەنگی QR</label>
-                                <input type="color" id="dark-color" class="color-input" value="#000000">
-                            </div>
-                            <div class="color-group">
-                                <label>ڕەنگی باگڕاوند</label>
-                                <input type="color" id="light-color" class="color-input" value="#ffffff">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button class="generate-btn" id="generate-btn" onclick="generateQR()">
-                        ⚡ QR کۆد دروست بکە
-                    </button>
-                </div>
-                
-                <div class="output-section">
-                    <div class="qr-container">
-                        <div id="qr-display" class="placeholder">
-                            QR کۆدەکەت لێرە دەردەکەوێت
-                        </div>
-                    </div>
-                    
-                    <div id="download-section" class="download-section" style="display: none;">
-                        <button class="download-btn" onclick="downloadQR('png')">
-                            📥 PNG داگرتن بە
+
+                        <!-- Generate Button -->
+                        <button
+                            id="generate-btn"
+                            onclick="generateQR()"
+                            class="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        >
+                            ⚡ QR کۆد دروست بکە
                         </button>
-                        <button class="download-btn svg-btn" onclick="downloadQR('svg')">
-                            📄 SVG داگرتن بە 
-                        </button>
                     </div>
-                    
-                    <div class="api-info">
-                        <strong class="fire-icon">🔥</strong> 
-                        <strong>دروست کراوە لەلایەن 
-                            <a href="https://www.facebook.com/share/1ZoYU1DAhS/?mibextid=wwXIfr" 
-                               target="_blank" 
-                               class="creator-link">
-                               MAHMOOD FAQE
-                            </a>
-                        </strong><br>
-                        لە هەموو ئامێرەکان کار دەکات - باشترین  و بەخۆڕایی!
+
+                    <!-- Output Section -->
+                    <div class="flex flex-col">
+                        <!-- QR Display -->
+                        <div id="qr-container" class="flex-1 flex items-center justify-center mb-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border-2 border-dashed border-gray-300 min-h-80">
+                            <div class="placeholder">
+                                QR کۆدەکەت لێرە دەردەکەوێت
+                            </div>
+                        </div>
+
+                        <!-- Download Buttons -->
+                        <div id="download-section" class="grid grid-cols-2 gap-3 mb-6" style="display: none;">
+                            <button
+                                onclick="downloadQR('png')"
+                                class="py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                            >
+                                📥 PNG
+                            </button>
+                            <button
+                                onclick="downloadQR('svg')"
+                                class="py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                            >
+                                📄 SVG
+                            </button>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="pt-4 border-t border-gray-200 text-center text-sm text-gray-600">
+                            <p>
+                                🔥 <strong>دروست کراوە لەلایەن</strong>
+                                <a
+                                    href="https://www.facebook.com/share/1ZoYU1DAhS/?mibextid=wwXIfr"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-blue-600 hover:text-blue-700 font-bold"
+                                >
+                                    MAHMOOD FAQE
+                                </a>
+                            </p>
+                            <p class="mt-1">لە هەموو ئامێرەکان کار دەکات - باشترین و بەخۆڕایی!</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -645,106 +309,123 @@ body {
     <script>
         let currentQRUrl = '';
         let currentQRData = '';
-        
+
         // Update size display
         document.getElementById('size-slider').addEventListener('input', function() {
             document.getElementById('size-display').textContent = this.value + 'px';
-            if (document.getElementById('qr-display').querySelector('.qr-with-frame')) {
+            if (document.getElementById('qr-container').querySelector('.qr-with-frame')) {
                 generateQR();
             }
         });
-        
-        // Auto-regenerate on changes
-        ['dark-color', 'light-color', 'frame-type'].forEach(id => {
-            document.getElementById(id).addEventListener('change', function() {
-                if (document.getElementById('qr-display').querySelector('.qr-with-frame')) {
-                    generateQR();
-                }
-            });
+
+        // Update color display
+        document.getElementById('dark-color').addEventListener('input', function() {
+            document.getElementById('dark-color-text').textContent = this.value;
+            if (document.getElementById('qr-container').querySelector('.qr-with-frame')) {
+                generateQR();
+            }
         });
-        
+
+        document.getElementById('light-color').addEventListener('input', function() {
+            document.getElementById('light-color-text').textContent = this.value;
+            if (document.getElementById('qr-container').querySelector('.qr-with-frame')) {
+                generateQR();
+            }
+        });
+
+        // Auto-regenerate on frame type change
+        document.getElementById('frame-type').addEventListener('change', function() {
+            if (document.getElementById('qr-container').querySelector('.qr-with-frame')) {
+                generateQR();
+            }
+        });
+
         function generateQR() {
             const text = document.getElementById('qr-text').value.trim();
-            
+
             if (!text) {
-                document.getElementById('qr-display').innerHTML = `
+                document.getElementById('qr-container').innerHTML = `
                     <div class="placeholder error">
                         <strong>⚠️ تکایە تێکستەکەت بنووسە!</strong>
                     </div>
                 `;
+                document.getElementById('download-section').style.display = 'none';
                 return;
             }
-            
+
             currentQRData = text;
-            
+
             // Get settings
-            const size = Math.min(document.getElementById('size-slider').value, 300); // Limit size for mobile
+            const size = Math.min(document.getElementById('size-slider').value, 300);
             const darkColor = document.getElementById('dark-color').value.replace('#', '');
             const lightColor = document.getElementById('light-color').value.replace('#', '');
             const frameType = document.getElementById('frame-type').value;
-            
+
             // Show loading
-            document.getElementById('qr-display').innerHTML = `
+            document.getElementById('qr-container').innerHTML = `
                 <div class="placeholder success">
-                    <div class="spinner"></div>
-                    <strong>چاوەڕێ بکە...</strong><br>
-                    QR کۆد دروست دەکرێت
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="spinner"></div>
+                        <strong>چاوەڕێ بکە...</strong><br>
+                        <span class="text-sm">QR کۆد دروست دەکرێت</span>
+                    </div>
                 </div>
             `;
-            
-            // Disable button during generation
+
+            // Disable button
             const generateBtn = document.getElementById('generate-btn');
             generateBtn.disabled = true;
             generateBtn.textContent = '🔄 دروستکردن...';
-            
-            // Try multiple QR APIs for better reliability
+
+            // Try multiple QR APIs
             const apis = [
                 `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&color=${darkColor}&bgcolor=${lightColor}&format=png&ecc=M`,
                 `https://chart.googleapis.com/chart?chs=${size}x${size}&cht=qr&chl=${encodeURIComponent(text)}&choe=UTF-8&chco=${darkColor}&chf=bg,s,${lightColor}`,
                 `https://quickchart.io/qr?text=${encodeURIComponent(text)}&size=${size}&color=${darkColor}&bgcolor=${lightColor}&format=png`
             ];
-            
+
             tryAPI(apis, 0, text, size, frameType);
         }
-        
+
         function tryAPI(apis, index, text, size, frameType) {
             if (index >= apis.length) {
-                document.getElementById('qr-display').innerHTML = `
+                document.getElementById('qr-container').innerHTML = `
                     <div class="placeholder error">
                         <strong>❌ هەڵەیەک ڕوویدا!</strong><br>
-                        تکایە ئینتەرنێتەکەت پشکنین بکە و دووبارە تاقی بکەرەوە
+                        <span class="text-sm">تکایە ئینتەرنێتەکەت پشکنین بکە و دووبارە تاقی بکەرەوە</span>
                     </div>
                 `;
                 resetButton();
+                document.getElementById('download-section').style.display = 'none';
                 return;
             }
-            
+
             const qrUrl = apis[index];
             const img = document.createElement('img');
-            
+
             img.onload = function() {
                 currentQRUrl = qrUrl;
-                
+
                 img.style.maxWidth = '100%';
                 img.style.height = 'auto';
                 img.style.display = 'block';
                 img.alt = 'QR Code: ' + text;
-                
+
                 // Create frame container
                 const frameContainer = document.createElement('div');
                 frameContainer.className = 'qr-with-frame';
-                
+
                 if (frameType !== 'none') {
                     frameContainer.classList.add('frame-' + frameType);
                 }
-                
+
                 frameContainer.appendChild(img);
-                
-                document.getElementById('qr-display').innerHTML = '';
-                document.getElementById('qr-display').appendChild(frameContainer);
-                document.getElementById('download-section').style.display = 'flex';
-                
-                // Add success animation
+
+                document.getElementById('qr-container').innerHTML = '';
+                document.getElementById('qr-container').appendChild(frameContainer);
+                document.getElementById('download-section').style.display = 'grid';
+
+                // Add animation
                 frameContainer.style.opacity = '0';
                 frameContainer.style.transform = 'scale(0.8)';
                 setTimeout(() => {
@@ -752,145 +433,36 @@ body {
                     frameContainer.style.opacity = '1';
                     frameContainer.style.transform = 'scale(1)';
                 }, 100);
-                
+
                 resetButton();
             };
-            
+
             img.onerror = function() {
                 tryAPI(apis, index + 1, text, size, frameType);
             };
-            
+
             setTimeout(() => {
                 if (img.complete === false) {
                     img.onerror();
                 }
-            }, 8000); // Reduced timeout for mobile
-            
+            }, 8000);
+
             img.src = qrUrl;
         }
-        
+
         function resetButton() {
             const generateBtn = document.getElementById('generate-btn');
             generateBtn.disabled = false;
             generateBtn.textContent = '⚡ QR کۆد دروست بکە';
         }
-        
-        function downloadQR(format = 'png') {
-            const frameContainer = document.querySelector('.qr-with-frame');
-            if (!frameContainer) {
-                alert('QR کۆد نەدۆزرایەوە!');
-                return;
-            }
-            
-            if (format === 'svg') {
-                generateSVGDownload();
-                return;
-            }
-            
-            // For mobile compatibility, use simpler download method
-            if (currentQRUrl) {
-                const link = document.createElement('a');
-                link.href = currentQRUrl;
-                link.download = `qr-code-${document.getElementById('frame-type').value}-${Date.now()}.png`;
-                link.target = '_blank';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
-        
-        function generateSVGDownload() {
-            if (!currentQRData) {
-                alert('QR کۆد نەدۆزرایەوە!');
-                return;
-            }
-            
-            const size = document.getElementById('size-slider').value;
-            const frameType = document.getElementById('frame-type').value;
-            
-            // Use QR Server API for SVG
-            const svgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(currentQRData)}&format=svg`;
-            
+
+        function downloadQR(format) {
+            if (!currentQRUrl) return;
+
             const link = document.createElement('a');
-            link.href = svgUrl;
-            link.download = `qr-code-${frameType}-${Date.now()}.svg`;
-            link.target = '_blank';
-            document.body.appendChild(link);
+            link.href = currentQRUrl;
+            link.download = `qr-code.${format === 'png' ? 'png' : 'svg'}`;
             link.click();
-            document.body.removeChild(link);
-        }
-        
-        // Generate QR on Enter key (but not on mobile)
-        document.getElementById('qr-text').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) {
-                e.preventDefault();
-                generateQR();
-            }
-        });
-        
-        // Auto-generate on page load
-        window.addEventListener('load', function() {
-            setTimeout(generateQR, 1000);
-        });
-        
-        // Real-time text change with longer debouncing for mobile
-        let timeout;
-        document.getElementById('qr-text').addEventListener('input', function() {
-            clearTimeout(timeout);
-            const delay = window.innerWidth <= 768 ? 3000 : 2000; // Longer delay on mobile
-            timeout = setTimeout(() => {
-                if (this.value.trim() && document.getElementById('qr-display').querySelector('.qr-with-frame')) {
-                    generateQR();
-                }
-            }, delay);
-        });
-        
-        // Touch-friendly interactions for mobile
-        if ('ontouchstart' in window) {
-            // Add touch feedback
-            document.querySelectorAll('button, .color-input').forEach(element => {
-                element.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.95)';
-                });
-                
-                element.addEventListener('touchend', function() {
-                    this.style.transform = '';
-                });
-            });
-        }
-        
-        // Prevent zoom on input focus for iOS
-        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            document.addEventListener('touchstart', function(e) {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                    e.target.style.fontSize = '16px';
-                }
-            });
-        }
-        
-        // Handle orientation change
-        window.addEventListener('orientationchange', function() {
-            setTimeout(() => {
-                // Recalculate dimensions if QR is displayed
-                if (document.getElementById('qr-display').querySelector('.qr-with-frame')) {
-                    generateQR();
-                }
-            }, 500);
-        });
-        
-        // Performance optimization for low-end devices
-        function isLowEndDevice() {
-            return navigator.hardwareConcurrency <= 2 || 
-                   /Android.*[0-6]\.|iPhone.*OS [0-9]_/.test(navigator.userAgent);
-        }
-        
-        if (isLowEndDevice()) {
-            // Reduce animations for better performance
-            document.documentElement.style.setProperty('--animation-duration', '0.2s');
-            
-            // Simplify gradients
-            document.body.style.animation = 'none';
-            document.body.style.background = '#667eea';
         }
     </script>
 </body>
