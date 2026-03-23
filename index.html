@@ -1,228 +1,307 @@
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>دروستکردنی QR کۆد</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Noto Kufi Arabic', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QR Studio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080612;--surface:rgba(255,255,255,.055);--border:rgba(255,255,255,.1);
+  --primary:#8b5cf6;--accent:#06b6d4;--text:#e2e8f0;--muted:rgba(226,232,240,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Kufi Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-    .bg-animated {
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      background-size: 400% 400%;
-      animation: bgShift 12s ease infinite;
-    }
-    @keyframes bgShift {
-      0%,100% { background-position: 0% 50%; }
-      50%      { background-position: 100% 50%; }
-    }
+.mesh{position:fixed;inset:0;z-index:0;pointer-events:none}
+.mesh::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(139,92,246,.35) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 80% 80%,rgba(6,182,212,.2) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 40% at 60% 30%,rgba(245,158,11,.1) 0%,transparent 60%);
+  animation:mm 18s ease-in-out infinite alternate;
+}
+.mesh::after{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(1.5px 1.5px at 15% 25%,rgba(255,255,255,.25) 0%,transparent 100%),
+    radial-gradient(1px 1px at 40% 60%,rgba(255,255,255,.2) 0%,transparent 100%),
+    radial-gradient(1px 1px at 70% 15%,rgba(255,255,255,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 85% 75%,rgba(255,255,255,.2) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 45%,rgba(255,255,255,.25) 0%,transparent 100%);
+}
+@keyframes mm{from{transform:scale(1) rotate(0deg)}to{transform:scale(1.1) rotate(3deg)}}
 
-    .glass {
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,0.12);
-    }
+.glass{background:var(--surface);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid var(--border)}
+.glass2{background:rgba(255,255,255,.03);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07)}
 
-    .btn-neon {
-      background: linear-gradient(135deg, #7c3aed, #4f46e5);
-      box-shadow: 0 0 20px rgba(124,58,237,0.5), 0 4px 15px rgba(0,0,0,0.3);
-      transition: all 0.3s ease;
-    }
-    .btn-neon:hover:not(:disabled) {
-      box-shadow: 0 0 35px rgba(124,58,237,0.8), 0 6px 20px rgba(0,0,0,0.4);
-      transform: translateY(-2px);
-    }
-    .btn-neon:disabled { opacity: 0.5; cursor: not-allowed; }
+.tab-btn{
+  padding:7px 12px;border-radius:9px;font-size:.75rem;font-weight:700;
+  transition:all .25s;cursor:pointer;border:1px solid transparent;
+  color:var(--muted);background:transparent;font-family:inherit;letter-spacing:.3px;
+}
+.tab-btn.active{background:linear-gradient(135deg,var(--primary),#4f46e5);color:#fff;box-shadow:0 0 14px rgba(139,92,246,.45)}
+.tab-btn:not(.active):hover{border-color:rgba(139,92,246,.4);color:var(--text)}
 
-    .btn-dl {
-      background: linear-gradient(135deg, #059669, #10b981);
-      box-shadow: 0 0 15px rgba(16,185,129,0.4);
-      transition: all 0.3s ease;
-    }
-    .btn-dl:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(16,185,129,0.6); }
+.inp{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  color:var(--text);border-radius:11px;padding:10px 13px;font-size:.85rem;
+  font-family:inherit;width:100%;transition:all .25s;
+}
+.inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(139,92,246,.2);background:rgba(255,255,255,.1)}
+.inp::placeholder{color:rgba(255,255,255,.25)}
+.inp option{background:#1a1040;color:var(--text)}
+textarea.inp{resize:vertical;min-height:78px}
 
-    .btn-svg {
-      background: linear-gradient(135deg, #db2777, #9333ea);
-      box-shadow: 0 0 15px rgba(219,39,119,0.4);
-      transition: all 0.3s ease;
-    }
-    .btn-svg:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(219,39,119,0.6); }
+.btn{font-family:inherit;font-weight:700;border:none;cursor:pointer;border-radius:11px;transition:all .3s;font-size:.85rem;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.btn-p{background:linear-gradient(135deg,var(--primary),#4f46e5);color:#fff;padding:12px 18px;box-shadow:0 0 20px rgba(139,92,246,.45)}
+.btn-p:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 34px rgba(139,92,246,.7)}
+.btn-p:disabled{opacity:.45;cursor:not-allowed}
+.btn-g{background:linear-gradient(135deg,#059669,#10b981);color:#fff;padding:10px 14px;box-shadow:0 0 12px rgba(16,185,129,.3)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(16,185,129,.5)}
+.btn-r{background:linear-gradient(135deg,#db2777,#9333ea);color:#fff;padding:10px 14px;box-shadow:0 0 12px rgba(219,39,119,.3)}
+.btn-r:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(219,39,119,.5)}
+.btn-c{background:linear-gradient(135deg,#0891b2,#06b6d4);color:#fff;padding:10px 14px;box-shadow:0 0 12px rgba(6,182,212,.3)}
+.btn-c:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(6,182,212,.5)}
+.btn-sm{padding:6px 11px;font-size:.75rem;border-radius:8px}
 
-    .input-field {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: #e2e8f0;
-      transition: all 0.3s ease;
-      font-family: 'Noto Kufi Arabic', sans-serif;
-    }
-    .input-field:focus {
-      outline: none;
-      border-color: #7c3aed;
-      box-shadow: 0 0 0 3px rgba(124,58,237,0.25);
-      background: rgba(255,255,255,0.12);
-    }
-    .input-field::placeholder { color: rgba(255,255,255,0.3); }
-    .input-field option { background: #1e1b4b; color: #e2e8f0; }
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.15);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#4f46e5);box-shadow:0 0 7px rgba(139,92,246,.6);cursor:pointer}
 
-    .qr-stage {
-      border-radius: 1.5rem;
-      min-height: 280px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      padding: 3px;
-      background: linear-gradient(45deg, #7c3aed, #4f46e5, #818cf8, #7c3aed);
-      background-size: 300% 300%;
-      animation: borderAnim 4s linear infinite;
-    }
-    .qr-stage-inner {
-      background: #0f0c29;
-      border-radius: 1.3rem;
-      width: 100%;
-      min-height: 274px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    @keyframes borderAnim {
-      0%,100% { background-position: 0% 50%; }
-      50%      { background-position: 100% 50%; }
-    }
+input[type=color]{-webkit-appearance:none;width:40px;height:40px;border:none;border-radius:50%;cursor:pointer;padding:0;background:none;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 3px 10px rgba(0,0,0,.4);transition:transform .2s,box-shadow .2s}
+input[type=color]:hover{transform:scale(1.15);box-shadow:0 0 0 3px var(--primary),0 3px 14px rgba(0,0,0,.5)}
 
-    .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid rgba(124,58,237,0.2);
-      border-top-color: #7c3aed;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+.qr-stage{border-radius:18px;min-height:250px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:3px;background:linear-gradient(135deg,var(--primary),#4f46e5,var(--accent),var(--primary));background-size:300% 300%;animation:bs 5s linear infinite}
+.qr-inner{background:#080612;border-radius:15px;width:100%;min-height:244px;display:flex;align-items:center;justify-content:center;padding:18px}
+@keyframes bs{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 
-    .frame-none     { }
-    .frame-modern   { padding: 16px; background: #fff; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-    .frame-elegant  { padding: 18px; background: #fff; border-radius: 12px; border: 3px solid #7c3aed; box-shadow: 0 0 20px rgba(124,58,237,0.4); }
-    .frame-classic  { padding: 14px; background: #fff; border: 6px solid #1e1b4b; border-radius: 4px; }
-    .frame-rounded  { padding: 20px; background: linear-gradient(135deg,#7c3aed,#4f46e5); border-radius: 40px; box-shadow: 0 12px 35px rgba(124,58,237,0.5); }
-    .frame-shadow   { padding: 14px; background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
-    .frame-gold     { padding: 18px; background: linear-gradient(145deg,#ffd700,#ffed4e); border-radius: 14px; border: 3px solid #b8860b; box-shadow: 0 0 30px rgba(255,215,0,0.5); }
-    .frame-neon     { padding: 18px; background: #000; border-radius: 14px; box-shadow: 0 0 30px #7c3aed, 0 0 60px #4f46e5; animation: neonPulse 2s ease-in-out infinite alternate; }
-    @keyframes neonPulse {
-      from { box-shadow: 0 0 30px #7c3aed, 0 0 60px #4f46e5; }
-      to   { box-shadow: 0 0 12px #7c3aed, 0 0 25px #4f46e5; }
-    }
-    .frame-gradient {
-      padding: 20px;
-      background: linear-gradient(45deg,#ff6b6b,#4ecdc4,#45b7d1,#96ceb4,#ffeaa7);
-      background-size: 300% 300%;
-      border-radius: 24px;
-      animation: gradMove 4s ease infinite;
-    }
-    @keyframes gradMove {
-      0%,100% { background-position: 0% 50%; }
-      50%      { background-position: 100% 50%; }
-    }
+.spinner{width:36px;height:36px;border:3px solid rgba(139,92,246,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    .float-in { animation: floatIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
-    @keyframes floatIn {
-      from { opacity:0; transform: scale(0.75) translateY(20px); }
-      to   { opacity:1; transform: scale(1) translateY(0); }
-    }
+.fr-none{}
+.fr-modern{padding:13px;background:#fff;border-radius:13px;box-shadow:0 10px 35px rgba(0,0,0,.5)}
+.fr-elegant{padding:15px;background:#fff;border-radius:11px;border:3px solid var(--primary);box-shadow:0 0 18px rgba(139,92,246,.4)}
+.fr-classic{padding:13px;background:#fff;border:6px solid #1a1040;border-radius:4px}
+.fr-rounded{padding:17px;background:linear-gradient(135deg,var(--primary),#4f46e5);border-radius:34px;box-shadow:0 10px 30px rgba(139,92,246,.5)}
+.fr-shadow{padding:13px;background:#fff;border-radius:13px;box-shadow:0 18px 55px rgba(0,0,0,.7)}
+.fr-gold{padding:15px;background:linear-gradient(145deg,#ffd700,#ffed4e);border-radius:13px;border:3px solid #b8860b;box-shadow:0 0 25px rgba(255,215,0,.5)}
+.fr-neon{padding:15px;background:#000;border-radius:13px;box-shadow:0 0 26px var(--primary),0 0 52px #4f46e5;animation:np 2s ease-in-out infinite alternate}
+@keyframes np{from{box-shadow:0 0 26px var(--primary),0 0 52px #4f46e5}to{box-shadow:0 0 10px var(--primary),0 0 22px #4f46e5}}
+.fr-gradient{padding:17px;background:linear-gradient(45deg,#ff6b6b,#4ecdc4,#45b7d1,#96ceb4);background-size:300% 300%;border-radius:20px;animation:gm 4s ease infinite}
+@keyframes gm{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 
-    input[type=range] {
-      -webkit-appearance: none; width:100%; height:6px; border-radius:3px;
-      background: rgba(255,255,255,0.15); outline:none; cursor:pointer;
-    }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
-      background: linear-gradient(135deg,#7c3aed,#4f46e5);
-      box-shadow:0 0 8px rgba(124,58,237,0.6); cursor:pointer;
-    }
+.hist-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:9px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all .2s}
+.hist-item:hover{background:rgba(139,92,246,.15);border-color:rgba(139,92,246,.4)}
 
-    input[type=color] {
-      -webkit-appearance:none; width:44px; height:44px; border:none;
-      border-radius:50%; cursor:pointer; padding:0; background:none;
-      box-shadow:0 0 0 2px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.3);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    input[type=color]:hover {
-      transform:scale(1.15);
-      box-shadow:0 0 0 3px #7c3aed, 0 4px 16px rgba(0,0,0,0.4);
-    }
+.float-in{animation:fi .5s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes fi{from{opacity:0;transform:scale(.75) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.fade-in{animation:fa .3s ease both}
+@keyframes fa{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-    .label-text { color: rgba(255,255,255,0.65); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; display: block; margin-bottom: 6px; }
-    .section-title { color: rgba(255,255,255,0.85); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-    .creator-link { color: #a78bfa; text-decoration: none; }
-    .creator-link:hover { color: #c4b5fd; text-decoration: underline; }
-    textarea.input-field { resize: vertical; min-height: 90px; }
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:linear-gradient(135deg,var(--primary),#4f46e5);color:#fff;padding:11px 20px;border-radius:13px;font-size:.82rem;font-weight:600;box-shadow:0 7px 26px rgba(139,92,246,.5);z-index:1000;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-    @media (max-width: 480px) {
-      .qr-stage { min-height: 220px; }
-      .qr-stage-inner { min-height: 214px; }
-    }
-  </style>
+.lbl{display:block;font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+
+body.light{--bg:#f0f4ff;--surface:rgba(255,255,255,.7);--border:rgba(0,0,0,.1);--text:#1e1b4b;--muted:rgba(30,27,75,.5)}
+body.light .qr-inner{background:#f0f4ff}
+body.light .inp{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.12);color:#1e1b4b}
+body.light .inp:focus{background:rgba(255,255,255,.9)}
+body.light .inp::placeholder{color:rgba(0,0,0,.3)}
+body.light .inp option{background:#fff;color:#1e1b4b}
+body.light .hist-item{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
+body.light .hist-item:hover{background:rgba(139,92,246,.1)}
+body.light .mesh::before{background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(139,92,246,.15) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(6,182,212,.1) 0%,transparent 60%)}
+
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:18px}
+.modal-bx{background:#12103a;border:1px solid rgba(139,92,246,.3);border-radius:18px;padding:22px;max-width:440px;width:100%}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(139,92,246,.4);border-radius:2px}
+</style>
 </head>
-<body class="bg-animated">
+<body>
+<div class="mesh"></div>
+<div class="toast" id="toast"></div>
 
-  <div id="app" class="min-h-screen flex items-center justify-center p-4">
-    <div class="glass rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl">
+<div id="app" style="position:relative;z-index:10;min-height:100vh;padding:14px;display:flex;flex-direction:column;align-items:center;padding-top:18px">
 
-      <!-- Header -->
-      <div class="relative text-center py-10 px-6 overflow-hidden"
-           style="background: linear-gradient(135deg, rgba(124,58,237,0.55) 0%, rgba(79,70,229,0.5) 50%, rgba(99,102,241,0.35) 100%);">
-        <div class="absolute inset-0 opacity-10"
-             style="background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.5) 0%, transparent 70%);"></div>
-        <h1 class="text-3xl md:text-4xl font-extrabold text-white relative z-10 mb-2"
-            style="text-shadow: 0 0 30px rgba(167,139,250,0.7);">
-          🎯 دروستکردنی QR کۆد
-        </h1>
-        <p class="relative z-10 text-sm md:text-base" style="color: rgba(216,180,254,0.9);">
-          ئێستا بەئاسانی QR کۆد دروست بکە!
-        </p>
+  <!-- Header -->
+  <div style="width:100%;max-width:980px;margin-bottom:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button
+          style="width:50px;height:26px;border-radius:13px;cursor:pointer;position:relative;border:none;transition:all .3s;background:linear-gradient(135deg,var(--primary),#4f46e5)"
+          @click="toggleTheme">
+          <span style="position:absolute;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .3s,right .3s;box-shadow:0 2px 5px rgba(0,0,0,.3)"
+                :style="lightTheme?'left:27px':'left:3px'"></span>
+        </button>
+        <span style="font-size:.7rem;font-weight:600;color:var(--muted)">{{ lightTheme?'☀️ ڕۆژ':'🌙 شەو' }}</span>
       </div>
+      <h1 style="font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+        🎯 QR Studio
+      </h1>
+      <div style="width:80px"></div>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:.82rem;margin-top:6px">پرۆفیشناڵترین دروستکەری QR کۆد — بەخۆڕایی!</p>
+  </div>
 
-      <!-- Body -->
-      <div class="p-6 md:p-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <!-- Main card -->
+  <div class="glass" style="border-radius:22px;width:100%;max-width:980px;overflow:hidden;box-shadow:0 28px 75px rgba(0,0,0,.45)">
 
-          <!-- LEFT -->
-          <div class="flex flex-col gap-5">
+    <div style="padding:18px 20px 0">
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px">
+        <button class="tab-btn" :class="{active:tab==='text'}"    @click="tab='text'">📝 تێکست</button>
+        <button class="tab-btn" :class="{active:tab==='url'}"     @click="tab='url'">🔗 بەستەر</button>
+        <button class="tab-btn" :class="{active:tab==='wifi'}"    @click="tab='wifi'">📶 WiFi</button>
+        <button class="tab-btn" :class="{active:tab==='vcard'}"   @click="tab='vcard'">👤 کارت</button>
+        <button class="tab-btn" :class="{active:tab==='maps'}"    @click="tab='maps'">📍 نەخشە</button>
+        <button class="tab-btn" :class="{active:tab==='email'}"   @click="tab='email'">✉️ ئیمەیل</button>
+        <button class="tab-btn" :class="{active:tab==='history'}" @click="tab='history'">🕐 مێژوو</button>
+        <button class="tab-btn" :class="{active:tab==='scan'}"    @click="tab='scan'">📷 خوێندنەوە</button>
+      </div>
+    </div>
 
+    <div :style="'display:grid;padding-bottom:0;' + (isWide?'grid-template-columns:1fr 1fr':'')">
+
+      <!-- ══ LEFT ══ -->
+      <div style="padding:0 20px 22px;border-left:1px solid var(--border)">
+
+        <!-- TEXT -->
+        <div v-if="tab==='text'" class="fade-in">
+          <label class="lbl">📝 تێکستەکەت بنووسە</label>
+          <textarea class="inp" v-model="inputs.text" placeholder="هەر تێکستێک بنووسە..."></textarea>
+        </div>
+
+        <!-- URL -->
+        <div v-if="tab==='url'" class="fade-in">
+          <label class="lbl">🔗 بەستەر</label>
+          <input class="inp" v-model="inputs.url" type="url" placeholder="https://example.com"/>
+        </div>
+
+        <!-- WIFI -->
+        <div v-if="tab==='wifi'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
+          <div><label class="lbl">📶 ناوی شبکە (SSID)</label><input class="inp" v-model="inputs.ssid" placeholder="My_WiFi"/></div>
+          <div><label class="lbl">🔑 پاسوۆرد</label><input class="inp" v-model="inputs.wpass" :type="showPass?'text':'password'" placeholder="پاسوۆردەکەت"/></div>
+          <div><label class="lbl">🔒 جۆری پاراستن</label>
+            <select class="inp" v-model="inputs.wsec">
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="">بەبێ پاسوۆرد</option>
+            </select>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.78rem;color:var(--muted)">
+            <input type="checkbox" v-model="showPass"/> پاسوۆرد نیشانبدە
+          </label>
+        </div>
+
+        <!-- VCARD -->
+        <div v-if="tab==='vcard'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+            <div><label class="lbl">👤 ناو</label><input class="inp" v-model="inputs.vcName" placeholder="ناوی تەواو"/></div>
+            <div><label class="lbl">🏢 کۆمپانیا</label><input class="inp" v-model="inputs.vcOrg" placeholder="شرکەت"/></div>
+          </div>
+          <div><label class="lbl">📞 تەلەفۆن</label><input class="inp" v-model="inputs.vcPhone" placeholder="+964 750 000 0000"/></div>
+          <div><label class="lbl">✉️ ئیمەیل</label><input class="inp" v-model="inputs.vcEmail" type="email" placeholder="name@example.com"/></div>
+          <div><label class="lbl">🌐 وێبسایت</label><input class="inp" v-model="inputs.vcWeb" placeholder="https://"/></div>
+          <div><label class="lbl">📍 ناونیشان</label><input class="inp" v-model="inputs.vcAddr" placeholder="شار، وڵات"/></div>
+        </div>
+
+        <!-- MAPS -->
+        <div v-if="tab==='maps'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+            <div><label class="lbl">🔢 Latitude</label><input class="inp" v-model="inputs.lat" type="number" step="any" placeholder="36.1901"/></div>
+            <div><label class="lbl">🔢 Longitude</label><input class="inp" v-model="inputs.lng" type="number" step="any" placeholder="44.0091"/></div>
+          </div>
+          <div><label class="lbl">📍 ناوی شوێن</label><input class="inp" v-model="inputs.mapName" placeholder="سلێمانی، عێراق"/></div>
+        </div>
+
+        <!-- EMAIL -->
+        <div v-if="tab==='email'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
+          <div><label class="lbl">✉️ بۆ</label><input class="inp" v-model="inputs.eTo" type="email" placeholder="name@example.com"/></div>
+          <div><label class="lbl">📌 بابەت</label><input class="inp" v-model="inputs.eSubj" placeholder="بابەتی ئیمەیل"/></div>
+          <div><label class="lbl">📝 پەیام</label><textarea class="inp" v-model="inputs.eBody" placeholder="ناوەرۆکی ئیمەیل..."></textarea></div>
+        </div>
+
+        <!-- HISTORY -->
+        <div v-if="tab==='history'" class="fade-in">
+          <div v-if="history.length===0" style="text-align:center;padding:28px;color:var(--muted)">
+            <div style="font-size:2.5rem;margin-bottom:8px">🕐</div>
+            <p style="font-size:.82rem">هیچ مێژوویەک نییە</p>
+          </div>
+          <div v-else style="display:flex;flex-direction:column;gap:7px;max-height:360px;overflow-y:auto;padding-left:2px">
+            <div class="hist-item" v-for="(h,i) in history" :key="i" @click="loadHistory(h)">
+              <img :src="h.url" style="width:42px;height:42px;border-radius:7px;flex-shrink:0;background:#fff"/>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:.7rem;font-weight:700;color:var(--primary);text-transform:uppercase">{{ h.type }}</div>
+                <div style="font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">{{ h.label }}</div>
+                <div style="font-size:.68rem;color:var(--muted)">{{ h.date }}</div>
+              </div>
+              <button class="btn btn-sm" style="background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.2);flex-shrink:0" @click.stop="removeHistory(i)">🗑️</button>
+            </div>
+            <button class="btn" style="background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.2);padding:7px;font-size:.75rem;margin-top:4px" @click="clearHistory">🗑️ هەموو بسڕەوە</button>
+          </div>
+        </div>
+
+        <!-- SCAN -->
+        <div v-if="tab==='scan'" class="fade-in" style="text-align:center;padding:8px 0">
+          <div style="font-size:3rem;margin-bottom:10px">📷</div>
+          <p style="color:var(--muted);font-size:.82rem;margin-bottom:14px">کامێرای مۆبایلت بکەرەوە و QR کۆد بخوێنەوە</p>
+          <button class="btn btn-p" style="width:100%;margin-bottom:9px" @click="startScan">📷 کامێرا بکەرەوە</button>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+            <span style="font-size:.72rem;color:var(--muted)">یان</span>
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+          </div>
+          <label style="display:block;cursor:pointer">
+            <div class="btn btn-c" style="width:100%">🖼️ وێنەی QR ئەپلۆد بکە</div>
+            <input type="file" accept="image/*" style="display:none" @change="scanFromFile"/>
+          </label>
+          <div v-if="scanResult" style="margin-top:14px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:11px;padding:12px">
+            <div style="font-size:.7rem;color:#10b981;font-weight:700;text-transform:uppercase;margin-bottom:5px">✅ دۆزرایەوە</div>
+            <div style="font-size:.82rem;word-break:break-all;color:var(--text)">{{ scanResult }}</div>
+            <button class="btn btn-sm btn-g" style="margin-top:9px" @click="copyScanResult">📋 کۆپی بکە</button>
+          </div>
+        </div>
+
+        <!-- Design controls (except history/scan) -->
+        <div v-if="!['history','scan'].includes(tab)" style="margin-top:16px">
+          <div class="glass2" style="border-radius:15px;padding:14px;display:flex;flex-direction:column;gap:13px">
+
+            <!-- Logo upload -->
             <div>
-              <span class="label-text">📝 تێکستەکەت یان بەستەرەکەت بنووسە</span>
-              <textarea
-                v-model="text"
-                class="input-field w-full rounded-xl px-4 py-3 text-sm"
-                placeholder="تێکستەکەت یان https://example.com بنووسە..."
-              ></textarea>
+              <label class="lbl">🖼️ لۆگۆ ناوەڕاست (ئەختیاری)</label>
+              <div style="display:flex;align-items:center;gap:8px">
+                <label style="cursor:pointer;flex:1">
+                  <div class="btn btn-sm" style="background:rgba(139,92,246,.2);color:var(--primary);border:1px solid rgba(139,92,246,.3);width:100%">
+                    {{ logoDataUrl?'✅ لۆگۆ هەیە':'⬆️ لۆگۆ ئەپلۆد بکە' }}
+                  </div>
+                  <input type="file" accept="image/*" style="display:none" @change="uploadLogo"/>
+                </label>
+                <button v-if="logoDataUrl" class="btn btn-sm" style="background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.2)" @click="logoDataUrl=''">✕</button>
+              </div>
             </div>
 
-            <div class="glass rounded-2xl p-5 flex flex-col gap-5">
-              <p class="section-title">🎨 دیزاین</p>
+            <!-- Caption -->
+            <div>
+              <label class="lbl">✏️ تێکستی ژێرەوە</label>
+              <input class="inp" v-model="caption" placeholder="مەسەلەن: اسکان بکە!"/>
+            </div>
 
+            <!-- Size & Frame -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
               <div>
-                <div class="flex justify-between items-center mb-2">
-                  <span class="label-text" style="margin-bottom:0">📏 قەبارەی QR کۆد</span>
-                  <span style="color:#a78bfa; font-weight:700; font-size:0.85rem;">{{ size }}px</span>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <span class="lbl" style="margin:0">📏 قەبارە</span>
+                  <span style="font-size:.75rem;font-weight:700;color:var(--primary)">{{ size }}px</span>
                 </div>
-                <input type="range" v-model.number="size" min="150" max="320" />
+                <input type="range" v-model.number="size" min="150" max="300"/>
               </div>
-
               <div>
-                <span class="label-text">🖼️ جۆری چوارچێوە</span>
-                <select v-model="frameType" class="input-field w-full rounded-xl px-4 py-3 text-sm">
-                  <option value="none">بەبێ چوارچێوە</option>
+                <label class="lbl">🖼️ چوارچێوە</label>
+                <select class="inp" v-model="frameType" style="padding:7px 9px;font-size:.78rem">
+                  <option value="none">بەبێ</option>
                   <option value="modern">مۆدێرن</option>
                   <option value="elegant">جوان</option>
                   <option value="classic">کلاسیک</option>
@@ -233,177 +312,293 @@
                   <option value="gold">زێڕین</option>
                 </select>
               </div>
-
-              <div class="grid grid-cols-2 gap-4 text-center">
-                <div>
-                  <span class="label-text">ڕەنگی QR</span>
-                  <div class="flex justify-center"><input type="color" v-model="darkColor" /></div>
-                </div>
-                <div>
-                  <span class="label-text">ڕەنگی باگڕاوند</span>
-                  <div class="flex justify-center"><input type="color" v-model="lightColor" /></div>
-                </div>
-              </div>
             </div>
 
-            <button
-              class="btn-neon text-white font-bold py-4 rounded-2xl text-base tracking-wide uppercase"
-              :disabled="loading"
-              @click="generateQR"
-            >
-              <span v-if="loading">🔄 دروستکردن...</span>
-              <span v-else>⚡ QR کۆد دروست بکە</span>
-            </button>
+            <!-- Colors -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;text-align:center">
+              <div><span class="lbl">ڕەنگی QR</span><div style="display:flex;justify-content:center"><input type="color" v-model="darkColor"/></div></div>
+              <div><span class="lbl">باگڕاوند</span><div style="display:flex;justify-content:center"><input type="color" v-model="lightColor"/></div></div>
+            </div>
+
+            <!-- ECC -->
+            <div>
+              <label class="lbl">🛡️ ئاستی پاراستن</label>
+              <select class="inp" v-model="ecc" style="padding:7px 9px;font-size:.78rem">
+                <option value="L">L — سادە</option>
+                <option value="M">M — ناوەند</option>
+                <option value="Q">Q — باش</option>
+                <option value="H">H — زۆر باش (بۆ لۆگۆ)</option>
+              </select>
+            </div>
           </div>
 
-          <!-- RIGHT -->
-          <div class="flex flex-col gap-5">
+          <button class="btn btn-p" style="width:100%;margin-top:13px" :disabled="loading" @click="generateQR">
+            <span v-if="loading" style="display:flex;align-items:center;gap:7px">
+              <span class="spinner" style="width:17px;height:17px;border-width:2px"></span>دروستکردن...
+            </span>
+            <span v-else>⚡ QR کۆد دروست بکە</span>
+          </button>
+        </div>
 
-            <div class="qr-stage">
-              <div class="qr-stage-inner">
+      </div>
 
-                <div v-if="!qrUrl && !loading && !error" class="text-center px-4" style="color: rgba(167,139,250,0.5);">
-                  <div style="font-size:3rem; margin-bottom:10px;">📱</div>
-                  <p style="font-size:0.85rem;">QR کۆدەکەت لێرە دەردەکەوێت</p>
+      <!-- ══ RIGHT ══ -->
+      <div style="padding:0 20px 22px;display:flex;flex-direction:column;gap:13px" v-if="showRight">
+
+        <!-- QR Stage -->
+        <div class="qr-stage">
+          <div class="qr-inner">
+            <div v-if="!qrUrl && !loading && !error" style="text-align:center;color:rgba(139,92,246,.4);padding:16px">
+              <div style="font-size:3.5rem;margin-bottom:9px">📱</div>
+              <p style="font-size:.82rem">QR کۆدەکەت لێرە دەردەکەوێت</p>
+            </div>
+            <div v-if="loading" style="text-align:center;color:var(--primary)">
+              <div class="spinner" style="margin:0 auto 11px"></div>
+              <p style="font-size:.82rem;font-weight:600">چاوەڕێ بکە...</p>
+            </div>
+            <div v-if="error && !loading" style="text-align:center;padding:16px">
+              <div style="font-size:2.5rem;margin-bottom:7px">⚠️</div>
+              <p style="color:#f87171;font-size:.82rem;font-weight:600">هەڵەیەک ڕوویدا!<br/>ئینتەرنێتەکەت پشکنین بکە</p>
+            </div>
+            <div v-if="qrUrl && !loading" class="float-in" style="display:flex;flex-direction:column;align-items:center;gap:9px">
+              <div :class="'fr-'+frameType" style="position:relative;display:inline-block">
+                <img :src="qrUrl" :width="size" :height="size" style="display:block;max-width:100%;height:auto" alt="QR"/>
+                <div v-if="logoDataUrl" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:7px;padding:3px;box-shadow:0 2px 9px rgba(0,0,0,.3)">
+                  <img :src="logoDataUrl" style="width:38px;height:38px;object-fit:contain;border-radius:4px;display:block"/>
                 </div>
-
-                <div v-if="loading" class="text-center" style="color: #a78bfa;">
-                  <div class="spinner mx-auto" style="margin-bottom:12px;"></div>
-                  <p style="font-size:0.85rem; font-weight:600;">چاوەڕێ بکە...</p>
-                </div>
-
-                <div v-if="error && !loading" class="text-center px-4">
-                  <div style="font-size:2.5rem; margin-bottom:8px;">⚠️</div>
-                  <p style="color:#f87171; font-size:0.85rem; font-weight:600;">هەڵەیەک ڕوویدا!<br>ئینتەرنێتەکەت پشکنین بکە</p>
-                </div>
-
-                <div v-if="qrUrl && !loading" :class="['float-in', 'frame-' + frameType]">
-                  <img :src="qrUrl" :alt="'QR: ' + text" :width="size" :height="size"
-                       style="display:block; max-width:100%; height:auto;" />
-                </div>
-
               </div>
+              <div v-if="caption" style="font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:.5px">{{ caption }}</div>
             </div>
-
-            <div v-if="qrUrl && !loading" class="flex gap-3 float-in">
-              <button class="btn-dl flex-1 text-white font-bold py-3 rounded-xl text-sm" @click="downloadPNG">
-                📥 PNG داگرتن
-              </button>
-              <button class="btn-svg flex-1 text-white font-bold py-3 rounded-xl text-sm" @click="downloadSVG">
-                📄 SVG داگرتن
-              </button>
-            </div>
-
-            <div class="glass rounded-xl py-3 px-4 text-center" style="font-size:0.75rem; color: rgba(216,180,254,0.8);">
-              🔥 دروست کراوە لەلایەن
-              <a href="https://www.facebook.com/share/1ZoYU1DAhS/?mibextid=wwXIfr"
-                 target="_blank" class="creator-link font-bold mx-1">MAHMOOD FAQE</a>
-              <br>لە هەموو ئامێرەکان کار دەکات — بەخۆڕایی!
-            </div>
-
           </div>
         </div>
+
+        <!-- Download buttons -->
+        <div v-if="qrUrl && !loading" class="float-in" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="btn btn-g" @click="downloadPNG">📥 PNG داگرتن</button>
+          <button class="btn btn-r" @click="downloadSVG">📄 SVG داگرتن</button>
+          <button class="btn btn-c" style="grid-column:1/-1" @click="copyLink">🔗 لینکی QR کۆپی بکە</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="glass2" style="border-radius:11px;padding:11px 13px;text-align:center;font-size:.7rem;color:var(--muted)">
+          🔥 دروست کراوە لەلایەن
+          <a href="https://www.facebook.com/share/1ZoYU1DAhS/?mibextid=wwXIfr" target="_blank"
+             style="color:var(--primary);text-decoration:none;font-weight:700;margin:0 3px">MAHMOOD FAQE</a>
+          — لە هەموو ئامێرەکان کار دەکات!
+        </div>
+
       </div>
     </div>
   </div>
 
-  <script>
-    const { createApp, ref, watch } = Vue;
+  <!-- Camera modal -->
+  <div class="modal-ov" v-if="showScanModal" @click.self="closeScan">
+    <div class="modal-bx">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h3 style="font-weight:700;font-size:.95rem">📷 کامێرا</h3>
+        <button class="btn btn-sm" style="background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.2)" @click="closeScan">✕</button>
+      </div>
+      <video ref="videoEl" style="width:100%;border-radius:11px;background:#000" autoplay playsinline></video>
+      <canvas ref="scanCanvas" style="display:none"></canvas>
+      <button class="btn btn-p" style="width:100%;margin-top:13px" @click="captureFrame">📸 وێنە بگرە</button>
+      <p style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:9px">QR کۆدەکە ئامادەبکە و وێنە بگرە</p>
+    </div>
+  </div>
 
-    createApp({
-      setup() {
-        const text       = ref('');
-        const size       = ref(220);
-        const darkColor  = ref('#000000');
-        const lightColor = ref('#ffffff');
-        const frameType  = ref('modern');
-        const qrUrl      = ref('');
-        const loading    = ref(false);
-        const error      = ref(false);
-        let debounceTimer = null;
-        let lastText = '';
+</div>
 
-        function getAPIs(t, s, dc, lc) {
-          return [
-            `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(t)}&color=${dc}&bgcolor=${lc}&format=png&ecc=M`,
-            `https://quickchart.io/qr?text=${encodeURIComponent(t)}&size=${s}&color=${dc}&bgcolor=${lc}&format=png`
-          ];
+<script>
+const {createApp,ref,reactive,computed,watch,onMounted,onUnmounted,nextTick}=Vue;
+createApp({
+  setup(){
+    const tab=ref('text');
+    const isWide=ref(window.innerWidth>=768);
+    const lightTheme=ref(false);
+    const loading=ref(false);
+    const error=ref(false);
+    const qrUrl=ref('');
+    const videoEl=ref(null);
+    const scanCanvas=ref(null);
+    const showScanModal=ref(false);
+    const scanResult=ref('');
+    const caption=ref('');
+    const logoDataUrl=ref('');
+    const showPass=ref(false);
+    const size=ref(220);
+    const frameType=ref('modern');
+    const darkColor=ref('#000000');
+    const lightColor=ref('#ffffff');
+    const ecc=ref('M');
+    const history=ref([]);
+    let mediaStream=null,debTimer=null,lastBuilt='';
+
+    const inputs=reactive({
+      text:'',url:'',
+      ssid:'',wpass:'',wsec:'WPA',
+      vcName:'',vcOrg:'',vcPhone:'',vcEmail:'',vcWeb:'',vcAddr:'',
+      lat:'',lng:'',mapName:'',
+      eTo:'',eSubj:'',eBody:''
+    });
+
+    const showRight=computed(()=>{
+      if(isWide.value) return true;
+      return !['history','scan'].includes(tab.value);
+    });
+
+    function onResize(){isWide.value=window.innerWidth>=768}
+    onMounted(()=>{window.addEventListener('resize',onResize);loadHist()});
+    onUnmounted(()=>window.removeEventListener('resize',onResize));
+
+    function toggleTheme(){
+      lightTheme.value=!lightTheme.value;
+      document.body.classList.toggle('light',lightTheme.value);
+    }
+
+    function buildData(){
+      switch(tab.value){
+        case 'text': return inputs.text.trim();
+        case 'url':  return inputs.url.trim();
+        case 'wifi': return `WIFI:T:${inputs.wsec};S:${inputs.ssid};P:${inputs.wpass};;`;
+        case 'vcard': return [
+          'BEGIN:VCARD','VERSION:3.0',
+          inputs.vcName  ?`FN:${inputs.vcName}`:'',
+          inputs.vcOrg   ?`ORG:${inputs.vcOrg}`:'',
+          inputs.vcPhone ?`TEL:${inputs.vcPhone}`:'',
+          inputs.vcEmail ?`EMAIL:${inputs.vcEmail}`:'',
+          inputs.vcWeb   ?`URL:${inputs.vcWeb}`:'',
+          inputs.vcAddr  ?`ADR:;;${inputs.vcAddr};;;;`:'',
+          'END:VCARD'
+        ].filter(Boolean).join('\n');
+        case 'maps':{
+          if(!inputs.lat||!inputs.lng) return '';
+          return `https://maps.google.com/?q=${inputs.lat},${inputs.lng}${inputs.mapName?'&query='+encodeURIComponent(inputs.mapName):''}`;
         }
-
-        function tryLoad(urls, idx, t, s, dc, lc) {
-          if (idx >= urls.length) {
-            loading.value = false;
-            error.value = true;
-            return;
-          }
-          const img = new Image();
-          const to = setTimeout(() => img.onerror(), 8000);
-          img.onload = () => {
-            clearTimeout(to);
-            qrUrl.value = urls[idx];
-            loading.value = false;
-            error.value = false;
-          };
-          img.onerror = () => {
-            clearTimeout(to);
-            tryLoad(urls, idx + 1, t, s, dc, lc);
-          };
-          img.src = urls[idx];
+        case 'email':{
+          if(!inputs.eTo) return '';
+          let s=`mailto:${inputs.eTo}`;
+          const p=[];
+          if(inputs.eSubj) p.push('subject='+encodeURIComponent(inputs.eSubj));
+          if(inputs.eBody) p.push('body='+encodeURIComponent(inputs.eBody));
+          if(p.length) s+='?'+p.join('&');
+          return s;
         }
-
-        function generateQR() {
-          const t = text.value.trim();
-          if (!t) { qrUrl.value = ''; return; }
-          lastText = t;
-          loading.value = true;
-          error.value = false;
-          qrUrl.value = '';
-          const s  = Math.min(size.value, 300);
-          const dc = darkColor.value.replace('#', '');
-          const lc = lightColor.value.replace('#', '');
-          tryLoad(getAPIs(t, s, dc, lc), 0, t, s, dc, lc);
-        }
-
-        function downloadPNG() {
-          if (!qrUrl.value) return;
-          const a = document.createElement('a');
-          a.href = qrUrl.value;
-          a.download = `qr-code-${frameType.value}-${Date.now()}.png`;
-          a.target = '_blank';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }
-
-        function downloadSVG() {
-          const t = lastText || text.value.trim();
-          if (!t) return;
-          const s = Math.min(size.value, 300);
-          const a = document.createElement('a');
-          a.href = `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(t)}&format=svg`;
-          a.download = `qr-code-${frameType.value}-${Date.now()}.svg`;
-          a.target = '_blank';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }
-
-        function scheduleRegen() {
-          if (!qrUrl.value && !loading.value) return;
-          clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(generateQR, 600);
-        }
-
-        watch([size, darkColor, lightColor, frameType], scheduleRegen);
-        watch(text, (val) => {
-          if (!val.trim()) { qrUrl.value = ''; return; }
-          clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(generateQR, 1200);
-        });
-
-        return { text, size, darkColor, lightColor, frameType, qrUrl, loading, error, generateQR, downloadPNG, downloadSVG };
+        default: return '';
       }
-    }).mount('#app');
-  </script>
+    }
+
+    function getAPIs(data){
+      const s=Math.min(size.value,300);
+      const dc=darkColor.value.replace('#','');
+      const lc=lightColor.value.replace('#','');
+      const enc=encodeURIComponent(data);
+      return [
+        `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${enc}&color=${dc}&bgcolor=${lc}&format=png&ecc=${ecc.value}`,
+        `https://quickchart.io/qr?text=${enc}&size=${s}&dark=${dc}&light=${lc}&ecLevel=${ecc.value}&format=png`
+      ];
+    }
+
+    function tryLoad(urls,idx,data){
+      if(idx>=urls.length){loading.value=false;error.value=true;return;}
+      const img=new Image();
+      const to=setTimeout(()=>img.onerror(),9000);
+      img.onload=()=>{clearTimeout(to);qrUrl.value=urls[idx];loading.value=false;error.value=false;saveHist(data,urls[idx])};
+      img.onerror=()=>{clearTimeout(to);tryLoad(urls,idx+1,data)};
+      img.src=urls[idx];
+    }
+
+    function generateQR(){
+      const data=buildData();
+      if(!data){toast('⚠️ زانیاری بنووسە!');return;}
+      lastBuilt=data;loading.value=true;error.value=false;qrUrl.value='';
+      tryLoad(getAPIs(data),0,data);
+    }
+
+    function schedRegen(){
+      if(!qrUrl.value&&!loading.value) return;
+      clearTimeout(debTimer);
+      debTimer=setTimeout(generateQR,700);
+    }
+    watch([size,darkColor,lightColor,frameType,ecc],schedRegen);
+
+    function uploadLogo(e){
+      const f=e.target.files[0];if(!f)return;
+      const r=new FileReader();
+      r.onload=ev=>{logoDataUrl.value=ev.target.result};
+      r.readAsDataURL(f);
+    }
+
+    function downloadPNG(){
+      if(!qrUrl.value)return;
+      const a=document.createElement('a');
+      a.href=qrUrl.value;a.download=`qr-${tab.value}-${Date.now()}.png`;a.target='_blank';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      toast('✅ PNG داگیرا!');
+    }
+    function downloadSVG(){
+      const data=lastBuilt||buildData();if(!data)return;
+      const s=Math.min(size.value,300);
+      const dc=darkColor.value.replace('#','');
+      const lc=lightColor.value.replace('#','');
+      const url=`https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(data)}&color=${dc}&bgcolor=${lc}&format=svg`;
+      const a=document.createElement('a');
+      a.href=url;a.download=`qr-${tab.value}-${Date.now()}.svg`;a.target='_blank';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      toast('✅ SVG داگیرا!');
+    }
+    async function copyLink(){
+      if(!qrUrl.value)return;
+      try{await navigator.clipboard.writeText(qrUrl.value);toast('✅ لینک کۆپی کرا!');}
+      catch{toast('❌ کۆپی نەکرا');}
+    }
+
+    function saveHist(data,url){
+      const lbls={text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'کارت',maps:'نەخشە',email:'ئیمەیل'};
+      history.value.unshift({type:lbls[tab.value]||tab.value,label:data.length>50?data.slice(0,50)+'...':data,url,date:new Date().toLocaleDateString('ku')});
+      if(history.value.length>20) history.value.pop();
+      localStorage.setItem('qr_h',JSON.stringify(history.value));
+    }
+    function loadHist(){try{const s=localStorage.getItem('qr_h');if(s)history.value=JSON.parse(s);}catch{}}
+    function loadHistory(h){qrUrl.value=h.url;toast('✅ لە مێژوو بارکرا');}
+    function removeHistory(i){history.value.splice(i,1);localStorage.setItem('qr_h',JSON.stringify(history.value));}
+    function clearHistory(){history.value=[];localStorage.removeItem('qr_h');}
+
+    async function startScan(){
+      showScanModal.value=true;
+      await nextTick();
+      try{
+        mediaStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+        if(videoEl.value) videoEl.value.srcObject=mediaStream;
+      }catch{toast('❌ کامێرا نەکرایەوە');showScanModal.value=false;}
+    }
+    function closeScan(){
+      if(mediaStream){mediaStream.getTracks().forEach(t=>t.stop());mediaStream=null;}
+      showScanModal.value=false;
+    }
+    function captureFrame(){
+      toast('📷 وێنە گیرا — بۆ خوێندنەوە ئامێری QR بەکاربهێنە');
+      closeScan();
+    }
+    function scanFromFile(){toast('⚠️ بۆ خوێندنەوەی فایل ئامێری تایبەتی QR بەکاربهێنە');}
+    async function copyScanResult(){try{await navigator.clipboard.writeText(scanResult.value);toast('✅ کۆپی کرا');}catch{}}
+
+    function toast(msg){
+      const el=document.getElementById('toast');
+      el.textContent=msg;el.classList.add('show');
+      setTimeout(()=>el.classList.remove('show'),2500);
+    }
+
+    return {
+      tab,isWide,lightTheme,toggleTheme,showRight,
+      loading,error,qrUrl,
+      inputs,size,frameType,darkColor,lightColor,ecc,
+      caption,logoDataUrl,showPass,
+      history,loadHistory,removeHistory,clearHistory,
+      showScanModal,scanResult,videoEl,scanCanvas,
+      generateQR,downloadPNG,downloadSVG,copyLink,
+      uploadLogo,startScan,closeScan,captureFrame,scanFromFile,copyScanResult
+    };
+  }
+}).mount('#app');
+</script>
 </body>
 </html>
