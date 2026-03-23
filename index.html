@@ -1,469 +1,409 @@
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دروستکردنی QR کۆد</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Noto Kufi Arabic', 'NotoKufiArabic', sans-serif;
-        }
-        
-        body {
-            direction: rtl;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>دروستکردنی QR کۆد</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        @keyframes gradientShift {
-            0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
-            50% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%); }
-        }
+    .bg-animated {
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      background-size: 400% 400%;
+      animation: bgShift 12s ease infinite;
+    }
+    @keyframes bgShift {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
 
-        @keyframes floatUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .glass {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
 
-        @keyframes borderGlow {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
+    .btn-neon {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      box-shadow: 0 0 20px rgba(124,58,237,0.5), 0 4px 15px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+    .btn-neon:hover:not(:disabled) {
+      box-shadow: 0 0 35px rgba(124,58,237,0.8), 0 6px 20px rgba(0,0,0,0.4);
+      transform: translateY(-2px);
+    }
+    .btn-neon:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+    .btn-dl {
+      background: linear-gradient(135deg, #059669, #10b981);
+      box-shadow: 0 0 15px rgba(16,185,129,0.4);
+      transition: all 0.3s ease;
+    }
+    .btn-dl:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(16,185,129,0.6); }
 
-        .bg-gradient-animated {
-            animation: gradientShift 10s ease infinite;
-            background-size: 400% 400%;
-        }
+    .btn-svg {
+      background: linear-gradient(135deg, #db2777, #9333ea);
+      box-shadow: 0 0 15px rgba(219,39,119,0.4);
+      transition: all 0.3s ease;
+    }
+    .btn-svg:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(219,39,119,0.6); }
 
-        .float-up {
-            animation: floatUp 0.8s ease-out;
-        }
+    .input-field {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #e2e8f0;
+      transition: all 0.3s ease;
+      font-family: 'Noto Kufi Arabic', sans-serif;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.25);
+      background: rgba(255,255,255,0.12);
+    }
+    .input-field::placeholder { color: rgba(255,255,255,0.3); }
+    .input-field option { background: #1e1b4b; color: #e2e8f0; }
 
-        .border-glow {
-            animation: borderGlow 3s ease-in-out infinite;
-        }
+    .qr-stage {
+      border-radius: 1.5rem;
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 3px;
+      background: linear-gradient(45deg, #7c3aed, #4f46e5, #818cf8, #7c3aed);
+      background-size: 300% 300%;
+      animation: borderAnim 4s linear infinite;
+    }
+    .qr-stage-inner {
+      background: #0f0c29;
+      border-radius: 1.3rem;
+      width: 100%;
+      min-height: 274px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    @keyframes borderAnim {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
 
-        .spinner {
-            border: 4px solid rgba(79, 172, 254, 0.1);
-            border-top: 4px solid #4facfe;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(124,58,237,0.2);
+      border-top-color: #7c3aed;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-        .frame-modern {
-            padding: 15px;
-            background: linear-gradient(145deg, #ffffff, #f8f9fa);
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1), inset 0 2px 8px rgba(255, 255, 255, 0.8);
-        }
+    .frame-none     { }
+    .frame-modern   { padding: 16px; background: #fff; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+    .frame-elegant  { padding: 18px; background: #fff; border-radius: 12px; border: 3px solid #7c3aed; box-shadow: 0 0 20px rgba(124,58,237,0.4); }
+    .frame-classic  { padding: 14px; background: #fff; border: 6px solid #1e1b4b; border-radius: 4px; }
+    .frame-rounded  { padding: 20px; background: linear-gradient(135deg,#7c3aed,#4f46e5); border-radius: 40px; box-shadow: 0 12px 35px rgba(124,58,237,0.5); }
+    .frame-shadow   { padding: 14px; background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .frame-gold     { padding: 18px; background: linear-gradient(145deg,#ffd700,#ffed4e); border-radius: 14px; border: 3px solid #b8860b; box-shadow: 0 0 30px rgba(255,215,0,0.5); }
+    .frame-neon     { padding: 18px; background: #000; border-radius: 14px; box-shadow: 0 0 30px #7c3aed, 0 0 60px #4f46e5; animation: neonPulse 2s ease-in-out infinite alternate; }
+    @keyframes neonPulse {
+      from { box-shadow: 0 0 30px #7c3aed, 0 0 60px #4f46e5; }
+      to   { box-shadow: 0 0 12px #7c3aed, 0 0 25px #4f46e5; }
+    }
+    .frame-gradient {
+      padding: 20px;
+      background: linear-gradient(45deg,#ff6b6b,#4ecdc4,#45b7d1,#96ceb4,#ffeaa7);
+      background-size: 300% 300%;
+      border-radius: 24px;
+      animation: gradMove 4s ease infinite;
+    }
+    @keyframes gradMove {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
 
-        .frame-elegant {
-            padding: 20px;
-            background: linear-gradient(145deg, #f8f9fa, #ffffff);
-            border-radius: 12px;
-            border: 3px solid #4facfe;
-            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.3);
-        }
+    .float-in { animation: floatIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+    @keyframes floatIn {
+      from { opacity:0; transform: scale(0.75) translateY(20px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
 
-        .frame-classic {
-            padding: 15px;
-            background: #ffffff;
-            border: 6px solid #333;
-            border-radius: 4px;
-            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #333;
-        }
+    input[type=range] {
+      -webkit-appearance: none; width:100%; height:6px; border-radius:3px;
+      background: rgba(255,255,255,0.15); outline:none; cursor:pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+      background: linear-gradient(135deg,#7c3aed,#4f46e5);
+      box-shadow:0 0 8px rgba(124,58,237,0.6); cursor:pointer;
+    }
 
-        .frame-rounded {
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 40px;
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-        }
+    input[type=color] {
+      -webkit-appearance:none; width:44px; height:44px; border:none;
+      border-radius:50%; cursor:pointer; padding:0; background:none;
+      box-shadow:0 0 0 2px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type=color]:hover {
+      transform:scale(1.15);
+      box-shadow:0 0 0 3px #7c3aed, 0 4px 16px rgba(0,0,0,0.4);
+    }
 
-        .frame-shadow {
-            padding: 12px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
-        }
+    .label-text { color: rgba(255,255,255,0.65); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; display: block; margin-bottom: 6px; }
+    .section-title { color: rgba(255,255,255,0.85); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .creator-link { color: #a78bfa; text-decoration: none; }
+    .creator-link:hover { color: #c4b5fd; text-decoration: underline; }
+    textarea.input-field { resize: vertical; min-height: 90px; }
 
-        .frame-tech {
-            padding: 15px;
-            background: linear-gradient(145deg, #2c3e50, #34495e);
-            border-radius: 12px;
-            border: 2px solid #4facfe;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .frame-neon {
-            padding: 18px;
-            background: #000;
-            border-radius: 12px;
-            border: 2px solid #00ffff;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-        }
-
-        .frame-gradient {
-            padding: 15px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
-        }
-
-        .frame-gold {
-            padding: 15px;
-            background: linear-gradient(145deg, #ffd700, #ffed4e);
-            border-radius: 12px;
-            border: 3px solid #daa520;
-            box-shadow: 0 8px 25px rgba(218, 165, 32, 0.3);
-        }
-
-        .qr-with-frame img {
-            display: block;
-            max-width: 100%;
-            height: auto;
-        }
-
-        .placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 320px;
-            color: #999;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .placeholder.error {
-            color: #ef4444;
-        }
-
-        .placeholder.success {
-            color: #3b82f6;
-        }
-    </style>
+    @media (max-width: 480px) {
+      .qr-stage { min-height: 220px; }
+      .qr-stage-inner { min-height: 214px; }
+    }
+  </style>
 </head>
-<body class="bg-gradient-animated min-h-screen py-8 px-4">
-    <div class="max-w-2xl mx-auto float-up">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                🎯 دروستکردنی QR کۆد
-            </h1>
-            <p class="text-lg text-gray-600">ئێستا بەئاسانی QR کۆد دروست بکە!</p>
-        </div>
+<body class="bg-animated">
 
-        <!-- Main Container -->
-        <div class="bg-white bg-opacity-95 rounded-2xl shadow-2xl backdrop-blur-lg border border-white border-opacity-20 overflow-hidden">
-            <!-- Header Section -->
-            <div class="bg-gradient-to-r from-blue-400 to-cyan-400 p-6 text-center text-white relative overflow-hidden">
-                <div class="absolute inset-0 opacity-10 border-glow"></div>
-                <h2 class="text-2xl font-bold relative z-10">🚀 دروستکردنی QR کۆد</h2>
+  <div id="app" class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl">
+
+      <!-- Header -->
+      <div class="relative text-center py-10 px-6 overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(124,58,237,0.55) 0%, rgba(79,70,229,0.5) 50%, rgba(99,102,241,0.35) 100%);">
+        <div class="absolute inset-0 opacity-10"
+             style="background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.5) 0%, transparent 70%);"></div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white relative z-10 mb-2"
+            style="text-shadow: 0 0 30px rgba(167,139,250,0.7);">
+          🎯 دروستکردنی QR کۆد
+        </h1>
+        <p class="relative z-10 text-sm md:text-base" style="color: rgba(216,180,254,0.9);">
+          ئێستا بەئاسانی QR کۆد دروست بکە!
+        </p>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 md:p-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <!-- LEFT -->
+          <div class="flex flex-col gap-5">
+
+            <div>
+              <span class="label-text">📝 تێکستەکەت یان بەستەرەکەت بنووسە</span>
+              <textarea
+                v-model="text"
+                class="input-field w-full rounded-xl px-4 py-3 text-sm"
+                placeholder="تێکستەکەت یان https://example.com بنووسە..."
+              ></textarea>
             </div>
 
-            <!-- Content -->
-            <div class="p-6">
-                <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Input Section -->
-                    <div class="space-y-6">
-                        <!-- Text Input -->
-                        <div class="space-y-2">
-                            <label class="block text-base font-bold text-gray-800">📝 تێکستەکەت یان بەستەرەکەت بنووسە</label>
-                            <textarea
-                                id="qr-text"
-                                placeholder="تێکستەکەت یان https://example.com بنووسە..."
-                                class="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200 transition min-h-24 resize-none font-medium"
-                            ></textarea>
-                        </div>
+            <div class="glass rounded-2xl p-5 flex flex-col gap-5">
+              <p class="section-title">🎨 دیزاین</p>
 
-                        <!-- Size Slider -->
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <label class="text-base font-bold text-gray-800">📏 قەبارەی QR کۆد</label>
-                                <span id="size-display" class="text-sm font-bold text-white bg-blue-600 px-3 py-1 rounded-full">220px</span>
-                            </div>
-                            <input
-                                type="range"
-                                id="size-slider"
-                                min="150"
-                                max="350"
-                                value="220"
-                                class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                            >
-                        </div>
-
-                        <!-- Frame Type -->
-                        <div class="space-y-2">
-                            <label class="block text-base font-bold text-gray-800">🎨 جۆری چوارچێوە</label>
-                            <select
-                                id="frame-type"
-                                class="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-200 transition font-medium"
-                            >
-                                <option value="none">بەبێ چوارچێوە</option>
-                                <option value="modern" selected>مۆدێرن</option>
-                                <option value="elegant">جوان</option>
-                                <option value="classic">کلاسیک</option>
-                                <option value="rounded">خولاوی</option>
-                                <option value="shadow">سێبەر</option>
-                                <option value="tech">تەکنەلۆجی</option>
-                                <option value="neon">نیۆن</option>
-                                <option value="gradient">ڕەنگاوڕەنگ</option>
-                                <option value="gold">زێڕین</option>
-                            </select>
-                        </div>
-
-                        <!-- Colors -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <label class="block text-base font-bold text-gray-800">ڕەنگی QR</label>
-                                <div class="flex items-center gap-3">
-                                    <input
-                                        type="color"
-                                        id="dark-color"
-                                        value="#000000"
-                                        class="w-16 h-16 rounded-lg cursor-pointer border-2 border-gray-300"
-                                    >
-                                    <span id="dark-color-text" class="text-sm font-mono text-gray-600">#000000</span>
-                                </div>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="block text-base font-bold text-gray-800">ڕەنگی باگڕاوند</label>
-                                <div class="flex items-center gap-3">
-                                    <input
-                                        type="color"
-                                        id="light-color"
-                                        value="#ffffff"
-                                        class="w-16 h-16 rounded-lg cursor-pointer border-2 border-gray-300"
-                                    >
-                                    <span id="light-color-text" class="text-sm font-mono text-gray-600">#ffffff</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Generate Button -->
-                        <button
-                            id="generate-btn"
-                            onclick="generateQR()"
-                            class="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                        >
-                            ⚡ QR کۆد دروست بکە
-                        </button>
-                    </div>
-
-                    <!-- Output Section -->
-                    <div class="flex flex-col">
-                        <!-- QR Display -->
-                        <div id="qr-container" class="flex-1 flex items-center justify-center mb-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border-2 border-dashed border-gray-300 min-h-80">
-                            <div class="placeholder">
-                                QR کۆدەکەت لێرە دەردەکەوێت
-                            </div>
-                        </div>
-
-                        <!-- Download Buttons -->
-                        <div id="download-section" class="grid grid-cols-2 gap-3 mb-6" style="display: none;">
-                            <button
-                                onclick="downloadQR('png')"
-                                class="py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
-                            >
-                                📥 PNG
-                            </button>
-                            <button
-                                onclick="downloadQR('svg')"
-                                class="py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
-                            >
-                                📄 SVG
-                            </button>
-                        </div>
-
-                        <!-- Footer -->
-                        <div class="pt-4 border-t border-gray-200 text-center text-sm text-gray-600">
-                            <p>
-                                🔥 <strong>دروست کراوە لەلایەن</strong>
-                                <a
-                                    href="https://www.facebook.com/share/1ZoYU1DAhS/?mibextid=wwXIfr"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="text-blue-600 hover:text-blue-700 font-bold"
-                                >
-                                    MAHMOOD FAQE
-                                </a>
-                            </p>
-                            <p class="mt-1">لە هەموو ئامێرەکان کار دەکات - باشترین و بەخۆڕایی!</p>
-                        </div>
-                    </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="label-text" style="margin-bottom:0">📏 قەبارەی QR کۆد</span>
+                  <span style="color:#a78bfa; font-weight:700; font-size:0.85rem;">{{ size }}px</span>
                 </div>
+                <input type="range" v-model.number="size" min="150" max="320" />
+              </div>
+
+              <div>
+                <span class="label-text">🖼️ جۆری چوارچێوە</span>
+                <select v-model="frameType" class="input-field w-full rounded-xl px-4 py-3 text-sm">
+                  <option value="none">بەبێ چوارچێوە</option>
+                  <option value="modern">مۆدێرن</option>
+                  <option value="elegant">جوان</option>
+                  <option value="classic">کلاسیک</option>
+                  <option value="rounded">خولاوی</option>
+                  <option value="shadow">سێبەر</option>
+                  <option value="neon">نیۆن</option>
+                  <option value="gradient">ڕەنگاوڕەنگ</option>
+                  <option value="gold">زێڕین</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <span class="label-text">ڕەنگی QR</span>
+                  <div class="flex justify-center"><input type="color" v-model="darkColor" /></div>
+                </div>
+                <div>
+                  <span class="label-text">ڕەنگی باگڕاوند</span>
+                  <div class="flex justify-center"><input type="color" v-model="lightColor" /></div>
+                </div>
+              </div>
             </div>
+
+            <button
+              class="btn-neon text-white font-bold py-4 rounded-2xl text-base tracking-wide uppercase"
+              :disabled="loading"
+              @click="generateQR"
+            >
+              <span v-if="loading">🔄 دروستکردن...</span>
+              <span v-else>⚡ QR کۆد دروست بکە</span>
+            </button>
+          </div>
+
+          <!-- RIGHT -->
+          <div class="flex flex-col gap-5">
+
+            <div class="qr-stage">
+              <div class="qr-stage-inner">
+
+                <div v-if="!qrUrl && !loading && !error" class="text-center px-4" style="color: rgba(167,139,250,0.5);">
+                  <div style="font-size:3rem; margin-bottom:10px;">📱</div>
+                  <p style="font-size:0.85rem;">QR کۆدەکەت لێرە دەردەکەوێت</p>
+                </div>
+
+                <div v-if="loading" class="text-center" style="color: #a78bfa;">
+                  <div class="spinner mx-auto" style="margin-bottom:12px;"></div>
+                  <p style="font-size:0.85rem; font-weight:600;">چاوەڕێ بکە...</p>
+                </div>
+
+                <div v-if="error && !loading" class="text-center px-4">
+                  <div style="font-size:2.5rem; margin-bottom:8px;">⚠️</div>
+                  <p style="color:#f87171; font-size:0.85rem; font-weight:600;">هەڵەیەک ڕوویدا!<br>ئینتەرنێتەکەت پشکنین بکە</p>
+                </div>
+
+                <div v-if="qrUrl && !loading" :class="['float-in', 'frame-' + frameType]">
+                  <img :src="qrUrl" :alt="'QR: ' + text" :width="size" :height="size"
+                       style="display:block; max-width:100%; height:auto;" />
+                </div>
+
+              </div>
+            </div>
+
+            <div v-if="qrUrl && !loading" class="flex gap-3 float-in">
+              <button class="btn-dl flex-1 text-white font-bold py-3 rounded-xl text-sm" @click="downloadPNG">
+                📥 PNG داگرتن
+              </button>
+              <button class="btn-svg flex-1 text-white font-bold py-3 rounded-xl text-sm" @click="downloadSVG">
+                📄 SVG داگرتن
+              </button>
+            </div>
+
+            <div class="glass rounded-xl py-3 px-4 text-center" style="font-size:0.75rem; color: rgba(216,180,254,0.8);">
+              🔥 دروست کراوە لەلایەن
+              <a href="https://www.facebook.com/share/1ZoYU1DAhS/?mibextid=wwXIfr"
+                 target="_blank" class="creator-link font-bold mx-1">MAHMOOD FAQE</a>
+              <br>لە هەموو ئامێرەکان کار دەکات — بەخۆڕایی!
+            </div>
+
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        let currentQRUrl = '';
-        let currentQRData = '';
+  <script>
+    const { createApp, ref, watch } = Vue;
 
-        // Update size display
-        document.getElementById('size-slider').addEventListener('input', function() {
-            document.getElementById('size-display').textContent = this.value + 'px';
-            if (document.getElementById('qr-container').querySelector('.qr-with-frame')) {
-                generateQR();
-            }
-        });
+    createApp({
+      setup() {
+        const text       = ref('');
+        const size       = ref(220);
+        const darkColor  = ref('#000000');
+        const lightColor = ref('#ffffff');
+        const frameType  = ref('modern');
+        const qrUrl      = ref('');
+        const loading    = ref(false);
+        const error      = ref(false);
+        let debounceTimer = null;
+        let lastText = '';
 
-        // Update color display
-        document.getElementById('dark-color').addEventListener('input', function() {
-            document.getElementById('dark-color-text').textContent = this.value;
-            if (document.getElementById('qr-container').querySelector('.qr-with-frame')) {
-                generateQR();
-            }
-        });
+        function getAPIs(t, s, dc, lc) {
+          return [
+            `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(t)}&color=${dc}&bgcolor=${lc}&format=png&ecc=M`,
+            `https://quickchart.io/qr?text=${encodeURIComponent(t)}&size=${s}&color=${dc}&bgcolor=${lc}&format=png`
+          ];
+        }
 
-        document.getElementById('light-color').addEventListener('input', function() {
-            document.getElementById('light-color-text').textContent = this.value;
-            if (document.getElementById('qr-container').querySelector('.qr-with-frame')) {
-                generateQR();
-            }
-        });
-
-        // Auto-regenerate on frame type change
-        document.getElementById('frame-type').addEventListener('change', function() {
-            if (document.getElementById('qr-container').querySelector('.qr-with-frame')) {
-                generateQR();
-            }
-        });
+        function tryLoad(urls, idx, t, s, dc, lc) {
+          if (idx >= urls.length) {
+            loading.value = false;
+            error.value = true;
+            return;
+          }
+          const img = new Image();
+          const to = setTimeout(() => img.onerror(), 8000);
+          img.onload = () => {
+            clearTimeout(to);
+            qrUrl.value = urls[idx];
+            loading.value = false;
+            error.value = false;
+          };
+          img.onerror = () => {
+            clearTimeout(to);
+            tryLoad(urls, idx + 1, t, s, dc, lc);
+          };
+          img.src = urls[idx];
+        }
 
         function generateQR() {
-            const text = document.getElementById('qr-text').value.trim();
-
-            if (!text) {
-                document.getElementById('qr-container').innerHTML = `
-                    <div class="placeholder error">
-                        <strong>⚠️ تکایە تێکستەکەت بنووسە!</strong>
-                    </div>
-                `;
-                document.getElementById('download-section').style.display = 'none';
-                return;
-            }
-
-            currentQRData = text;
-
-            // Get settings
-            const size = Math.min(document.getElementById('size-slider').value, 300);
-            const darkColor = document.getElementById('dark-color').value.replace('#', '');
-            const lightColor = document.getElementById('light-color').value.replace('#', '');
-            const frameType = document.getElementById('frame-type').value;
-
-            // Show loading
-            document.getElementById('qr-container').innerHTML = `
-                <div class="placeholder success">
-                    <div class="flex flex-col items-center gap-4">
-                        <div class="spinner"></div>
-                        <strong>چاوەڕێ بکە...</strong><br>
-                        <span class="text-sm">QR کۆد دروست دەکرێت</span>
-                    </div>
-                </div>
-            `;
-
-            // Disable button
-            const generateBtn = document.getElementById('generate-btn');
-            generateBtn.disabled = true;
-            generateBtn.textContent = '🔄 دروستکردن...';
-
-            // Try multiple QR APIs
-            const apis = [
-                `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&color=${darkColor}&bgcolor=${lightColor}&format=png&ecc=M`,
-                `https://chart.googleapis.com/chart?chs=${size}x${size}&cht=qr&chl=${encodeURIComponent(text)}&choe=UTF-8&chco=${darkColor}&chf=bg,s,${lightColor}`,
-                `https://quickchart.io/qr?text=${encodeURIComponent(text)}&size=${size}&color=${darkColor}&bgcolor=${lightColor}&format=png`
-            ];
-
-            tryAPI(apis, 0, text, size, frameType);
+          const t = text.value.trim();
+          if (!t) { qrUrl.value = ''; return; }
+          lastText = t;
+          loading.value = true;
+          error.value = false;
+          qrUrl.value = '';
+          const s  = Math.min(size.value, 300);
+          const dc = darkColor.value.replace('#', '');
+          const lc = lightColor.value.replace('#', '');
+          tryLoad(getAPIs(t, s, dc, lc), 0, t, s, dc, lc);
         }
 
-        function tryAPI(apis, index, text, size, frameType) {
-            if (index >= apis.length) {
-                document.getElementById('qr-container').innerHTML = `
-                    <div class="placeholder error">
-                        <strong>❌ هەڵەیەک ڕوویدا!</strong><br>
-                        <span class="text-sm">تکایە ئینتەرنێتەکەت پشکنین بکە و دووبارە تاقی بکەرەوە</span>
-                    </div>
-                `;
-                resetButton();
-                document.getElementById('download-section').style.display = 'none';
-                return;
-            }
-
-            const qrUrl = apis[index];
-            const img = document.createElement('img');
-
-            img.onload = function() {
-                currentQRUrl = qrUrl;
-
-                img.style.maxWidth = '100%';
-                img.style.height = 'auto';
-                img.style.display = 'block';
-                img.alt = 'QR Code: ' + text;
-
-                // Create frame container
-                const frameContainer = document.createElement('div');
-                frameContainer.className = 'qr-with-frame';
-
-                if (frameType !== 'none') {
-                    frameContainer.classList.add('frame-' + frameType);
-                }
-
-                frameContainer.appendChild(img);
-
-                document.getElementById('qr-container').innerHTML = '';
-                document.getElementById('qr-container').appendChild(frameContainer);
-                document.getElementById('download-section').style.display = 'grid';
-
-                // Add animation
-                frameContainer.style.opacity = '0';
-                frameContainer.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    frameContainer.style.transition = 'all 0.5s ease';
-                    frameContainer.style.opacity = '1';
-                    frameContainer.style.transform = 'scale(1)';
-                }, 100);
-
-                resetButton();
-            };
-
-            img.onerror = function() {
-                tryAPI(apis, index + 1, text, size, frameType);
-            };
-
-            setTimeout(() => {
-                if (img.complete === false) {
-                    img.onerror();
-                }
-            }, 8000);
-
-            img.src = qrUrl;
+        function downloadPNG() {
+          if (!qrUrl.value) return;
+          const a = document.createElement('a');
+          a.href = qrUrl.value;
+          a.download = `qr-code-${frameType.value}-${Date.now()}.png`;
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
         }
 
-        function resetButton() {
-            const generateBtn = document.getElementById('generate-btn');
-            generateBtn.disabled = false;
-            generateBtn.textContent = '⚡ QR کۆد دروست بکە';
+        function downloadSVG() {
+          const t = lastText || text.value.trim();
+          if (!t) return;
+          const s = Math.min(size.value, 300);
+          const a = document.createElement('a');
+          a.href = `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(t)}&format=svg`;
+          a.download = `qr-code-${frameType.value}-${Date.now()}.svg`;
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
         }
 
-        function downloadQR(format) {
-            if (!currentQRUrl) return;
-
-            const link = document.createElement('a');
-            link.href = currentQRUrl;
-            link.download = `qr-code.${format === 'png' ? 'png' : 'svg'}`;
-            link.click();
+        function scheduleRegen() {
+          if (!qrUrl.value && !loading.value) return;
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(generateQR, 600);
         }
-    </script>
+
+        watch([size, darkColor, lightColor, frameType], scheduleRegen);
+        watch(text, (val) => {
+          if (!val.trim()) { qrUrl.value = ''; return; }
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(generateQR, 1200);
+        });
+
+        return { text, size, darkColor, lightColor, frameType, qrUrl, loading, error, generateQR, downloadPNG, downloadSVG };
+      }
+    }).mount('#app');
+  </script>
 </body>
 </html>
