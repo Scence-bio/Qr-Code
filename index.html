@@ -3,38 +3,554 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>QR Studio Pro</title>
+<title>QR Studio v2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 <style>
 :root{
-  --primary:#6366f1;--primary-light:#818cf8;--primary-dark:#4f46e5;
-  --accent:#ec4899;--accent-light:#f472b6;--accent-dark:#be185d;
-  --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
-  --bg-dark:#0f172a;--bg-darker:#020617;
-  --surface:#1e293b;--surface-light:#334155;
-  --text:#f1f5f9;--text-muted:#cbd5e1;
-  --border:#475569;--border-light:#64748b;
+  --bg:#020d14;--deep:#041820;
+  --surface:rgba(0,180,180,.07);--surface2:rgba(0,200,200,.04);
+  --border:rgba(0,210,210,.15);--border2:rgba(0,210,210,.08);
+  --primary:#00d4d4;--primary2:#00a8b5;
+  --gold:#c9a84c;--gold2:#e8c87a;
+  --text:#d8f5f5;--text2:#a0d4d4;--muted:rgba(160,212,212,.45);
+  --danger:#ff6b8a;--success:#00e5a0;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Noto Kufi Arabic',sans-serif;
-  background:linear-gradient(135deg,var(--bg-darker) 0%,#1a1f35 100%);
-  color:var(--text);
-  min-height:100vh;
-  overflow-x:hidden;
-  position:relative;
-}
+body{font-family:'Noto Kufi Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-body::before{
-  content:'';
-  position:fixed;
-  inset:0;
+.ocean-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.ocean-bg::before{
+  content:'';position:absolute;inset:0;
   background:
+    radial-gradient(ellipse 90% 70% at 15% 0%,rgba(0,180,200,.22) 0%,transparent 55%),
+    radial-gradient(ellipse 70% 60% at 85% 100%,rgba(0,120,160,.18) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 50%,rgba(0,80,100,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 75% 20%,rgba(201,168,76,.08) 0%,transparent 50%);
+  animation:oceandrift 22s ease-in-out infinite alternate;
+}
+@keyframes oceandrift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.08) translate(-2%,1.5%)}}
+.ocean-bg::after{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,210,210,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,210,210,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
+}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:orbfloat var(--dur,20s) ease-in-out infinite alternate}
+.orb1{width:400px;height:400px;background:rgba(0,200,200,.07);top:-100px;right:-100px;--dur:24s}
+.orb2{width:300px;height:300px;background:rgba(0,120,160,.06);bottom:-80px;left:-80px;--dur:18s}
+.orb3{width:200px;height:200px;background:rgba(201,168,76,.05);top:40%;left:20%;--dur:30s}
+@keyframes orbfloat{from{transform:translate(0,0)}to{transform:translate(30px,20px)}}
+
+.glass{background:linear-gradient(135deg,rgba(0,180,180,.09) 0%,rgba(0,100,120,.05) 100%);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border:1px solid var(--border)}
+.glass2{background:rgba(0,180,180,.04);backdrop-filter:blur(16px);border:1px solid var(--border2)}
+.glass-card{background:linear-gradient(160deg,rgba(0,200,210,.08) 0%,rgba(0,80,100,.04) 100%);backdrop-filter:blur(24px);border:1px solid rgba(0,210,210,.12);border-radius:16px}
+
+.tab-wrap{display:flex;flex-wrap:wrap;gap:4px;padding:14px 16px;border-bottom:1px solid var(--border2)}
+.tab-btn{padding:7px 13px;border-radius:8px;font-size:.73rem;font-weight:700;transition:all .22s;cursor:pointer;border:1px solid transparent;color:var(--muted);background:transparent;font-family:inherit;letter-spacing:.2px;position:relative;overflow:hidden}
+.tab-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--primary),var(--primary2));opacity:0;transition:opacity .22s}
+.tab-btn.active{color:#001a1a;border-color:transparent;box-shadow:0 0 18px rgba(0,212,212,.4),0 2px 8px rgba(0,0,0,.3)}
+.tab-btn.active::before{opacity:1}
+.tab-btn.active span{position:relative;z-index:1}
+.tab-btn:not(.active):hover{border-color:rgba(0,212,212,.3);color:var(--primary);background:rgba(0,212,212,.06)}
+
+.inp{background:rgba(0,180,180,.07);border:1px solid rgba(0,210,210,.18);color:var(--text);border-radius:10px;padding:10px 14px;font-size:.85rem;font-family:inherit;width:100%;transition:all .22s}
+.inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,212,212,.15);background:rgba(0,180,180,.12)}
+.inp::placeholder{color:rgba(0,180,180,.3)}
+.inp option{background:#041820;color:var(--text)}
+textarea.inp{resize:vertical;min-height:80px}
+
+.btn{font-family:inherit;font-weight:700;border:none;cursor:pointer;border-radius:10px;transition:all .25s;font-size:.82rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.2px;position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .2s}
+.btn:hover::after{background:rgba(255,255,255,.08)}
+.btn-p{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#001a1a;padding:12px 20px;box-shadow:0 0 24px rgba(0,212,212,.35),0 4px 12px rgba(0,0,0,.3)}
+.btn-p:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 38px rgba(0,212,212,.55)}
+.btn-p:disabled{opacity:.4;cursor:not-allowed}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1000;padding:10px 16px;box-shadow:0 0 18px rgba(201,168,76,.35)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(201,168,76,.55)}
+.btn-g{background:linear-gradient(135deg,#00c48c,#00e5a0);color:#001a10;padding:10px 16px;box-shadow:0 0 14px rgba(0,229,160,.3)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(0,229,160,.5)}
+.btn-r{background:linear-gradient(135deg,#e0426e,#ff6b8a);color:#fff;padding:10px 16px;box-shadow:0 0 14px rgba(255,107,138,.3)}
+.btn-r:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(255,107,138,.5)}
+.btn-c{background:linear-gradient(135deg,rgba(0,180,180,.2),rgba(0,180,180,.12));color:var(--primary);border:1px solid rgba(0,210,210,.3);padding:10px 16px}
+.btn-c:hover{transform:translateY(-2px);background:rgba(0,180,180,.25);border-color:var(--primary)}
+.btn-danger{background:rgba(255,107,138,.12);color:var(--danger);border:1px solid rgba(255,107,138,.2);padding:6px 11px;font-size:.72rem;border-radius:8px}
+.btn-danger:hover{background:rgba(255,107,138,.22)}
+.btn-sm{padding:6px 11px;font-size:.73rem;border-radius:8px}
+
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(0,180,180,.2);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 0 8px rgba(0,212,212,.6);cursor:pointer;border:2px solid rgba(0,0,0,.3)}
+input[type=color]{-webkit-appearance:none;width:38px;height:38px;border:none;border-radius:50%;cursor:pointer;padding:0;background:none;box-shadow:0 0 0 2px rgba(0,210,210,.25),0 3px 10px rgba(0,0,0,.4);transition:transform .2s,box-shadow .2s}
+input[type=color]:hover{transform:scale(1.18);box-shadow:0 0 0 3px var(--primary),0 3px 14px rgba(0,0,0,.5)}
+
+.qr-stage{border-radius:18px;min-height:260px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:2px;background:linear-gradient(135deg,var(--primary),var(--primary2),var(--gold),var(--primary));background-size:300% 300%;animation:gradshift 6s linear infinite}
+@keyframes gradshift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.qr-inner{background:var(--deep);border-radius:16px;width:100%;min-height:256px;display:flex;align-items:center;justify-content:center;padding:20px}
+
+.fr-none{}.fr-modern{padding:14px;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.5)}.fr-elegant{padding:15px;background:#fff;border-radius:12px;border:3px solid var(--primary);box-shadow:0 0 22px rgba(0,212,212,.4)}.fr-classic{padding:14px;background:#fff;border:6px solid #001a1a;border-radius:4px}.fr-rounded{padding:18px;background:linear-gradient(135deg,var(--primary),var(--primary2));border-radius:36px;box-shadow:0 12px 32px rgba(0,212,212,.5)}.fr-shadow{padding:14px;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.7)}.fr-gold{padding:16px;background:linear-gradient(145deg,#ffd700,#ffe874);border-radius:14px;border:3px solid #b8860b;box-shadow:0 0 28px rgba(255,215,0,.5)}.fr-neon{padding:16px;background:#000;border-radius:14px;box-shadow:0 0 28px var(--primary),0 0 55px var(--primary2);animation:neonpulse 2.5s ease-in-out infinite alternate}
+@keyframes neonpulse{from{box-shadow:0 0 28px var(--primary),0 0 55px var(--primary2)}to{box-shadow:0 0 10px var(--primary),0 0 20px var(--primary2)}}
+.fr-gradient{padding:18px;background:linear-gradient(45deg,#00d4d4,#0891b2,#00c48c,#c9a84c);background-size:300% 300%;border-radius:22px;animation:gradmove 4s ease infinite}
+@keyframes gradmove{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.hist-item{background:rgba(0,180,180,.05);border:1px solid var(--border2);border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s}
+.hist-item:hover{background:rgba(0,180,180,.12);border-color:rgba(0,212,212,.35)}
+
+.float-in{animation:floatin .5s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes floatin{from{opacity:0;transform:scale(.75) translateY(22px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.fade-in{animation:fadein .28s ease both}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:linear-gradient(135deg,var(--deep),#062030);color:var(--primary);padding:11px 22px;border-radius:12px;font-size:.8rem;font-weight:700;border:1px solid rgba(0,212,212,.35);box-shadow:0 0 24px rgba(0,212,212,.2),0 8px 28px rgba(0,0,0,.5);z-index:1000;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.lbl{display:block;font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.spinner{width:34px;height:34px;border:3px solid rgba(0,212,212,.15);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--primary),var(--gold),var(--primary),transparent);animation:scanline 2.2s ease-in-out infinite;box-shadow:0 0 10px rgba(0,212,212,.7)}
+@keyframes scanline{0%{top:8%}50%{top:92%}100%{top:8%}}
+
+.modal-ov{position:fixed;inset:0;background:rgba(0,5,10,.88);backdrop-filter:blur(12px);z-index:500;display:flex;align-items:center;justify-content:center;padding:18px}
+.modal-bx{background:linear-gradient(160deg,rgba(0,50,60,.95),rgba(2,13,20,.98));border:1px solid rgba(0,210,210,.25);border-radius:20px;padding:24px;max-width:460px;width:100%;box-shadow:0 0 60px rgba(0,180,180,.15),0 24px 60px rgba(0,0,0,.6)}
+
+.badge-new{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a0f00;font-size:.58rem;font-weight:800;padding:2px 6px;border-radius:5px;vertical-align:middle;margin-right:3px}
+.divider{display:flex;align-items:center;gap:10px;margin:8px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
+.divider span{font-size:.7rem;color:var(--muted)}
+
+.title-main{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4.5vw,2.4rem);font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,var(--primary) 0%,var(--gold) 50%,var(--primary) 100%);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.theme-toggle{width:52px;height:28px;border-radius:14px;cursor:pointer;position:relative;border:1px solid rgba(0,210,210,.3);background:rgba(0,180,180,.1);transition:all .3s}
+.theme-toggle:hover{border-color:var(--primary);box-shadow:0 0 12px rgba(0,212,212,.2)}
+.toggle-knob{position:absolute;top:3px;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary2));transition:left .3s;box-shadow:0 2px 6px rgba(0,0,0,.3),0 0 8px rgba(0,212,212,.4)}
+
+body.light{--bg:#e8f8f8;--deep:#f0fdfd;--surface:rgba(0,180,180,.07);--border:rgba(0,150,150,.18);--border2:rgba(0,150,150,.1);--text:#062030;--muted:rgba(6,32,48,.5)}
+body.light .qr-inner{background:#f0fdfd}
+body.light .inp{background:rgba(0,150,150,.07);border-color:rgba(0,150,150,.2);color:#062030}
+body.light .inp:focus{background:rgba(255,255,255,.9)}
+body.light .inp::placeholder{color:rgba(0,100,100,.3)}
+body.light .inp option{background:#f0fdfd;color:#062030}
+body.light .modal-bx{background:rgba(230,252,252,.97)}
+body.light .glass{background:rgba(255,255,255,.55);border-color:rgba(0,180,180,.15)}
+
+@keyframes success-pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,160,0)}50%{box-shadow:0 0 0 10px rgba(0,229,160,.15)}}
+.scan-success{animation:success-pulse .8s ease}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,212,212,.3);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="ocean-bg"></div>
+<div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+<div class="toast" id="toast"></div>
+
+<div id="app" style="position:relative;z-index:10;min-height:100vh;padding:16px;display:flex;flex-direction:column;align-items:center;padding-top:22px">
+
+  <!-- HEADER -->
+  <div style="width:100%;max-width:1000px;margin-bottom:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <button class="theme-toggle" @click="toggleTheme">
+          <span class="toggle-knob" :style="lightTheme?'left:28px':'left:4px'"></span>
+        </button>
+        <span style="font-size:.68rem;font-weight:700;color:var(--muted)">{{ lightTheme?'☀️':'🌙' }}</span>
+      </div>
+      <div style="text-align:center">
+        <div class="title-main">QR Studio</div>
+        <div style="font-size:.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:2px">PROFESSIONAL SUITE</div>
+      </div>
+      <div style="font-size:.6rem;font-weight:800;color:var(--primary);border:1px solid rgba(0,212,212,.3);background:rgba(0,212,212,.08);padding:4px 10px;border-radius:20px;letter-spacing:1px">v 2.0</div>
+    </div>
+    <div style="text-align:center">
+      <span style="font-size:.76rem;color:var(--muted)">پرۆفیشناڵترین دروستکەری QR کۆد</span>
+      <span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--gold);margin:0 8px;vertical-align:middle"></span>
+      <span style="font-size:.76rem;color:var(--gold)">بەخۆڕایی</span>
+    </div>
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="glass" style="border-radius:24px;width:100%;max-width:1000px;overflow:hidden;box-shadow:0 0 80px rgba(0,180,180,.1),0 32px 80px rgba(0,0,0,.5)">
+
+    <!-- TABS -->
+    <div class="tab-wrap">
+      <button class="tab-btn" :class="{active:tab==='text'}"    @click="tab='text'"><span>📝 تێکست</span></button>
+      <button class="tab-btn" :class="{active:tab==='url'}"     @click="tab='url'"><span>🔗 بەستەر</span></button>
+      <button class="tab-btn" :class="{active:tab==='wifi'}"    @click="tab='wifi'"><span>📶 WiFi</span></button>
+      <button class="tab-btn" :class="{active:tab==='vcard'}"   @click="tab='vcard'"><span>👤 کارت</span></button>
+      <button class="tab-btn" :class="{active:tab==='maps'}"    @click="tab='maps'"><span>📍 نەخشە</span></button>
+      <button class="tab-btn" :class="{active:tab==='email'}"   @click="tab='email'"><span>✉️ ئیمەیل</span></button>
+      <button class="tab-btn" :class="{active:tab==='barcode'}" @click="tab='barcode'"><span><span class="badge-new">NEW</span>📊 بارکۆد</span></button>
+      <button class="tab-btn" :class="{active:tab==='history'}" @click="tab='history'"><span>🕐 مێژوو</span></button>
+      <button class="tab-btn" :class="{active:tab==='scan'}"    @click="tab='scan'"><span>📷 خوێندنەوە</span></button>
+    </div>
+
+    <div :style="'display:grid;' + (isWide?'grid-template-columns:1fr 1fr':'')">
+
+      <!-- LEFT -->
+      <div style="padding:22px;border-left:1px solid var(--border2)">
+
+        <div v-if="tab==='text'" class="fade-in">
+          <label class="lbl">📝 تێکستەکەت بنووسە</label>
+          <textarea class="inp" v-model="inputs.text" placeholder="هەر تێکستێک بنووسە..."></textarea>
+        </div>
+
+        <div v-if="tab==='url'" class="fade-in">
+          <label class="lbl">🔗 بەستەر</label>
+          <input class="inp" v-model="inputs.url" type="url" placeholder="https://example.com"/>
+        </div>
+
+        <div v-if="tab==='wifi'" class="fade-in" style="display:flex;flex-direction:column;gap:10px">
+          <div><label class="lbl">📶 ناوی شبکە (SSID)</label><input class="inp" v-model="inputs.ssid" placeholder="My_WiFi"/></div>
+          <div><label class="lbl">🔑 پاسوۆرد</label><input class="inp" v-model="inputs.wpass" :type="showPass?'text':'password'" placeholder="پاسوۆردەکەت"/></div>
+          <div><label class="lbl">🔒 جۆری پاراستن</label>
+            <select class="inp" v-model="inputs.wsec">
+              <option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="">بەبێ پاسوۆرد</option>
+            </select>
+          </div>
+          <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:.78rem;color:var(--muted)">
+            <input type="checkbox" v-model="showPass" style="accent-color:var(--primary)"/> پاسوۆرد نیشانبدە
+          </label>
+        </div>
+
+        <div v-if="tab==='vcard'" class="fade-in" style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div><label class="lbl">👤 ناو</label><input class="inp" v-model="inputs.vcName" placeholder="ناوی تەواو"/></div>
+            <div><label class="lbl">🏢 کۆمپانیا</label><input class="inp" v-model="inputs.vcOrg" placeholder="شرکەت"/></div>
+          </div>
+          <div><label class="lbl">📞 تەلەفۆن</label><input class="inp" v-model="inputs.vcPhone" placeholder="+964 750 000 0000"/></div>
+          <div><label class="lbl">✉️ ئیمەیل</label><input class="inp" v-model="inputs.vcEmail" type="email" placeholder="name@example.com"/></div>
+          <div><label class="lbl">🌐 وێبسایت</label><input class="inp" v-model="inputs.vcWeb" placeholder="https://"/></div>
+          <div><label class="lbl">📍 ناونیشان</label><input class="inp" v-model="inputs.vcAddr" placeholder="شار، وڵات"/></div>
+        </div>
+
+        <div v-if="tab==='maps'" class="fade-in" style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div><label class="lbl">🔢 Latitude</label><input class="inp" v-model="inputs.lat" type="number" step="any" placeholder="36.1901"/></div>
+            <div><label class="lbl">🔢 Longitude</label><input class="inp" v-model="inputs.lng" type="number" step="any" placeholder="44.0091"/></div>
+          </div>
+          <div><label class="lbl">📍 ناوی شوێن</label><input class="inp" v-model="inputs.mapName" placeholder="سلێمانی، عێراق"/></div>
+        </div>
+
+        <div v-if="tab==='email'" class="fade-in" style="display:flex;flex-direction:column;gap:10px">
+          <div><label class="lbl">✉️ بۆ</label><input class="inp" v-model="inputs.eTo" type="email" placeholder="name@example.com"/></div>
+          <div><label class="lbl">📌 بابەت</label><input class="inp" v-model="inputs.eSubj" placeholder="بابەتی ئیمەیل"/></div>
+          <div><label class="lbl">📝 پەیام</label><textarea class="inp" v-model="inputs.eBody" placeholder="ناوەرۆکی ئیمەیل..."></textarea></div>
+        </div>
+
+        <div v-if="tab==='barcode'" class="fade-in" style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:linear-gradient(135deg,rgba(0,180,180,.1),rgba(201,168,76,.07));border:1px solid rgba(0,210,210,.2);border-radius:10px;padding:10px 14px;font-size:.74rem;color:var(--primary);font-weight:600">
+            ✨ تایبەتمەندیی نوێ — بارکۆدی EAN، Code128، UPC و زیاتر
+          </div>
+          <div><label class="lbl">📊 جۆری بارکۆد</label>
+            <select class="inp" v-model="barcodeType">
+              <option value="CODE128">Code 128 — گشتی</option><option value="EAN13">EAN-13 — بازاڕ</option>
+              <option value="EAN8">EAN-8 — بچووک</option><option value="UPC">UPC-A — ئەمریکی</option>
+              <option value="CODE39">Code 39 — پیشەسازی</option><option value="ITF14">ITF-14 — کارتۆن</option>
+              <option value="MSI">MSI — کۆگا</option><option value="pharmacode">Pharmacode — دەرمانخانە</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">🔢 ژمارەی بارکۆد</label>
+            <input class="inp" v-model="barcodeValue" :placeholder="barcodePlaceholder"/>
+            <div style="font-size:.67rem;color:var(--muted);margin-top:4px">{{ barcodeHint }}</div>
+          </div>
+          <div><label class="lbl">✏️ تێکستی ژێرەوە</label><input class="inp" v-model="barcodeLabel" placeholder="ناوی بەرهەم..."/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div><span class="lbl">ڕەنگی هێڵ</span><div style="display:flex;justify-content:center;margin-top:5px"><input type="color" v-model="barcodeLineColor"/></div></div>
+            <div><span class="lbl">باگڕاوند</span><div style="display:flex;justify-content:center;margin-top:5px"><input type="color" v-model="barcodeBgColor"/></div></div>
+          </div>
+          <button class="btn btn-p" style="width:100%;margin-top:4px" @click="generateBarcode">⚡ بارکۆد دروست بکە</button>
+        </div>
+
+        <div v-if="tab==='history'" class="fade-in">
+          <div v-if="history.length===0" style="text-align:center;padding:32px;color:var(--muted)">
+            <div style="font-size:3rem;margin-bottom:10px;opacity:.5">🕐</div>
+            <p style="font-size:.82rem">هیچ مێژوویەک نییە</p>
+          </div>
+          <div v-else style="display:flex;flex-direction:column;gap:7px;max-height:380px;overflow-y:auto;padding-left:2px">
+            <div class="hist-item" v-for="(h,i) in history" :key="i" @click="loadHistory(h)">
+              <img :src="h.url" style="width:44px;height:44px;border-radius:8px;flex-shrink:0;background:#fff"/>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:.68rem;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:.5px">{{ h.type }}</div>
+                <div style="font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">{{ h.label }}</div>
+                <div style="font-size:.66rem;color:var(--muted)">{{ h.date }}</div>
+              </div>
+              <button class="btn btn-danger" @click.stop="removeHistory(i)">🗑️</button>
+            </div>
+            <button class="btn" style="background:rgba(255,107,138,.1);color:var(--danger);border:1px solid rgba(255,107,138,.2);padding:8px;font-size:.74rem;margin-top:5px" @click="clearHistory">🗑️ هەموو بسڕەوە</button>
+          </div>
+        </div>
+
+        <div v-if="tab==='scan'" class="fade-in" style="text-align:center;padding:6px 0">
+          <div style="font-size:3.2rem;margin-bottom:12px">📷</div>
+          <p style="color:var(--muted);font-size:.8rem;margin-bottom:16px;line-height:1.7">jsQR — خوێندنەوەی ڕاستەقینەی QR کۆد<br/>لە کامێرا و وێنەکان</p>
+          <button class="btn btn-p" style="width:100%;margin-bottom:10px" @click="startScan">📷 کامێرا بکەرەوە — خودکار دەخوێنێتەوە</button>
+          <div class="divider"><span>یان</span></div>
+          <label style="display:block;cursor:pointer;margin-top:10px">
+            <div class="btn btn-c" style="width:100%">🖼️ وێنەی QR ئەپلۆد بکە</div>
+            <input type="file" accept="image/*" style="display:none" @change="scanFromFile"/>
+          </label>
+          <div v-if="scanResult" class="scan-success" style="margin-top:16px;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.3);border-radius:12px;padding:14px">
+            <div style="font-size:.68rem;color:var(--success);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">✅ دۆزرایەوە</div>
+            <div style="font-size:.82rem;word-break:break-all;color:var(--text);line-height:1.5">{{ scanResult }}</div>
+            <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;justify-content:center">
+              <button class="btn btn-sm btn-g" @click="copyScanResult">📋 کۆپی</button>
+              <button class="btn btn-sm btn-c" v-if="isUrl(scanResult)" @click="openScanResult">🔗 بکرەوە</button>
+              <button class="btn btn-sm btn-gold" @click="shareResult">📤 بەشکردن</button>
+            </div>
+          </div>
+          <div v-if="scanError" style="margin-top:14px;background:rgba(255,107,138,.08);border:1px solid rgba(255,107,138,.25);border-radius:12px;padding:12px">
+            <div style="font-size:.8rem;color:var(--danger)">{{ scanError }}</div>
+          </div>
+        </div>
+
+        <!-- DESIGN CONTROLS -->
+        <div v-if="!['history','scan','barcode'].includes(tab)" style="margin-top:18px">
+          <div class="glass-card" style="padding:16px;display:flex;flex-direction:column;gap:14px">
+            <div>
+              <label class="lbl">🖼️ لۆگۆ ناوەڕاست (ئەختیاری)</label>
+              <div style="display:flex;align-items:center;gap:8px">
+                <label style="cursor:pointer;flex:1">
+                  <div class="btn btn-sm btn-c" style="width:100%">{{ logoDataUrl?'✅ لۆگۆ هەیە':'⬆️ لۆگۆ ئەپلۆد بکە' }}</div>
+                  <input type="file" accept="image/*" style="display:none" @change="uploadLogo"/>
+                </label>
+                <button v-if="logoDataUrl" class="btn btn-danger" @click="logoDataUrl=''">✕</button>
+              </div>
+            </div>
+            <div>
+              <label class="lbl">✏️ تێکستی ژێرەوە</label>
+              <input class="inp" v-model="caption" placeholder="مەسەلەن: اسکان بکە!"/>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                  <span class="lbl" style="margin:0">📏 قەبارە</span>
+                  <span style="font-size:.74rem;font-weight:800;color:var(--primary)">{{ size }}px</span>
+                </div>
+                <input type="range" v-model.number="size" min="150" max="400"/>
+              </div>
+              <div>
+                <label class="lbl">🖼️ چوارچێوە</label>
+                <select class="inp" v-model="frameType" style="padding:8px 10px;font-size:.78rem">
+                  <option value="none">بەبێ</option><option value="modern">مۆدێرن</option>
+                  <option value="elegant">جوان</option><option value="classic">کلاسیک</option>
+                  <option value="rounded">خولاوی</option><option value="shadow">سێبەر</option>
+                  <option value="neon">نیۆن</option><option value="gradient">ڕەنگاوڕەنگ</option>
+                  <option value="gold">زێڕین</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:center">
+              <div><span class="lbl">ڕەنگی QR</span><div style="display:flex;justify-content:center;margin-top:5px"><input type="color" v-model="darkColor"/></div></div>
+              <div><span class="lbl">باگڕاوند</span><div style="display:flex;justify-content:center;margin-top:5px"><input type="color" v-model="lightColor"/></div></div>
+            </div>
+            <div>
+              <label class="lbl">🛡️ ئاستی پاراستن</label>
+              <select class="inp" v-model="ecc" style="padding:8px 10px;font-size:.78rem">
+                <option value="L">L — سادە</option><option value="M">M — ناوەند</option>
+                <option value="Q">Q — باش</option><option value="H">H — زۆر باش (بۆ لۆگۆ)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-p" style="width:100%;margin-top:14px;padding:14px" :disabled="loading" @click="generateQR">
+            <span v-if="loading" style="display:flex;align-items:center;gap:8px">
+              <span class="spinner" style="width:18px;height:18px;border-width:2px"></span>دروستکردن...
+            </span>
+            <span v-else>⚡ QR کۆد دروست بکە</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div style="padding:22px;display:flex;flex-direction:column;gap:14px" v-if="showRight">
+
+        <!-- Barcode preview -->
+        <div v-if="tab==='barcode'">
+          <div v-if="!barcodeReady" class="qr-stage" style="min-height:180px">
+            <div class="qr-inner" style="min-height:174px">
+              <div style="text-align:center;color:rgba(0,212,212,.25);padding:16px">
+                <div style="font-size:3.2rem;margin-bottom:10px">📊</div>
+                <p style="font-size:.8rem">بارکۆدەکەت لێرە دەردەکەوێت</p>
+              </div>
+            </div>
+          </div>
+          <div v-if="barcodeReady" class="float-in glass-card" style="padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px">
+            <div id="barcode-canvas-wrap" style="background:#fff;padding:16px;border-radius:12px;width:100%;display:flex;justify-content:center"></div>
+            <div v-if="barcodeLabel" style="font-size:.82rem;font-weight:700;color:var(--muted)">{{ barcodeLabel }}</div>
+          </div>
+          <div v-if="barcodeReady" class="float-in" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+            <button class="btn btn-g" @click="downloadBarcodePNG">📥 PNG داگرتن</button>
+            <button class="btn btn-r" @click="downloadBarcodeSVG">📄 SVG داگرتن</button>
+            <button class="btn btn-gold" style="grid-column:1/-1" @click="shareBarcode">📤 بەشکردن</button>
+          </div>
+        </div>
+
+        <!-- QR Stage -->
+        <div v-if="tab!=='barcode'" class="qr-stage">
+          <div class="qr-inner">
+            <div v-if="!qrUrl && !loading && !error" style="text-align:center;color:rgba(0,212,212,.25);padding:18px">
+              <div style="font-size:3.8rem;margin-bottom:10px">📱</div>
+              <p style="font-size:.8rem;color:var(--muted)">QR کۆدەکەت لێرە دەردەکەوێت</p>
+            </div>
+            <div v-if="loading" style="text-align:center">
+              <div class="spinner" style="margin:0 auto 12px"></div>
+              <p style="font-size:.8rem;font-weight:700;color:var(--primary)">چاوەڕێ بکە...</p>
+            </div>
+            <div v-if="error && !loading" style="text-align:center;padding:18px">
+              <div style="font-size:2.8rem;margin-bottom:8px">⚠️</div>
+              <p style="color:var(--danger);font-size:.8rem;font-weight:600;line-height:1.6">هەڵەیەک ڕوویدا!<br/>ئینتەرنێتەکەت پشکنین بکە</p>
+            </div>
+            <div v-if="qrUrl && !loading" class="float-in" style="display:flex;flex-direction:column;align-items:center;gap:10px">
+              <div :class="'fr-'+frameType" style="position:relative;display:inline-block">
+                <img :src="qrUrl" :width="size" :height="size" style="display:block;max-width:100%;height:auto" alt="QR"/>
+                <div v-if="logoDataUrl" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:8px;padding:4px;box-shadow:0 3px 12px rgba(0,0,0,.35)">
+                  <img :src="logoDataUrl" style="width:40px;height:40px;object-fit:contain;border-radius:5px;display:block"/>
+                </div>
+              </div>
+              <div v-if="caption" style="font-size:.8rem;font-weight:700;color:var(--gold);letter-spacing:.6px">{{ caption }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR Buttons -->
+        <div v-if="qrUrl && !loading && tab!=='barcode'" class="float-in" style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="btn btn-g" @click="downloadPNG">📥 PNG داگرتن</button>
+            <button class="btn btn-r" @click="downloadSVG">📄 SVG داگرتن</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="btn btn-c" @click="downloadHD">🔥 HD (600px)</button>
+            <button class="btn btn-gold" @click="shareQR">📤 بەشکردن</button>
+          </div>
+          <button class="btn btn-c" style="width:100%" @click="copyLink">🔗 لینکی QR کۆپی بکە</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="glass2" style="border-radius:12px;padding:12px 16px;text-align:center;font-size:.68rem;color:var(--muted);margin-top:auto">
+          <span style="color:var(--gold)">✦</span>
+          دروست کراوە لەلایەن
+          <a href="https://www.facebook.com/share/1ZoYU1DAhS/?mibextid=wwXIfr" target="_blank"
+             style="color:var(--primary);text-decoration:none;font-weight:800;margin:0 4px">MAHMOOD FAQE</a>
+          <span style="color:var(--gold)">✦</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCAN MODAL -->
+  <div class="modal-ov" v-if="showScanModal" @click.self="closeScan">
+    <div class="modal-bx">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div>
+          <h3 style="font-weight:800;font-size:.95rem;color:var(--primary)">📷 خوێندنەوەی QR</h3>
+          <p style="font-size:.66rem;color:var(--muted);margin-top:2px">QR کۆدەکە ناو چوارگۆشەکەدا بگرە</p>
+        </div>
+        <button class="btn btn-danger" @click="closeScan">✕ داخستن</button>
+      </div>
+      <div style="position:relative;border-radius:14px;overflow:hidden;background:#000;border:1px solid var(--border2)">
+        <video ref="videoEl" style="width:100%;display:block;border-radius:14px" autoplay playsinline></video>
+        <div class="scan-line"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:170px;height:170px;pointer-events:none">
+          <div style="position:absolute;top:0;right:0;width:30px;height:30px;border-top:2.5px solid var(--primary);border-right:2.5px solid var(--primary);border-radius:0 8px 0 0"></div>
+          <div style="position:absolute;top:0;left:0;width:30px;height:30px;border-top:2.5px solid var(--primary);border-left:2.5px solid var(--primary);border-radius:8px 0 0 0"></div>
+          <div style="position:absolute;bottom:0;right:0;width:30px;height:30px;border-bottom:2.5px solid var(--primary);border-right:2.5px solid var(--primary);border-radius:0 0 8px 0"></div>
+          <div style="position:absolute;bottom:0;left:0;width:30px;height:30px;border-bottom:2.5px solid var(--primary);border-left:2.5px solid var(--primary);border-radius:0 0 0 8px"></div>
+        </div>
+      </div>
+      <canvas ref="scanCanvas" style="display:none"></canvas>
+      <div v-if="liveResult" style="margin-top:12px;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.35);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:.68rem;color:var(--success);font-weight:800;margin-bottom:4px">✅ دۆزرایەوە!</div>
+        <div style="font-size:.82rem;word-break:break-all;color:var(--text)">{{ liveResult }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+const {createApp,ref,reactive,computed,watch,onMounted,onUnmounted,nextTick}=Vue;
+createApp({
+  setup(){
+    const tab=ref('text'),isWide=ref(window.innerWidth>=768),lightTheme=ref(false);
+    const loading=ref(false),error=ref(false),qrUrl=ref('');
+    const videoEl=ref(null),scanCanvas=ref(null),showScanModal=ref(false);
+    const scanResult=ref(''),scanError=ref(''),liveResult=ref('');
+    const caption=ref(''),logoDataUrl=ref(''),showPass=ref(false);
+    const size=ref(220),frameType=ref('modern'),darkColor=ref('#000000'),lightColor=ref('#ffffff'),ecc=ref('M');
+    const history=ref([]);
+    const barcodeType=ref('CODE128'),barcodeValue=ref(''),barcodeLabel=ref('');
+    const barcodeLineColor=ref('#000000'),barcodeBgColor=ref('#ffffff'),barcodeReady=ref(false);
+    let mediaStream=null,debTimer=null,lastBuilt='',scanRAF=null;
+    const inputs=reactive({text:'',url:'',ssid:'',wpass:'',wsec:'WPA',vcName:'',vcOrg:'',vcPhone:'',vcEmail:'',vcWeb:'',vcAddr:'',lat:'',lng:'',mapName:'',eTo:'',eSubj:'',eBody:''});
+
+    const barcodePlaceholder=computed(()=>({EAN13:'1234567890128',EAN8:'12345670',UPC:'012345678905',CODE39:'HELLO-123',ITF14:'12345678901231',pharmacode:'1234'})[barcodeType.value]||'ABC-123456');
+    const barcodeHint=computed(()=>({EAN13:'13 ژمارە پێویستە',EAN8:'8 ژمارە پێویستە',UPC:'12 ژمارە پێویستە',CODE39:'پیت و ژمارە و - . * $ / + %',ITF14:'14 ژمارە پێویستە',pharmacode:'1 — 131070'})[barcodeType.value]||'هەر تێکستێک یان ژمارەیەک');
+    const showRight=computed(()=>isWide.value||!['history','scan'].includes(tab.value));
+
+    function onResize(){isWide.value=window.innerWidth>=768}
+    onMounted(()=>{window.addEventListener('resize',onResize);loadHist()});
+    onUnmounted(()=>{window.removeEventListener('resize',onResize);stopScanLoop()});
+    function toggleTheme(){lightTheme.value=!lightTheme.value;document.body.classList.toggle('light',lightTheme.value)}
+
+    function buildData(){
+      switch(tab.value){
+        case 'text':return inputs.text.trim();
+        case 'url':return inputs.url.trim();
+        case 'wifi':return `WIFI:T:${inputs.wsec};S:${inputs.ssid};P:${inputs.wpass};;`;
+        case 'vcard':return ['BEGIN:VCARD','VERSION:3.0',inputs.vcName?`FN:${inputs.vcName}`:'',inputs.vcOrg?`ORG:${inputs.vcOrg}`:'',inputs.vcPhone?`TEL:${inputs.vcPhone}`:'',inputs.vcEmail?`EMAIL:${inputs.vcEmail}`:'',inputs.vcWeb?`URL:${inputs.vcWeb}`:'',inputs.vcAddr?`ADR:;;${inputs.vcAddr};;;;`:'','END:VCARD'].filter(Boolean).join('\n');
+        case 'maps':if(!inputs.lat||!inputs.lng)return '';return `https://maps.google.com/?q=${inputs.lat},${inputs.lng}${inputs.mapName?'&query='+encodeURIComponent(inputs.mapName):''}`;
+        case 'email':{if(!inputs.eTo)return '';let s=`mailto:${inputs.eTo}`;const p=[];if(inputs.eSubj)p.push('subject='+encodeURIComponent(inputs.eSubj));if(inputs.eBody)p.push('body='+encodeURIComponent(inputs.eBody));if(p.length)s+='?'+p.join('&');return s;}
+        default:return '';
+      }
+    }
+    function getAPIs(data,px){const s=Math.min(px||size.value,600),dc=darkColor.value.replace('#',''),lc=lightColor.value.replace('#',''),enc=encodeURIComponent(data);return[`https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${enc}&color=${dc}&bgcolor=${lc}&format=png&ecc=${ecc.value}`,`https://quickchart.io/qr?text=${enc}&size=${s}&dark=${dc}&light=${lc}&ecLevel=${ecc.value}&format=png`];}
+    function tryLoad(urls,idx,data,hd){if(idx>=urls.length){if(hd){hd(null);return;}loading.value=false;error.value=true;return;}const img=new Image();img.crossOrigin='anonymous';const to=setTimeout(()=>img.onerror(),9000);img.onload=()=>{clearTimeout(to);if(hd){hd(urls[idx]);return;}qrUrl.value=urls[idx];loading.value=false;error.value=false;saveHist(data,urls[idx]);};img.onerror=()=>{clearTimeout(to);tryLoad(urls,idx+1,data,hd)};img.src=urls[idx];}
+    function generateQR(){const data=buildData();if(!data){toast('⚠️ زانیاری بنووسە!');return;}lastBuilt=data;loading.value=true;error.value=false;qrUrl.value='';tryLoad(getAPIs(data),0,data,null);}
+    function schedRegen(){if(!qrUrl.value&&!loading.value)return;clearTimeout(debTimer);debTimer=setTimeout(generateQR,700);}
+    watch([size,darkColor,lightColor,frameType,ecc],schedRegen);
+
+    async function getImageAsCanvas(url,px){return new Promise((res,rej)=>{const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{const c=document.createElement('canvas');c.width=px;c.height=px;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,px,px);if(logoDataUrl.value){const l=new Image();l.onload=()=>{const ls=px*.2,lx=(px-ls)/2,ly=(px-ls)/2,r=ls*.15;ctx.fillStyle='#fff';ctx.beginPath();ctx.roundRect(lx-4,ly-4,ls+8,ls+8,r+2);ctx.fill();ctx.drawImage(l,lx,ly,ls,ls);res(c);};l.onerror=()=>res(c);l.src=logoDataUrl.value;}else res(c);};img.onerror=rej;img.src=url;});}
+
+    async function downloadPNG(){if(!qrUrl.value)return;try{const c=await getImageAsCanvas(qrUrl.value,size.value);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`qr-${tab.value}-${Date.now()}.png`;a.click();URL.revokeObjectURL(a.href);toast('✅ PNG داگیرا!');},'image/png');}catch{const a=document.createElement('a');a.href=qrUrl.value;a.download=`qr-${tab.value}-${Date.now()}.png`;a.target='_blank';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('✅ PNG داگیرا!');}}
+    async function downloadHD(){if(!qrUrl.value)return;toast('🔄 HD دروست دەکرێت...');const data=lastBuilt||buildData();if(!data)return;const hdUrl=await new Promise(r=>tryLoad(getAPIs(data,600),0,data,r));if(!hdUrl){toast('❌ HD نەکرایەوە');return;}try{const c=await getImageAsCanvas(hdUrl,600);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`qr-hd-${tab.value}-${Date.now()}.png`;a.click();URL.revokeObjectURL(a.href);toast('✅ HD داگیرا (600px)!');},'image/png');}catch{toast('❌ هەڵەیەک ڕوویدا');}}
+    function downloadSVG(){const data=lastBuilt||buildData();if(!data)return;const s=Math.min(size.value,300),dc=darkColor.value.replace('#',''),lc=lightColor.value.replace('#','');const a=document.createElement('a');a.href=`https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(data)}&color=${dc}&bgcolor=${lc}&format=svg`;a.download=`qr-${tab.value}-${Date.now()}.svg`;a.target='_blank';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('✅ SVG داگیرا!');}
+    async function copyLink(){if(!qrUrl.value)return;try{await navigator.clipboard.writeText(qrUrl.value);toast('✅ لینک کۆپی کرا!');}catch{toast('❌ کۆپی نەکرا');}}
+    async function shareQR(){if(!qrUrl.value)return;const data=lastBuilt||buildData();if(navigator.share){try{const c=await getImageAsCanvas(qrUrl.value,size.value);c.toBlob(async b=>{const file=new File([b],`qr-${tab.value}.png`,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'QR Studio',text:data,files:[file]});}else await navigator.share({title:'QR Studio',text:data,url:qrUrl.value});toast('✅ بەشکرا!');},'image/png');}catch(e){if(e.name!=='AbortError')toast('❌ بەشکردن نەکرا');}}else{await copyLink();}}
+
+    function generateBarcode(){if(!barcodeValue.value.trim()){toast('⚠️ ژمارەی بارکۆد بنووسە!');return;}const wrap=document.getElementById('barcode-canvas-wrap');if(!wrap)return;wrap.innerHTML='<svg id="barcode-svg"></svg>';try{JsBarcode('#barcode-svg',barcodeValue.value.trim(),{format:barcodeType.value,lineColor:barcodeLineColor.value,background:barcodeBgColor.value,width:2,height:80,displayValue:true,fontSize:14,margin:12,text:barcodeLabel.value||undefined});barcodeReady.value=true;toast('✅ بارکۆد دروست کرا!');}catch(e){toast('❌ هەڵە: '+e.message.slice(0,40));barcodeReady.value=false;}}
+    function downloadBarcodePNG(){const svg=document.getElementById('barcode-svg');if(!svg)return;const data=new XMLSerializer().serializeToString(svg);const img=new Image();const blob=new Blob([data],{type:'image/svg+xml'});const url=URL.createObjectURL(blob);img.onload=()=>{const c=document.createElement('canvas');c.width=svg.width.baseVal.value||400;c.height=svg.height.baseVal.value||120;const ctx=c.getContext('2d');ctx.fillStyle=barcodeBgColor.value;ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0);URL.revokeObjectURL(url);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`barcode-${barcodeType.value}-${Date.now()}.png`;a.click();toast('✅ PNG داگیرا!');},'image/png');};img.src=url;}
+    function downloadBarcodeSVG(){const svg=document.getElementById('barcode-svg');if(!svg)return;const data=new XMLSerializer().serializeToString(svg);const blob=new Blob([data],{type:'image/svg+xml'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`barcode-${barcodeType.value}-${Date.now()}.svg`;a.click();toast('✅ SVG داگیرا!');}
+    async function shareBarcode(){const svg=document.getElementById('barcode-svg');if(!svg){toast('⚠️ بارکۆد دروست بکە');return;}const data=new XMLSerializer().serializeToString(svg);const img=new Image();const blob=new Blob([data],{type:'image/svg+xml'});const url=URL.createObjectURL(blob);img.onload=async()=>{const c=document.createElement('canvas');c.width=svg.width.baseVal.value||400;c.height=svg.height.baseVal.value||120;const ctx=c.getContext('2d');ctx.fillStyle=barcodeBgColor.value;ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0);URL.revokeObjectURL(url);c.toBlob(async b=>{const file=new File([b],'barcode.png',{type:'image/png'});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({title:'بارکۆد',files:[file]});toast('✅ بەشکرا!');}catch(e){if(e.name!=='AbortError')toast('❌ نەکرا');}}else{await navigator.clipboard.writeText(barcodeValue.value);toast('📋 ژمارەی بارکۆد کۆپی کرا');}},'image/png');};img.src=url;}
+
+    async function startScan(){scanResult.value='';scanError.value='';liveResult.value='';showScanModal.value=true;await nextTick();try{mediaStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});if(videoEl.value){videoEl.value.srcObject=mediaStream;videoEl.value.onloadedmetadata=()=>{videoEl.value.play();startScanLoop()};}}catch(e){toast('❌ کامێرا نەکرایەوە: '+e.message);showScanModal.value=false;}}
+    function startScanLoop(){const canvas=scanCanvas.value,video=videoEl.value;if(!canvas||!video)return;function tick(){if(!showScanModal.value)return;if(video.readyState===video.HAVE_ENOUGH_DATA){canvas.height=video.videoHeight;canvas.width=video.videoWidth;const ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,canvas.width,canvas.height);const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);const code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});if(code){liveResult.value=code.data;setTimeout(()=>{scanResult.value=code.data;closeScan();toast('✅ QR کۆد دۆزرایەوە!');},1200);return;}}scanRAF=requestAnimationFrame(tick);}scanRAF=requestAnimationFrame(tick);}
+    function stopScanLoop(){if(scanRAF){cancelAnimationFrame(scanRAF);scanRAF=null;}}
+    function closeScan(){stopScanLoop();if(mediaStream){mediaStream.getTracks().forEach(t=>t.stop());mediaStream=null;}showScanModal.value=false;}
+    function scanFromFile(e){const f=e.target.files[0];if(!f)return;scanResult.value='';scanError.value='';const img=new Image();const url=URL.createObjectURL(f);img.onload=()=>{const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);URL.revokeObjectURL(url);const imageData=ctx.getImageData(0,0,c.width,c.height);const code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'attemptBoth'});if(code){scanResult.value=code.data;toast('✅ QR کۆد دۆزرایەوە!');}else scanError.value='❌ هیچ QR کۆدێک لە وێنەکەدا نەدۆزرایەوە. وێنەیەکی ڕوونتر تاقی بکەرەوە.';};img.onerror=()=>{scanError.value='❌ وێنەکە نەکرایەوە.';URL.revokeObjectURL(url);};img.src=url;e.target.value='';}
+    function isUrl(s){try{new URL(s);return true;}catch{return false;}}
+    function openScanResult(){if(scanResult.value)window.open(scanResult.value,'_blank');}
+    async function copyScanResult(){try{await navigator.clipboard.writeText(scanResult.value);toast('✅ کۆپی کرا!');}catch{toast('❌ کۆپی نەکرا');}}
+    async function shareResult(){if(!scanResult.value)return;if(navigator.share){try{await navigator.share({title:'QR Studio',text:scanResult.value});toast('✅ بەشکرا!');}catch(e){if(e.name!=='AbortError')await copyScanResult();}}else await copyScanResult();}
+
+    function saveHist(data,url){const lbls={text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'کارت',maps:'نەخشە',email:'ئیمەیل'};history.value.unshift({type:lbls[tab.value]||tab.value,label:data.length>50?data.slice(0,50)+'...':data,url,date:new Date().toLocaleDateString('ku')});if(history.value.length>20)history.value.pop();localStorage.setItem('qr_h',JSON.stringify(history.value));}
+    function loadHist(){try{const s=localStorage.getItem('qr_h');if(s)history.value=JSON.parse(s);}catch{}}
+    function loadHistory(h){qrUrl.value=h.url;toast('✅ لە مێژوو بارکرا');}
+    function removeHistory(i){history.value.splice(i,1);localStorage.setItem('qr_h',JSON.stringify(history.value));}
+    function clearHistory(){history.value=[];localStorage.removeItem('qr_h');}
+    function uploadLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{logoDataUrl.value=ev.target.result};r.readAsDataURL(f);}
+    function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
+
+    return {tab,isWide,lightTheme,toggleTheme,showRight,loading,error,qrUrl,inputs,size,frameType,darkColor,lightColor,ecc,caption,logoDataUrl,showPass,history,loadHistory,removeHistory,clearHistory,showScanModal,scanResult,scanError,liveResult,videoEl,scanCanvas,barcodeType,barcodeValue,barcodeLabel,barcodeLineColor,barcodeBgColor,barcodeReady,barcodePlaceholder,barcodeHint,generateQR,downloadPNG,downloadSVG,downloadHD,copyLink,shareQR,uploadLogo,startScan,closeScan,scanFromFile,copyScanResult,shareResult,isUrl,openScanResult,generateBarcode,downloadBarcodePNG,downloadBarcodeSVG,shareBarcode};
+  }
+}).mount('#app');
+</script>
+</body>
+</html>  background:
     radial-gradient(ellipse 800px 600px at 20% 30%,rgba(99,102,241,.08) 0%,transparent 50%),
     radial-gradient(ellipse 600px 500px at 80% 70%,rgba(236,72,153,.06) 0%,transparent 50%);
   pointer-events:none;
