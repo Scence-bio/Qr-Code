@@ -956,10 +956,7 @@ createApp({
       window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; pwaReady.value=true; });
       window.addEventListener('appinstalled', ()=>{ pwaInstalled.value=true; pwaReady.value=false; });
       
-      // Automatically request location permission on load
-      setTimeout(() => {
-        getLocation();
-      }, 1000);
+
     });
     onUnmounted(()=>{ window.removeEventListener('keydown',handleKey); closeScan(); });
 
