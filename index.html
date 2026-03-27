@@ -1237,13 +1237,31 @@ createApp({
     function clearHistory(){ history.value = []; try{localStorage.removeItem('qr_h2');}catch{} }
 
     function getLocation(){
-      if(!navigator.geolocation){ showToast('❌ GPS بەردەست نییە'); return; }
-      navigator.geolocation.getCurrentPosition(p=>{
-        inputs.lat = p.coords.latitude.toFixed(6);
-        inputs.lng = p.coords.longitude.toFixed(6);
-        showToast('✅ شوێن دۆزرایەوە');
-      }, ()=>showToast('❌ شوێن نەدۆزرایەوە'));
+    if(!navigator.geolocation){ 
+    showToast('❌ GPS بەردەست نییە'); 
+    return; 
     }
+  
+  // زیادکردنی ڕێکخستن بۆ وردی زیاتر و کاتی چاوەڕوانی
+    const options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
+  };
+
+    navigator.geolocation.getCurrentPosition(p => {
+    inputs.lat = p.coords.latitude.toFixed(6);
+    inputs.lng = p.coords.longitude.toFixed(6);
+    showToast('✅ شوێن دۆزرایەوە');
+  }, (err) => {
+    // پیشاندانی جۆری هەڵەکە بۆ ئەوەی بزانیت کێشەکە چییە
+    let msg = '❌ شوێن نەدۆزرایەوە';
+    if(err.code === 1) msg = '❌ تکایە مۆڵەتی شوێن بدە بە وێبگەڕەکە';
+    else if(err.code === 3) msg = '❌ کاتی چاوەڕوانی تەواو بوو';
+    showToast(msg);
+  }, options);
+}
+
 
     // ── jsQR SCAN ──
     async function startScan(){
