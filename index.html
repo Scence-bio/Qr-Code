@@ -666,7 +666,7 @@
           </button>
           <button 
             :class="['tab', { on: tab === 'scan' }]" 
-            @click="openScanner" 
+            @click="tab = 'scan'" 
             style="color: var(--accent)"
             title="QR سکان بکە">
             🔍 سکان
@@ -752,7 +752,7 @@
                 <input class="inp" v-model="inputs.lng" placeholder="44.0091" />
               </div>
             </div>
-            <button class="btn btn-ghost" @click="getLocation" style="width: 100%">📍 شوێنی ئێستام</button>
+            <button class="btn btn-ghost" @click="getLocation" style="width: 100%; margin-bottom: 8px">📍 شوێنی ئێستام</button>
           </div>
 
           <div v-if="tab === 'email'" style="display: grid; gap: 8px">
@@ -784,6 +784,14 @@
           <div v-if="tab === 'phone'">
             <label class="lbl">☎️ ژمارەی تەلەفۆن</label>
             <input class="inp" v-model="inputs.phone" placeholder="+964..." />
+          </div>
+
+          <!-- Scanner Section -->
+          <div v-if="tab === 'scan'">
+            <div style="text-align: center; padding: 20px">
+              <p style="font-size: 0.8rem; margin-bottom: 12px; color: var(--muted)">کامێرا بەکاربهێنە بۆ خوێندنەوەی QR کۆد</p>
+              <button class="btn btn-p" @click="openScanner" style="width: 100%">📷 سکانەر دەستپێ بکە</button>
+            </div>
           </div>
 
           <!-- History Section -->
@@ -883,14 +891,23 @@
         <button class="close-btn" @click="closeScanner">✕</button>
       </div>
       <div class="modal-body">
-        <video 
-          id="scanner-video" 
-          ref="scannerVideo"
-          playsinline
-          style="width: 100%; border-radius: 12px; background: #000">
-        </video>
+        <div style="position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden">
+          <video 
+            id="scanner-video" 
+            ref="scannerVideo"
+            playsinline
+            autoplay
+            style="width: 100%; display: block; border-radius: 12px; background: #000">
+          </video>
+          <div v-if="!scannerActive" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7)">
+            <div style="text-align: center; color: #fff">
+              <p style="margin-bottom: 12px">⏳ کامێرا دەستپێدەکات...</p>
+              <div class="spin" style="margin: 0 auto"></div>
+            </div>
+          </div>
+        </div>
         <p style="text-align: center; margin-top: 12px; font-size: 0.75rem; color: var(--muted)">
-          کامێرا بۆ QR کۆد ئاماده بکە
+          QR کۆد ڕوو بە کامێرا بکە
         </p>
       </div>
     </div>
@@ -919,6 +936,7 @@
         const ecc = ref('M');
         const history = ref([]);
         const scannerVideo = ref(null);
+        const scannerActive = ref(false);
         let scannerInterval = null;
 
         // ============ Input Fields ============
@@ -1141,7 +1159,7 @@
 
         async function openScanner() {
           showScanner.value = true;
-          tab.value = 'scan';
+          scannerActive.value = false;
           
           await nextTick();
           
@@ -1162,6 +1180,7 @@
               
               // Ensure video plays
               scannerVideo.value.onloadedmetadata = () => {
+                scannerActive.value = true;
                 scannerVideo.value.play().catch(err => {
                   console.error('Play error:', err);
                   showToast('❌ ڤیدیۆ پلەی نەکرد');
@@ -1221,6 +1240,7 @@
 
         function closeScanner() {
           showScanner.value = false;
+          scannerActive.value = false;
           if (scannerInterval) {
             clearInterval(scannerInterval);
             scannerInterval = null;
@@ -1304,7 +1324,8 @@
           showScanner,
           openScanner,
           closeScanner,
-          scannerVideo
+          scannerVideo,
+          scannerActive
         };
       }
     }).mount('#app');
