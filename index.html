@@ -480,8 +480,8 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
     <div class="shortcuts-content glass">
       <h3 style="margin-bottom:15px;text-align:center">⌨️ کورتکراوەکانی تەختەکلیل</h3>
       <div v-for="(v,k) in shortcuts" :key="k" class="shortcut-row">
-        <span style="font-size:.8rem">{{ v }}</span>
-        <span class="shortcut-key">{{ k }}</span>
+        <span style="font-size:.8rem">{{ v.desc }}</span>
+        <span class="shortcut-key">{{ v.key }}</span>
       </div>
       <button class="btn btn-p" style="width:100%;margin-top:20px" @click="showShortcuts=false">تێگەیشتم</button>
     </div>
@@ -594,26 +594,35 @@ createApp({
       {id:'forest',name:'دار',dark:'#14532d',light:'#f0fdf4'},
       {id:'fire',name:'ئاگر',dark:'#7f1d1d',light:'#fff7ed'},
       {id:'night',name:'شەو',dark:'#1e1b4b',light:'#eef2ff'},
-      {id:'gold',name:'ئاڵتون',dark:'#78350f',light:'#fef3c7'},
-      {id:'cyber',name:'سایبەر',dark:'#0f172a',light:'#38bdf8'}
+      {id:'gold',name:'زێڕ',dark:'#78350f',light:'#fffbeb'},
+      {id:'rose',name:'گوڵ',dark:'#881337',light:'#fff1f2'},
+      {id:'cyber',name:'سایبەر',dark:'#7c3aed',light:'#06b6d4'},
+      {id:'mono',name:'خۆیی',dark:'#374151',light:'#f9fafb'},
     ];
 
     const templates = [
-      {id:'t1',icon:'🔗',name:'لینکی بایۆ',tab:'url',data:{url:'https://linktr.ee/user'},caption:'بەستەرەکانم'},
-      {id:'t2',icon:'📶',name:'وایفای میوان',tab:'wifi',data:{ssid:'Guest_WiFi',wpass:'welcome123',wsec:'WPA'},caption:'پەیوەندی بکە'},
-      {id:'t3',icon:'🏢',name:'کارتی بازرگانی',tab:'vcard',data:{vcName:'کۆمپانیای نمونە',vcPhone:'+964 750 000 0000',vcOrg:'تەکنەلۆژیا'},caption:'پەیوەندیمان پێوە بکەن'},
+      {id:'biz',icon:'🏢',name:'بیزنس',tab:'url',data:{url:'https://yourwebsite.com'},caption:'وێبسایتمان سەردان بکە'},
+      {id:'wifi_home',icon:'📶',name:'WiFi ماڵ',tab:'wifi',data:{ssid:'HomeWiFi',wsec:'WPA'},caption:'بەخێربێی! WiFiمان بەکاربهێنە'},
+      {id:'contact',icon:'👤',name:'پەیوەندی',tab:'vcard',data:{vcName:'ناوت',vcPhone:'+964'},caption:'زانیاریم پارێزگاری بکە'},
+      {id:'restaurant',icon:'🍽️',name:'رستۆران',tab:'url',data:{url:'https://menu.restaurant.com'},caption:'مینیۆی ئێمە ببینە'},
+      {id:'event',icon:'🎉',name:'ئیڤێنت',tab:'url',data:{url:'https://event.com'},caption:'تۆمار بکە!'},
+      {id:'social',icon:'📱',name:'سۆشیال',tab:'url',data:{url:'https://linktr.ee/'},caption:'لینکەکانم ببینە'},
       {id:'location',icon:'📍',name:'شوێن',tab:'maps',data:{lat:'36.1901',lng:'44.0091',mapName:'سلێمانی'},caption:'شوێنمان بدۆزەرەوە'},
-      {id:'t5',icon:'💰',name:'پارەدان',tab:'url',data:{url:'https://paypal.me/user'},caption:'بۆ پارەدان سکان بکە'},
-      {id:'t6',icon:'💬',name:'وەتسئەپ',tab:'url',data:{url:'https://wa.me/9647500000000'},caption:'چاتمان لەگەڵ بکە'}
+      {id:'email_tpl',icon:'✉️',name:'ئیمەیل',tab:'email',data:{eTo:'info@company.com',eSubj:'پرسیار'},caption:'ئیمەیلمان بنێرە'},
     ];
 
-    const shortcuts = {
-      '1-8': 'گۆڕینی تابەکان',
-      'G': 'دروستکردنی QR',
-      'T': 'گۆڕینی تێم',
-      'S': 'سکانکردن',
-      'H': 'مێژوو'
-    };
+    const shortcuts = [
+      {key:'G',desc:'QR دروست بکە'},
+      {key:'1-8',desc:'تابەکان گۆڕین'},
+      {key:'T',desc:'تیم گۆڕین'},
+      {key:'H',desc:'مێژوو'},
+      {key:'S',desc:'خوێندنەوە'},
+    ];
+
+    function toggleTheme(){
+      lightTheme.value = !lightTheme.value;
+      document.body.classList.toggle('light', lightTheme.value);
+    }
 
     function buildData(){
       switch(tab.value){
@@ -647,37 +656,34 @@ createApp({
         }
         case 'sms': {
           if(!inputs.smsTo) return '';
-          return `sms:${inputs.smsTo}${inputs.smsBody?':'+inputs.smsBody:''}`;
+          return `sms:${inputs.smsTo}${inputs.smsBody?'?body='+encodeURIComponent(inputs.smsBody):''}`;
         }
-        case 'phone': {
-          if(!inputs.phone) return '';
-          return `tel:${inputs.phone}`;
-        }
+        case 'phone': return inputs.phone ? `tel:${inputs.phone}` : '';
         default: return '';
       }
     }
 
-    function getAPIs(d){
-      const s = size.value;
-      const fg = darkColor.value.replace('#','');
-      const bg = lightColor.value.replace('#','');
-      const q = encodeURIComponent(d);
+    function isValidUrl(s){
+      try{new URL(s);return true;}catch{return false;}
+    }
+
+    function getAPIs(data){
+      const s = Math.min(size.value, 350);
+      const dc = darkColor.value.replace('#','');
+      const lc = lightColor.value.replace('#','');
+      const enc = encodeURIComponent(data);
       return [
-        `https://api.qrserver.com/v1/create-qr-code/?data=${q}&size=${s}x${s}&color=${fg}&bgcolor=${bg}&format=png&ecc=${ecc.value}`,
-        `https://chart.googleapis.com/chart?cht=qr&chs=${s}x${s}&chl=${q}&choe=UTF-8&chld=${ecc.value}`
+        `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${enc}&color=${dc}&bgcolor=${lc}&format=png&ecc=${ecc.value}`,
+        `https://quickchart.io/qr?text=${enc}&size=${s}&dark=${dc}&light=${lc}&ecLevel=${ecc.value}&format=png`
       ];
     }
 
-    async function tryLoad(urls, idx, data){
-      if(idx >= urls.length){ loading.value=false; error.value=true; showToast('❌ هەڵەیەک ڕوویدا'); return; }
+    function tryLoad(urls, idx, data){
+      if(idx >= urls.length){ loading.value = false; error.value = true; return; }
       const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => { 
-        qrUrl.value = urls[idx]; 
-        loading.value = false; 
-        saveToHistory(data);
-      };
-      img.onerror = () => tryLoad(urls, idx+1, data);
+      const to = setTimeout(()=>img.onerror(), 10000);
+      img.onload = ()=>{ clearTimeout(to); qrUrl.value = urls[idx]; loading.value = false; error.value = false; saveHist(data, urls[idx]); };
+      img.onerror = ()=>{ clearTimeout(to); tryLoad(urls, idx+1, data); };
       img.src = urls[idx];
     }
 
@@ -725,16 +731,29 @@ createApp({
       r.readAsDataURL(f);
     }
 
+    // ── FRAME STYLES for canvas rendering ──
     const frameStyles = {
       none:     { pad:0,   bg:null,           radius:0,  border:null,        shadow:null },
-      modern:   { pad:40,  bg:'#ffffff',      radius:30, border:null,        shadow:'0 20px 50px rgba(0,0,0,0.3)' },
-      elegant:  { pad:40,  bg:'#ffffff',      radius:20, border:'4px solid', shadow:null },
-      rounded:  { pad:60,  bg:'gradient',     radius:80, border:null,        shadow:'0 15px 40px rgba(0,0,0,0.2)' },
-      neon:     { pad:45,  bg:'#000000',      radius:25, border:'2px solid', shadow:'0 0 30px' },
-      cosmic:   { pad:50,  bg:'#0f172a',      radius:30, border:null,        shadow:'0 0 40px rgba(56,189,248,0.4)' },
-      gold:     { pad:45,  bg:'#fef3c7',      radius:20, border:'5px solid #d97706', shadow:null },
-      rose:     { pad:45,  bg:'#fff1f2',      radius:30, border:'2px solid #fb7185', shadow:null }
+      modern:   { pad:20,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.5)' },
+      elegant:  { pad:20,  bg:'#ffffff',       radius:14, border:{w:3,c:'#7c3aed'}, shadow:'rgba(124,58,237,0.4)' },
+      classic:  { pad:20,  bg:'#ffffff',       radius:4,  border:{w:7,c:'#1a1040'}, shadow:null },
+      rounded:  { pad:24,  bg:'#7c3aed',       radius:40, border:null,        shadow:'rgba(124,58,237,0.5)' },
+      shadow:   { pad:20,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.8)' },
+      neon:     { pad:20,  bg:'#000000',       radius:16, border:{w:2,c:'#7c3aed'}, shadow:'rgba(124,58,237,0.8)' },
+      gradient: { pad:24,  bg:'gradient',      radius:24, border:null,        shadow:null },
+      gold:     { pad:22,  bg:'#ffd700',       radius:16, border:{w:3,c:'#b8860b'}, shadow:'rgba(255,215,0,0.5)' },
+      cosmic:   { pad:22,  bg:'#0f0c29',       radius:20, border:{w:2,c:'#7c3aed'}, shadow:'rgba(124,58,237,0.4)' },
+      rose:     { pad:22,  bg:'#fff0f3',       radius:20, border:{w:2,c:'#ffb3c6'}, shadow:'rgba(236,72,153,0.3)' },
     };
+
+    async function fetchQRBlob(url){
+      try{
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('failed');
+        const blob = await res.blob();
+        return URL.createObjectURL(blob);
+      } catch { return null; }
+    }
 
     async function downloadPNG(){
       if(!qrUrl.value) return;
@@ -742,16 +761,23 @@ createApp({
       const ctx = canvas.getContext('2d');
       const qrImg = new Image();
       qrImg.crossOrigin = 'anonymous';
-      qrImg.src = qrUrl.value;
+      qrImg.src = await fetchQRBlob(qrUrl.value) || qrUrl.value;
       
       qrImg.onload = () => {
         const f = frameStyles[frameType.value];
         const s = parseInt(size.value);
         const pad = f.pad;
         canvas.width = s + (pad * 2);
-        canvas.height = s + (pad * 2) + (caption.value ? 60 : 0);
+        canvas.height = s + (pad * 2) + (caption.value ? 45 : 0);
 
-        ctx.fillStyle = f.bg === 'gradient' ? darkColor.value : (f.bg || lightColor.value);
+        if(f.bg === 'gradient'){
+          const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+          g.addColorStop(0, '#7c3aed'); g.addColorStop(1, '#06b6d4');
+          ctx.fillStyle = g;
+        } else {
+          ctx.fillStyle = f.bg || lightColor.value;
+        }
+
         if(f.radius > 0){
           ctx.beginPath();
           ctx.roundRect(0, 0, canvas.width, canvas.height, f.radius);
@@ -760,7 +786,19 @@ createApp({
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
+        if(f.shadow){
+          ctx.shadowBlur = 20; ctx.shadowColor = f.shadow;
+        }
+
         ctx.drawImage(qrImg, pad, pad, s, s);
+        ctx.shadowBlur = 0;
+
+        if(f.border){
+          ctx.strokeStyle = f.border.c; ctx.lineWidth = f.border.w;
+          ctx.beginPath();
+          ctx.roundRect(f.border.w/2, f.border.w/2, canvas.width-f.border.w, canvas.height-f.border.w, f.radius);
+          ctx.stroke();
+        }
 
         if(logoDataUrl.value){
           const lImg = new Image();
@@ -771,15 +809,24 @@ createApp({
             const ly = pad + (s - lSize) / 2;
             ctx.fillStyle = lightColor.value;
             ctx.beginPath();
-            ctx.roundRect(lx-5, ly-5, lSize+10, lSize+10, 10);
+            ctx.roundRect(lx-4, ly-4, lSize+8, lSize+8, 8);
             ctx.fill();
             ctx.drawImage(lImg, lx, ly, lSize, lSize);
+            if(caption.value) drawCaption(ctx, canvas, s, pad);
             finalizeDownload(canvas);
           };
         } else {
+          if(caption.value) drawCaption(ctx, canvas, s, pad);
           finalizeDownload(canvas);
         }
       };
+    }
+
+    function drawCaption(ctx, canvas, s, pad){
+      ctx.fillStyle = frameType.value==='neon' || frameType.value==='cosmic' ? '#ffffff' : darkColor.value;
+      ctx.font = 'bold 16px "Noto Kufi Arabic"';
+      ctx.textAlign = 'center';
+      ctx.fillText(caption.value, canvas.width/2, pad + s + 30);
     }
 
     function finalizeDownload(canvas){
@@ -790,7 +837,23 @@ createApp({
       showToast('✅ وێنەکە دابەزێنرا');
     }
 
-    function downloadSVG(){ showToast('🚀 ئەم تایبەتمەندییە بەم زووانە زیاد دەکرێت'); }
+    function downloadSVG(){ window.open(qrUrl.value.replace('format=png','format=svg'), '_blank'); }
+    function downloadSVGPlain(){ window.open(`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(buildData())}&format=svg`, '_blank'); }
+    function downloadJPG(){ 
+      const canvas = document.createElement('canvas');
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = qrUrl.value;
+      img.onload = ()=>{
+        canvas.width = img.width; canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        const link = document.createElement('a');
+        link.download = 'qr.jpg'; link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.click();
+      };
+    }
 
     function copyLink(){
       if(!qrUrl.value) return;
@@ -798,25 +861,43 @@ createApp({
       showToast('📋 لینکەکە کۆپی کرا');
     }
 
-    function shareNative(){
+    function shareWhatsApp(){
+      const url = encodeURIComponent(qrUrl.value || '');
+      window.open(`https://wa.me/?text=سەیری ئەم QR کۆدە بکە: ${url}`, '_blank');
+    }
+    function shareTelegram(){
+      const url = encodeURIComponent(qrUrl.value || '');
+      window.open(`https://t.me/share/url?url=${url}&text=QR کۆدم`, '_blank');
+    }
+    function shareTwitter(){
+      const url = encodeURIComponent(qrUrl.value || '');
+      window.open(`https://twitter.com/intent/tweet?text=QR کۆدم ببینە&url=${url}`, '_blank');
+    }
+    async function shareNative(){
       if(!qrUrl.value) return;
       if(navigator.share){
-        navigator.share({ title:'QR کۆدەکەم', text:'سەیری ئەم QR کۆدە بکە', url: qrUrl.value });
+        try{
+          await navigator.share({ title: 'QR کۆدم', text: 'QR Studio Pro', url: qrUrl.value });
+        } catch{}
       } else {
         copyLink();
       }
     }
 
-    function saveToHistory(v){
-      const h = { type: tab.value, val: v, date: new Date().toLocaleDateString('ku'), url: qrUrl.value };
-      history.value.unshift(h);
-      if(history.value.length > 20) history.value.pop();
-      try{ localStorage.setItem('qr_h2', JSON.stringify(history.value)); }catch{}
+    function saveHist(data, url){
+      const lbls = {text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'کارت',maps:'نەخشە',email:'ئیمەیل',sms:'SMS',phone:'تەلەفۆن'};
+      history.value.unshift({
+        type: lbls[tab.value] || tab.value,
+        label: data.length > 55 ? data.slice(0,55) + '...' : data,
+        url, date: new Date().toLocaleDateString('ku')
+      });
+      if(history.value.length > 30) history.value.pop();
+      try{ localStorage.setItem('qr_h2', JSON.stringify(history.value)); } catch{}
     }
 
     function loadHistData(){
       try{
-        const s = localStorage.getItem('qr_h2');
+        const s = localStorage.getItem('qr_h2') || localStorage.getItem('qr_h');
         if(s) history.value = JSON.parse(s);
       } catch{}
     }
@@ -826,29 +907,33 @@ createApp({
     function clearHistory(){ history.value = []; try{localStorage.removeItem('qr_h2');}catch{} }
 
     function getLocation(){
-      if(!navigator.geolocation){ 
-        showToast('❌ GPS بەردەست نییە'); 
-        return; 
-      }
-      
-      const options = {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      };
-
-      navigator.geolocation.getCurrentPosition(p => {
-        inputs.lat = p.coords.latitude.toFixed(6);
-        inputs.lng = p.coords.longitude.toFixed(6);
-        showToast('✅ شوێن دۆزرایەوە');
-      }, (err) => {
-        let msg = '❌ شوێن نەدۆزرایەوە';
-        if(err.code === 1) msg = '❌ تکایە مۆڵەتی شوێن بدە بە وێبگەڕەکە';
-        else if(err.code === 3) msg = '❌ کاتی چاوەڕوانی تەواو بوو';
-        showToast(msg);
-      }, options);
+    if(!navigator.geolocation){ 
+    showToast('❌ GPS بەردەست نییە'); 
+    return; 
     }
+  
+  // زیادکردنی ڕێکخستن بۆ وردی زیاتر و کاتی چاوەڕوانی
+    const options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
+  };
 
+    navigator.geolocation.getCurrentPosition(p => {
+    inputs.lat = p.coords.latitude.toFixed(6);
+    inputs.lng = p.coords.longitude.toFixed(6);
+    showToast('✅ شوێن دۆزرایەوە');
+  }, (err) => {
+    // پیشاندانی جۆری هەڵەکە بۆ ئەوەی بزانیت کێشەکە چییە
+    let msg = '❌ شوێن نەدۆزرایەوە';
+    if(err.code === 1) msg = '❌ تکایە مۆڵەتی شوێن بدە بە وێبگەڕەکە';
+    else if(err.code === 3) msg = '❌ کاتی چاوەڕوانی تەواو بوو';
+    showToast(msg);
+  }, options);
+}
+
+
+    // ── jsQR SCAN ──
     async function startScan(){
       showScanModal.value = true;
       scanResult.value = '';
@@ -861,69 +946,91 @@ createApp({
         videoEl.value.onloadedmetadata = ()=>{
           scanning.value = true;
           scanStatus.value = 'QR کۆدەکە ئامادەبکە...';
-          scanInterval = setInterval(scanFrame, 300);
+          startJsQRScan();
         };
-      }catch(e){
-        showToast('❌ کامێرا نەکراوە');
-        closeScan();
+      } catch(err){
+        showToast('❌ کامێرا نەکرایەوە');
+        showScanModal.value = false;
       }
+    }
+
+    function startJsQRScan(){
+      const canvas = videoCanvas.value;
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      scanInterval = setInterval(()=>{
+        if(!videoEl.value || !scanning.value) return;
+        const v = videoEl.value;
+        if(v.readyState < 2) return;
+        canvas.width = v.videoWidth;
+        canvas.height = v.videoHeight;
+        ctx.drawImage(v, 0, 0);
+        try{
+          const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+          const code = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'dontInvert'});
+          if(code){
+            scanResult.value = code.data;
+            scanStatus.value = '✅ QR دۆزرایەوە!';
+            scanning.value = false;
+            clearInterval(scanInterval);
+            showToast('✅ QR کۆد دۆزرایەوە!');
+          }
+        } catch{}
+      }, 200);
     }
 
     function closeScan(){
-      showScanModal.value = false;
-      if(mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); }
+      scanning.value = false;
       clearInterval(scanInterval);
+      if(mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); mediaStream = null; }
+      showScanModal.value = false;
     }
-
-    function scanFrame(){
-      if(!scanning.value || !videoEl.value) return;
-      const canvas = document.createElement('canvas');
-      canvas.width = videoEl.value.videoWidth;
-      canvas.height = videoEl.value.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoEl.value, 0, 0);
-      const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
-      const code = jsQR(imgData.data, imgData.width, imgData.height);
-      if(code){
-        scanResult.value = code.data;
-        showToast('✅ سکان کرا');
-        scanning.value = false;
-        clearInterval(scanInterval);
-      }
-    }
-
-    function useScanResult(){
-      if(scanResult.value.startsWith('http')){ tab.value='url'; inputs.url=scanResult.value; }
-      else { tab.value='text'; inputs.text=scanResult.value; }
-      closeScan();
-    }
-    function copyScanResult(){ navigator.clipboard.writeText(scanResult.value); showToast('📋 کۆپی کرا'); }
-    function openScanResult(){ window.open(scanResult.value, '_blank'); }
 
     function scanFromFile(e){
       const f = e.target.files[0]; if(!f) return;
-      const r = new FileReader();
-      r.onload = ev => {
+      const reader = new FileReader();
+      reader.onload = ev=>{
         const img = new Image();
-        img.onload = () => {
-          const cv = document.createElement('canvas');
-          cv.width = img.width; cv.height = img.height;
-          const ct = cv.getContext('2d');
-          ct.drawImage(img,0,0);
-          const data = ct.getImageData(0,0,cv.width,cv.height);
-          const code = jsQR(data.data, data.width, data.height);
-          if(code){ scanResult.value = code.data; showToast('✅ سکان کرا'); }
-          else { showToast('❌ کۆد نەدۆزرایەوە'); }
+        img.onload = ()=>{
+          const c = scanCanvas.value || document.createElement('canvas');
+          c.width = img.width; c.height = img.height;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imgData = ctx.getImageData(0,0,c.width,c.height);
+          const code = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'attemptBoth'});
+          if(code){
+            scanResult.value = code.data;
+            showToast('✅ QR کۆد دۆزرایەوە!');
+          } else {
+            showToast('❌ هیچ QR کۆدێک نەدۆزرایەوە');
+          }
         };
         img.src = ev.target.result;
       };
-      r.readAsDataURL(f);
+      reader.readAsDataURL(f);
+      e.target.value = '';
     }
 
-    function isValidUrl(s){ try{ new URL(s); return true; }catch{ return false; } }
-    function toggleTheme(){ lightTheme.value = !lightTheme.value; document.body.style.filter = lightTheme.value ? 'invert(0.9) hue-rotate(180deg)' : 'none'; }
-    function installPWA(){ if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>deferredPrompt=null); } }
+    async function copyScanResult(){ try{await navigator.clipboard.writeText(scanResult.value); showToast('✅ کۆپی کرا');}catch{} }
+    function useScanResult(){
+      if(!scanResult.value) return;
+      inputs.text = scanResult.value;
+      tab.value = 'text';
+      closeScan();
+      showToast('✅ بەکارهێنرا — دەتوانیت QR دروست بکەیت');
+    }
+    function openScanResult(){ if(scanResult.value) window.open(scanResult.value,'_blank'); }
 
+    // ── PWA ──
+    function installPWA(){
+      if(deferredPrompt){
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(r=>{ if(r.outcome==='accepted'){ pwaInstalled.value=true; pwaReady.value=false; showToast('✅ دامەزرا!'); } });
+        deferredPrompt = null;
+      }
+    }
+
+    // ── KEYBOARD SHORTCUTS ──
     function handleKey(e){
       if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
       const tabKeys = {1:'text',2:'url',3:'wifi',4:'vcard',5:'maps',6:'email',7:'sms',8:'phone'};
@@ -962,8 +1069,8 @@ createApp({
       selTemplate, selScheme, colorSchemes, templates, shortcuts,
       showShortcuts,
       stats, currentTabLabel, isValidUrl,
-      generateQR, downloadPNG, downloadSVG, copyLink,
-      shareNative,
+      generateQR, downloadPNG, downloadSVG, downloadSVGPlain, downloadJPG, copyLink,
+      shareWhatsApp, shareTelegram, shareTwitter, shareNative,
       uploadLogo, resetDesign, applyScheme, applyTemplate,
       startScan, closeScan, scanFromFile, copyScanResult, useScanResult, openScanResult,
       getLocation
