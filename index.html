@@ -2,7 +2,7 @@
 <html lang="ku" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#080612"/>
 <meta name="description" content="QR Studio - پرۆفیشناڵترین دروستکەری QR کۆد"/>
 <link rel="manifest" id="pwa-manifest"/>
@@ -57,27 +57,35 @@ body{
 .glass2{background:var(--surface2);backdrop-filter:blur(12px);border:1px solid var(--border2)}
 
 /* ── LAYOUT ── */
-.wrap{position:relative;z-index:10;min-height:100vh;padding:16px;max-width:1100px;margin:0 auto}
+.wrap{position:relative;z-index:10;min-height:100vh;padding:12px;max-width:1100px;margin:0 auto}
+@media(min-width:640px){ .wrap{padding:16px} }
 
 /* ── HEADER ── */
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding:14px 20px;border-radius:var(--radius);border-bottom:1px solid var(--border)}
-.logo-text{font-size:clamp(1.4rem,3.5vw,2rem);font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#c084fc,#7c3aed,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.logo-badge{background:linear-gradient(135deg,var(--pink),var(--primary));color:#fff;font-size:.58rem;font-weight:800;padding:2px 7px;border-radius:20px;vertical-align:super;letter-spacing:.5px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding:12px 16px;border-radius:var(--radius);border-bottom:1px solid var(--border);gap:10px}
+@media(min-width:640px){ .header{margin-bottom:22px;padding:14px 20px} }
+.logo-text{font-size:clamp(1.2rem,4vw,2rem);font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#c084fc,#7c3aed,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-badge{background:linear-gradient(135deg,var(--pink),var(--primary));color:#fff;font-size:.5rem;font-weight:800;padding:1px 5px;border-radius:20px;vertical-align:super;letter-spacing:.5px}
+@media(min-width:640px){ .logo-badge{font-size:.58rem;padding:2px 7px} }
 
 /* ── STATS BAR ── */
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
-.stat-card{border-radius:var(--radius-sm);padding:12px 10px;text-align:center;position:relative;overflow:hidden}
+.stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+@media(min-width:640px){ .stats-bar{grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px} }
+.stat-card{border-radius:var(--radius-sm);padding:10px 8px;text-align:center;position:relative;overflow:hidden}
+@media(min-width:640px){ .stat-card{padding:12px 10px} }
 .stat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c1),var(--c2));opacity:.12}
-.stat-num{font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
-.stat-lbl{font-size:.62rem;font-weight:700;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.stat-num{font-size:1.2rem;font-weight:900;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+@media(min-width:640px){ .stat-num{font-size:1.4rem} }
+.stat-lbl{font-size:.55rem;font-weight:700;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+@media(min-width:640px){ .stat-lbl{font-size:.62rem;margin-top:3px} }
 
 /* ── MAIN GRID ── */
 .main-grid{display:grid;gap:16px}
-@media(min-width:800px){.main-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:850px){.main-grid{grid-template-columns:1fr 1fr}}
 
 /* ── TABS ── */
-.tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px;padding:6px;border-radius:var(--radius);background:rgba(0,0,0,.25)}
-.tab{padding:7px 11px;border-radius:9px;font-size:.72rem;font-weight:800;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;letter-spacing:.3px;transition:all .25s;white-space:nowrap}
+.tabs{display:flex;overflow-x:auto;gap:4px;margin-bottom:16px;padding:6px;border-radius:var(--radius);background:rgba(0,0,0,.25);scrollbar-width:none;-ms-overflow-style:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 12px;border-radius:9px;font-size:.72rem;font-weight:800;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;letter-spacing:.3px;transition:all .25s;white-space:nowrap;flex-shrink:0}
 .tab.on{background:linear-gradient(135deg,var(--primary),#4f46e5);color:#fff;box-shadow:0 0 16px rgba(124,58,237,.5)}
 .tab:not(.on):hover{color:var(--text2);background:rgba(124,58,237,.15)}
 
@@ -90,20 +98,20 @@ body{
 textarea.inp{resize:vertical;min-height:80px}
 
 /* ── BUTTONS ── */
-.btn{font-family:inherit;font-weight:800;border:none;cursor:pointer;border-radius:var(--radius-sm);transition:all .25s;font-size:.8rem;display:inline-flex;align-items:center;justify-content:center;gap:5px;letter-spacing:.3px}
+.btn{font-family:inherit;font-weight:800;border:none;cursor:pointer;border-radius:var(--radius-sm);transition:all .25s;font-size:.8rem;display:inline-flex;align-items:center;justify-content:center;gap:5px;letter-spacing:.3px;padding:10px 14px}
 .btn-p{background:linear-gradient(135deg,var(--primary),#4f46e5);color:#fff;padding:12px 16px;box-shadow:0 0 24px rgba(124,58,237,.4)}
 .btn-p:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 28px rgba(124,58,237,.65)}
 .btn-p:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.btn-g{background:linear-gradient(135deg,#059669,#10b981);color:#fff;padding:11px 14px;box-shadow:0 0 14px rgba(16,185,129,.3)}
+.btn-g{background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 0 14px rgba(16,185,129,.3)}
 .btn-g:hover{transform:translateY(-2px);box-shadow:0 4px 22px rgba(16,185,129,.5)}
-.btn-r{background:linear-gradient(135deg,#db2777,#9333ea);color:#fff;padding:11px 14px}
+.btn-r{background:linear-gradient(135deg,#db2777,#9333ea);color:#fff}
 .btn-r:hover{transform:translateY(-2px);box-shadow:0 4px 22px rgba(219,39,119,.5)}
-.btn-c{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;padding:11px 14px}
+.btn-c{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff}
 .btn-c:hover{transform:translateY(-2px);box-shadow:0 4px 22px rgba(6,182,212,.5)}
-.btn-o{background:linear-gradient(135deg,#d97706,var(--gold));color:#fff;padding:11px 14px}
+.btn-o{background:linear-gradient(135deg,#d97706,var(--gold));color:#fff}
 .btn-o:hover{transform:translateY(-2px)}
 .btn-sm{padding:6px 10px;font-size:.7rem;border-radius:7px}
-.btn-ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--text2);padding:8px 12px}
+.btn-ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--text2)}
 .btn-ghost:hover{background:rgba(255,255,255,.12)}
 
 /* ── RANGE ── */
@@ -112,18 +120,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
 
 /* ── COLOR ── */
-input[type=color]{-webkit-appearance:none;width:38px;height:38px;border:none;border-radius:50%;cursor:pointer;padding:0;background:none;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 3px 10px rgba(0,0,0,.5);transition:all .2s}
+input[type=color]{-webkit-appearance:none;width:38px;height:38px;border:none;border-radius:50%;cursor:pointer;padding:0;background:none;box-shadow:0 0 0 2px rgba(255,255,255,.2),0 3px 10px rgba(0,0,0,.5);transition:all .2s;flex-shrink:0}
 input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary),0 3px 14px rgba(0,0,0,.5)}
 
 /* ── QR STAGE ── */
 .qr-wrap{border-radius:var(--radius);overflow:hidden;position:relative}
 .qr-border{padding:2px;border-radius:var(--radius);background:linear-gradient(135deg,var(--primary),#4f46e5,var(--accent),var(--pink),var(--primary));background-size:300% 300%;animation:bga 6s linear infinite}
-.qr-inner{background:var(--bg2);border-radius:calc(var(--radius) - 2px);min-height:260px;display:flex;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:14px}
+.qr-inner{background:var(--bg2);border-radius:calc(var(--radius) - 2px);min-height:260px;display:flex;align-items:center;justify-content:center;padding:16px;flex-direction:column;gap:14px}
+@media(min-width:640px){ .qr-inner{padding:20px} }
 @keyframes bga{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
 
 /* QR placeholder animation */
 .qr-ph{text-align:center;color:rgba(124,58,237,.35)}
-.qr-ph-icon{font-size:4rem;animation:pulse2 2s ease-in-out infinite}
+.qr-ph-icon{font-size:3.5rem;animation:pulse2 2s ease-in-out infinite}
+@media(min-width:640px){ .qr-ph-icon{font-size:4rem} }
 @keyframes pulse2{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
 
 /* ── SPINNER ── */
@@ -151,6 +161,9 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
 
 /* ── TEMPLATE GRID ── */
 .tpl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:480px){ .tpl-grid{grid-template-columns:repeat(3,1fr)} }
+@media(min-width:640px){ .tpl-grid{grid-template-columns:repeat(4,1fr)} }
+@media(min-width:850px){ .tpl-grid{grid-template-columns:repeat(2,1fr)} }
 .tpl-card{background:rgba(255,255,255,.04);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:11px;cursor:pointer;transition:all .22s;text-align:center}
 .tpl-card:hover{border-color:var(--primary);background:rgba(124,58,237,.12);transform:translateY(-2px)}
 .tpl-card.sel{border-color:var(--primary);background:rgba(124,58,237,.2);box-shadow:0 0 14px rgba(124,58,237,.3)}
@@ -164,7 +177,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
 .shortcut-key{background:rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-family:monospace;font-weight:bold;color:var(--accent)}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(15,10,30,.9);backdrop-filter:blur(12px);border:1px solid var(--primary);color:#fff;padding:12px 24px;border-radius:50px;font-size:.85rem;font-weight:700;z-index:9999;transition:all .4s cubic-bezier(.175,.885,.32,1.275);opacity:0;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(124,58,237,.3)}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(15,10,30,.9);backdrop-filter:blur(12px);border:1px solid var(--primary);color:#fff;padding:12px 24px;border-radius:50px;font-size:.85rem;font-weight:700;z-index:9999;transition:all .4s cubic-bezier(.175,.885,.32,1.275);opacity:0;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(124,58,237,.3);width:max-content;max-width:90%}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
 /* ── ANIMATIONS ── */
@@ -172,13 +185,16 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
 @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── SCAN MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:12px}
+@media(min-width:640px){ .modal-overlay{padding:20px} }
 .modal-card{width:100%;max-width:500px;border-radius:24px;overflow:hidden;position:relative}
 .scan-area{position:relative;aspect-ratio:1;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .scan-video{width:100%;height:100%;object-fit:cover}
 .scan-guide{position:absolute;inset:20%;border:2px solid var(--primary);border-radius:20px;box-shadow:0 0 0 2000px rgba(0,0,0,.5);pointer-events:none}
 .scan-line{position:absolute;top:20%;left:20%;right:20%;height:2px;background:var(--primary);box-shadow:0 0 15px var(--primary);animation:scanL 2s linear infinite}
 @keyframes scanL{0%{top:20%}50%{top:80%}100%{top:20%}}
+
+[v-cloak] { display: none; }
 
 </style>
 </head>
@@ -198,9 +214,9 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
       <span class="logo-text">QR Studio</span>
       <span class="logo-badge">PRO</span>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-ghost btn-sm" @click="showShortcuts=true">⌨️ کورتکراوەکان</button>
-      <button class="btn btn-ghost btn-sm" @click="toggleTheme">{{ lightTheme ? '🌙 تاریک' : '☀️ ڕووناک' }}</button>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-ghost btn-sm" @click="showShortcuts=true" title="کورتکراوەکان">⌨️</button>
+      <button class="btn btn-ghost btn-sm" @click="toggleTheme">{{ lightTheme ? '🌙' : '☀️' }}</button>
     </div>
   </header>
 
@@ -226,21 +242,21 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
   <main class="main-grid">
     
     <!-- LEFT: EDITOR -->
-    <section class="glass" style="padding:20px;border-radius:var(--radius)">
+    <section class="glass" style="padding:16px;border-radius:var(--radius)">
       
       <div class="tabs">
         <button v-for="t in ['text','url','wifi','vcard','maps','email','sms','phone']" 
                 :key="t" :class="['tab', {on: tab===t}]" @click="tab=t">
-          {{ {text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'کارتی پەیوەندی',maps:'نەخشە',email:'ئیمەیل',sms:'SMS',phone:'تەلەفۆن'}[t] }}
+          {{ {text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'کارت',maps:'نەخشە',email:'ئیمەیل',sms:'SMS',phone:'تەلەفۆن'}[t] }}
         </button>
-        <button :class="['tab', {on: tab==='scan'}]" @click="startScan" style="color:var(--accent)">🔍 سکانکردن</button>
+        <button :class="['tab', {on: tab==='scan'}]" @click="startScan" style="color:var(--accent)">🔍 سکان</button>
         <button :class="['tab', {on: tab==='history'}]" @click="tab='history'">📜 مێژوو</button>
       </div>
 
       <div style="margin-bottom:20px">
-        <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-          <span style="width:8px;height:24px;background:var(--primary);border-radius:4px"></span>
-          زانیارییەکان: {{ currentTabLabel }}
+        <h2 style="font-size:1rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+          <span style="width:6px;height:20px;background:var(--primary);border-radius:4px"></span>
+          زانیاری: {{ currentTabLabel }}
         </h2>
 
         <!-- TEXT -->
@@ -281,22 +297,22 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
         <!-- VCARD -->
         <div v-if="tab==='vcard'" class="fade-in" style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
           <div style="grid-column:span 2"><label class="lbl">👤 ناوی تەواو</label><input class="inp" v-model="inputs.vcName" placeholder="ئاراس ئەحمەد"/></div>
-          <div><label class="lbl">📞 مۆبایل</label><input class="inp" v-model="inputs.vcPhone" placeholder="+964 750 000 0000"/></div>
-          <div><label class="lbl">🏢 کۆمپانیا</label><input class="inp" v-model="inputs.vcOrg" placeholder="کۆمپانیای ئاراس"/></div>
-          <div><label class="lbl">✉️ ئیمەیل</label><input class="inp" v-model="inputs.vcEmail" type="email" placeholder="name@mail.com"/></div>
-          <div><label class="lbl">🌐 ماڵپەڕ</label><input class="inp" v-model="inputs.vcWeb" placeholder="www.site.com"/></div>
-          <div><label class="lbl">📍 ناونیشان</label><input class="inp" v-model="inputs.vcAddr" placeholder="شار، وڵات"/></div>
-          <div><label class="lbl">🎂 لەدایکبوون</label><input class="inp" v-model="inputs.vcBday" type="date"/></div>
+          <div class="col-span-mobile"><label class="lbl">📞 مۆبایل</label><input class="inp" v-model="inputs.vcPhone" placeholder="+964 750 000 0000"/></div>
+          <div class="col-span-mobile"><label class="lbl">🏢 کۆمپانیا</label><input class="inp" v-model="inputs.vcOrg" placeholder="کۆمپانیای ئاراس"/></div>
+          <div class="col-span-mobile"><label class="lbl">✉️ ئیمەیل</label><input class="inp" v-model="inputs.vcEmail" type="email" placeholder="name@mail.com"/></div>
+          <div class="col-span-mobile"><label class="lbl">🌐 ماڵپەڕ</label><input class="inp" v-model="inputs.vcWeb" placeholder="www.site.com"/></div>
+          <div class="col-span-mobile"><label class="lbl">📍 ناونیشان</label><input class="inp" v-model="inputs.vcAddr" placeholder="شار، وڵات"/></div>
+          <div class="col-span-mobile"><label class="lbl">🎂 لەدایکبوون</label><input class="inp" v-model="inputs.vcBday" type="date"/></div>
         </div>
 
         <!-- MAPS -->
         <div v-if="tab==='maps'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-            <div><label class="lbl">🔢 Latitude</label><input class="inp" v-model="inputs.lat" type="number" step="any" placeholder="36.1901"/></div>
-            <div><label class="lbl">🔢 Longitude</label><input class="inp" v-model="inputs.lng" type="number" step="any" placeholder="44.0091"/></div>
+            <div><label class="lbl">🔢 Lat</label><input class="inp" v-model="inputs.lat" type="number" step="any" placeholder="36.1901"/></div>
+            <div><label class="lbl">🔢 Lng</label><input class="inp" v-model="inputs.lng" type="number" step="any" placeholder="44.0091"/></div>
           </div>
           <div><label class="lbl">📍 ناوی شوێن</label><input class="inp" v-model="inputs.mapName" placeholder="سلێمانی، عێراق"/></div>
-          <button class="btn btn-ghost" style="font-size:.75rem" @click="getLocation">📍 شوێنی ئێستام بەکاربێنم</button>
+          <button class="btn btn-ghost" style="font-size:.75rem" @click="getLocation">📍 شوێنی ئێستام</button>
         </div>
 
         <!-- EMAIL -->
@@ -308,7 +324,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
 
         <!-- SMS -->
         <div v-if="tab==='sms'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
-          <div><label class="lbl">📞 ژمارەی تەلەفۆن</label><input class="inp" v-model="inputs.smsTo" placeholder="+964 750 000 0000"/></div>
+          <div><label class="lbl">📞 ژمارە</label><input class="inp" v-model="inputs.smsTo" placeholder="+964 750 000 0000"/></div>
           <div><label class="lbl">💬 پەیام</label><textarea class="inp" v-model="inputs.smsBody" placeholder="پەیامەکەت..."></textarea></div>
         </div>
 
@@ -326,14 +342,14 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
           </div>
           <div v-else style="display:grid;gap:8px;max-height:300px;overflow-y:auto;padding-left:5px">
             <div v-for="(h,i) in history" :key="i" class="hist-item" @click="loadHistory(h)">
-              <div style="font-size:1.2rem">{{ h.type }}</div>
+              <div style="font-size:1.1rem">{{ h.type }}</div>
               <div style="flex:1;overflow:hidden">
                 <div style="font-size:.75rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.label }}</div>
                 <div style="font-size:.55rem;color:var(--muted)">{{ h.date }}</div>
               </div>
               <button @click.stop="removeHistory(i)" style="background:none;border:none;color:var(--pink);cursor:pointer;padding:5px">🗑️</button>
             </div>
-            <button class="btn btn-ghost btn-sm" @click="clearHistory" style="margin-top:10px;color:var(--pink)">پاککردنەوەی گشتی</button>
+            <button class="btn btn-ghost btn-sm" @click="clearHistory" style="margin-top:10px;color:var(--pink);width:100%">پاککردنەوەی گشتی</button>
           </div>
         </div>
       </div>
@@ -341,7 +357,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
       <div style="display:grid;grid-template-columns:1fr auto;gap:10px">
         <button class="btn btn-p" @click="generateQR" :disabled="loading">
           <span v-if="loading" class="spin" style="width:16px;height:16px;border-width:2px"></span>
-          <span v-else>✨ دروستکردنی QR</span>
+          <span v-else>✨ دروستکردن</span>
         </button>
         <button class="btn btn-ghost" @click="resetDesign" title="ڕیسێت">🔄</button>
       </div>
@@ -357,7 +373,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
           <div class="qr-inner">
             <div v-if="!qrUrl && !loading" class="qr-ph">
               <div class="qr-ph-icon">✨</div>
-              <div style="font-weight:800;font-size:.85rem">چاوەڕێی زانیارییەکانم...</div>
+              <div style="font-weight:800;font-size:.8rem">چاوەڕێی زانیاری...</div>
             </div>
             <div v-if="loading" class="spin"></div>
             <img v-if="qrUrl && !loading" :src="qrUrl" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.3)"/>
@@ -365,7 +381,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
             <div v-if="qrUrl && !loading" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px">
               <button class="btn btn-g btn-sm" @click="downloadPNG">📥 PNG</button>
               <button class="btn btn-c btn-sm" @click="downloadSVG">📥 SVG</button>
-              <button class="btn btn-o btn-sm" @click="copyLink">📋 کۆپی لینک</button>
+              <button class="btn btn-o btn-sm" @click="copyLink">📋 کۆپی</button>
               <button class="btn btn-ghost btn-sm" @click="shareNative">📤 ناردن</button>
             </div>
           </div>
@@ -375,13 +391,13 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
       <!-- DESIGN TABS -->
       <div class="glass" style="padding:16px;border-radius:var(--radius)">
         <div style="display:flex;gap:15px;margin-bottom:15px;border-bottom:1px solid var(--border2);padding-bottom:10px">
-          <h3 style="font-size:.8rem;font-weight:900;color:var(--primary)">🎨 دیزاین</h3>
+          <h3 style="font-size:.8rem;font-weight:900;color:var(--primary);cursor:pointer" @click="tab='text'">🎨 دیزاین</h3>
           <h3 style="font-size:.8rem;font-weight:900;color:var(--muted);cursor:pointer" @click="tab='templates'">🎭 تێمپلێتەکان</h3>
         </div>
 
         <div v-if="tab!=='templates'" class="fade-in">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px">
-            <div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px">
+            <div class="col-span-mobile">
               <label class="lbl">🖼️ چوارچێوە</label>
               <select class="inp" v-model="frameType">
                 <option value="none">بێ چوارچێوە</option>
@@ -397,7 +413,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
                 <option value="rose">گوڵاوی</option>
               </select>
             </div>
-            <div>
+            <div class="col-span-mobile">
               <label class="lbl">📏 قەبارە</label>
               <div style="display:flex;align-items:center;gap:10px">
                 <input type="range" v-model="size" min="150" max="500" step="10"/>
@@ -406,17 +422,17 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px">
-            <div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px">
+            <div class="col-span-mobile">
               <label class="lbl">🎨 ڕەنگی سەرەکی</label>
-              <div style="display:flex;align-items:center;gap:10px">
+              <div style="display:flex;align-items:center;gap:8px">
                 <input type="color" v-model="darkColor"/>
                 <input class="inp" v-model="darkColor" style="padding:5px 8px;font-size:.65rem;text-transform:uppercase"/>
               </div>
             </div>
-            <div>
+            <div class="col-span-mobile">
               <label class="lbl">🏳️ ڕەنگی پشتەوە</label>
-              <div style="display:flex;align-items:center;gap:10px">
+              <div style="display:flex;align-items:center;gap:8px">
                 <input type="color" v-model="lightColor"/>
                 <input class="inp" v-model="lightColor" style="padding:5px 8px;font-size:.65rem;text-transform:uppercase"/>
               </div>
@@ -425,11 +441,11 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
 
           <div style="margin-bottom:15px">
             <label class="lbl">🌈 سیتەمی ڕەنگەکان</label>
-            <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:5px">
+            <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;scrollbar-width:none">
               <div v-for="s in colorSchemes" :key="s.id" 
-                   class="glass2" :style="{padding:'6px 12px',borderRadius:'10px',cursor:'pointer',border:selScheme===s.id?'1px solid var(--primary)':'1px solid transparent'}"
+                   class="glass2" :style="{padding:'6px 12px',borderRadius:'10px',cursor:'pointer',border:selScheme===s.id?'1px solid var(--primary)':'1px solid transparent', flexShrink:0}"
                    @click="applyScheme(s)">
-                <div style="display:flex;gap:4px;margin-bottom:4px">
+                <div style="display:flex;gap:4px;margin-bottom:4px;justify-content:center">
                   <div :style="{width:'12px',height:'12px',borderRadius:'50%',background:s.dark}"></div>
                   <div :style="{width:'12px',height:'12px',borderRadius:'50%',background:s.light,border:'1px solid rgba(255,255,255,.1)'}"></div>
                 </div>
@@ -438,8 +454,8 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
-            <div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="col-span-mobile">
               <label class="lbl">🛡️ ئاستی چاککردن (ECC)</label>
               <select class="inp" v-model="ecc">
                 <option value="L">نزم (7%)</option>
@@ -448,7 +464,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
                 <option value="H">زۆر بەرز (30%)</option>
               </select>
             </div>
-            <div>
+            <div class="col-span-mobile">
               <label class="lbl">🏷️ لۆگۆ یان وێنە</label>
               <div style="display:flex;gap:5px">
                 <button class="btn btn-ghost btn-sm" style="flex:1" @click="$refs.logoInp.click()">
@@ -513,7 +529,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
         <div v-if="scanResult" class="fade-in" style="margin-bottom:15px">
           <div class="lbl">ئەنجامی دۆزراوە:</div>
           <div style="background:rgba(255,255,255,.05);padding:10px;border-radius:10px;font-size:.8rem;word-break:break-all;margin-bottom:10px">{{ scanResult }}</div>
-          <div style="display:flex;gap:8px;justify-content:center">
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
             <button class="btn btn-p btn-sm" @click="useScanResult">📥 بەکارهێنان</button>
             <button class="btn btn-c btn-sm" @click="copyScanResult">📋 کۆپی</button>
             <button v-if="isValidUrl(scanResult)" class="btn btn-g btn-sm" @click="openScanResult">🌐 کردنەوە</button>
@@ -523,8 +539,8 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
           کۆدەکە بخەرە ناو چوارچێوەکەوە بۆ ئەوەی خۆکارانە سکان بکرێت
         </div>
         <div style="margin-top:15px">
-          <label class="btn btn-ghost btn-sm" style="cursor:pointer">
-            📁 هەڵبژاردنی وێنە لە مۆبایل
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer;width:100%">
+            📁 هەڵبژاردنی وێنە
             <input type="file" hidden accept="image/*" @change="scanFromFile"/>
           </label>
         </div>
@@ -587,7 +603,7 @@ createApp({
     });
 
     const currentTabLabel = computed(()=>{
-      const m = {text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'کارتی پەیوەندی',maps:'نەخشە',email:'ئیمەیل',sms:'SMS',phone:'تەلەفۆن'};
+      const m = {text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'کارت',maps:'نەخشە',email:'ئیمەیل',sms:'SMS',phone:'تەلەفۆن'};
       return m[tab.value] || tab.value;
     });
 
@@ -865,18 +881,6 @@ createApp({
       showToast('📋 لینکەکە کۆپی کرا');
     }
 
-    function shareWhatsApp(){
-      const url = encodeURIComponent(qrUrl.value || '');
-      window.open(`https://wa.me/?text=سەیری ئەم QR کۆدە بکە: ${url}`, '_blank');
-    }
-    function shareTelegram(){
-      const url = encodeURIComponent(qrUrl.value || '');
-      window.open(`https://t.me/share/url?url=${url}&text=QR کۆدم`, '_blank');
-    }
-    function shareTwitter(){
-      const url = encodeURIComponent(qrUrl.value || '');
-      window.open(`https://twitter.com/intent/tweet?text=QR کۆدم ببینە&url=${url}`, '_blank');
-    }
     async function shareNative(){
       if(!qrUrl.value) return;
       if(navigator.share){
@@ -911,31 +915,19 @@ createApp({
     function clearHistory(){ history.value = []; try{localStorage.removeItem('qr_h2');}catch{} }
 
     function getLocation(){
-    if(!navigator.geolocation){ 
-    showToast('❌ GPS بەردەست نییە'); 
-    return; 
+      if(!navigator.geolocation){ showToast('❌ GPS بەردەست نییە'); return; }
+      const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
+      navigator.geolocation.getCurrentPosition(p => {
+        inputs.lat = p.coords.latitude.toFixed(6);
+        inputs.lng = p.coords.longitude.toFixed(6);
+        showToast('✅ شوێن دۆزرایەوە');
+      }, (err) => {
+        let msg = '❌ شوێن نەدۆزرایەوە';
+        if(err.code === 1) msg = '❌ تکایە مۆڵەتی شوێن بدە';
+        else if(err.code === 3) msg = '❌ کاتی چاوەڕوانی تەواو بوو';
+        showToast(msg);
+      }, options);
     }
-  
-  // زیادکردنی ڕێکخستن بۆ وردی زیاتر و کاتی چاوەڕوانی
-    const options = {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0
-  };
-
-    navigator.geolocation.getCurrentPosition(p => {
-    inputs.lat = p.coords.latitude.toFixed(6);
-    inputs.lng = p.coords.longitude.toFixed(6);
-    showToast('✅ شوێن دۆزرایەوە');
-  }, (err) => {
-    // پیشاندانی جۆری هەڵەکە بۆ ئەوەی بزانیت کێشەکە چییە
-    let msg = '❌ شوێن نەدۆزرایەوە';
-    if(err.code === 1) msg = '❌ تکایە مۆڵەتی شوێن بدە بە وێبگەڕەکە';
-    else if(err.code === 3) msg = '❌ کاتی چاوەڕوانی تەواو بوو';
-    showToast(msg);
-  }, options);
-}
-
 
     // ── jsQR SCAN ──
     async function startScan(){
@@ -1021,11 +1013,10 @@ createApp({
       inputs.text = scanResult.value;
       tab.value = 'text';
       closeScan();
-      showToast('✅ بەکارهێنرا — دەتوانیت QR دروست بکەیت');
+      showToast('✅ بەکارهێنرا');
     }
     function openScanResult(){ if(scanResult.value) window.open(scanResult.value,'_blank'); }
 
-    // ── PWA ──
     function installPWA(){
       if(deferredPrompt){
         deferredPrompt.prompt();
@@ -1034,7 +1025,6 @@ createApp({
       }
     }
 
-    // ── KEYBOARD SHORTCUTS ──
     function handleKey(e){
       if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
       const tabKeys = {1:'text',2:'url',3:'wifi',4:'vcard',5:'maps',6:'email',7:'sms',8:'phone'};
@@ -1049,6 +1039,7 @@ createApp({
 
     function showToast(msg){
       const el = document.getElementById('toast');
+      if(!el) return;
       el.textContent = msg; el.classList.add('show');
       setTimeout(()=>el.classList.remove('show'), 2800);
     }
@@ -1073,8 +1064,7 @@ createApp({
       selTemplate, selScheme, colorSchemes, templates, shortcuts,
       showShortcuts,
       stats, currentTabLabel, isValidUrl,
-      generateQR, downloadPNG, downloadSVG, downloadSVGPlain, downloadJPG, copyLink,
-      shareWhatsApp, shareTelegram, shareTwitter, shareNative,
+      generateQR, downloadPNG, downloadSVG, copyLink, shareNative,
       uploadLogo, resetDesign, applyScheme, applyTemplate,
       startScan, closeScan, scanFromFile, copyScanResult, useScanResult, openScanResult,
       getLocation
