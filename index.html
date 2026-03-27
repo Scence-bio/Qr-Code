@@ -628,14 +628,14 @@
     
     <!-- Header -->
     <header class="header glass">
-      <div>
-        <span class="logo-text">QR Studio</span>
-        <span class="logo-badge">PRO</span>
-      </div>
       <div class="header-actions">
         <button class="btn btn-ghost btn-sm" @click="toggleTheme" title="تێما بگۆڕە">
           {{ lightTheme ? '🌙' : '☀️' }}
         </button>
+      </div>
+      <div>
+        <span class="logo-text">QR Studio</span>
+        <span class="logo-badge">PRO</span>
       </div>
     </header>
 
@@ -856,11 +856,7 @@
       <!-- Right Section: QR Preview -->
       <section class="qr-container">
         <div class="qr-stage glass">
-          <!-- Placeholder -->
-          <div v-if="!qrUrl && !loading" class="qr-ph">
-            <div class="qr-ph-icon">✨</div>
-            <div style="font-weight: 800; font-size: 0.75rem">ئامادەیە بۆ دروستکردن</div>
-          </div>
+          <!-- Placeholder - Hidden until QR is generated -->
 
           <!-- Loading Spinner -->
           <div v-if="loading" class="spin"></div>
