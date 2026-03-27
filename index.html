@@ -231,7 +231,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
       <div class="tabs">
         <button v-for="t in ['text','url','wifi','vcard','maps','email','sms','phone']" 
                 :key="t" :class="['tab', {on: tab===t}]" @click="tab=t">
-          {{ {text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'VCard',maps:'نەخشە',email:'ئیمەیل',sms:'SMS',phone:'تەلەفۆن'}[t] }}
+          {{ {text:'تێکست',url:'بەستەر',wifi:'WiFi',vcard:'کارتی پەیوەندی',maps:'نەخشە',email:'ئیمەیل',sms:'SMS',phone:'تەلەفۆن'}[t] }}
         </button>
         <button :class="['tab', {on: tab==='scan'}]" @click="startScan" style="color:var(--accent)">🔍 سکانکردن</button>
         <button :class="['tab', {on: tab==='history'}]" @click="tab='history'">📜 مێژوو</button>
@@ -326,9 +326,9 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
           </div>
           <div v-else style="display:grid;gap:8px;max-height:300px;overflow-y:auto;padding-left:5px">
             <div v-for="(h,i) in history" :key="i" class="hist-item" @click="loadHistory(h)">
-              <div style="font-size:1.2rem">{{ {text:'📝',url:'🔗',wifi:'📶',vcard:'👤',maps:'📍',email:'✉️',sms:'💬',phone:'📞'}[h.type] }}</div>
+              <div style="font-size:1.2rem">{{ h.type }}</div>
               <div style="flex:1;overflow:hidden">
-                <div style="font-size:.75rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.val }}</div>
+                <div style="font-size:.75rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.label }}</div>
                 <div style="font-size:.55rem;color:var(--muted)">{{ h.date }}</div>
               </div>
               <button @click.stop="removeHistory(i)" style="background:none;border:none;color:var(--pink);cursor:pointer;padding:5px">🗑️</button>
@@ -387,10 +387,13 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
                 <option value="none">بێ چوارچێوە</option>
                 <option value="modern">مۆدێرن</option>
                 <option value="elegant">ناسک</option>
+                <option value="classic">کلاسیک</option>
                 <option value="rounded">خڕ</option>
+                <option value="shadow">سێبەر</option>
                 <option value="neon">نیۆن</option>
-                <option value="cosmic">گەردونی</option>
+                <option value="gradient">ڕەنگاوڕەنگ</option>
                 <option value="gold">ئاڵتونی</option>
+                <option value="cosmic">گەردونی</option>
                 <option value="rose">گوڵاوی</option>
               </select>
             </div>
@@ -497,6 +500,7 @@ input[type=color]:hover{transform:scale(1.2);box-shadow:0 0 0 3px var(--primary)
       
       <div class="scan-area">
         <video ref="videoEl" class="scan-video" autoplay playsinline></video>
+        <canvas ref="videoCanvas" style="display:none"></canvas>
         <div class="scan-guide"></div>
         <div class="scan-line"></div>
         <div v-if="!scanning" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);flex-direction:column;gap:15px">
