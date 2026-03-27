@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#080612" />
-  <meta name="description" content="QR Studio - پرۆفیشناڵترین دروستکەری QR کۆد" />
+  <meta name="description" content="QR Studio Pro - پرۆفیشناڵترین دروستکەری QR کۆد" />
+  <meta name="apple-mobile-web-app-capable" content="true" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" id="pwa-manifest" />
   <title>QR Studio Pro</title>
   
@@ -135,7 +137,7 @@
       display: flex;
       flex-direction: column;
       padding: 8px;
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       width: 100%;
     }
@@ -175,55 +177,13 @@
       padding: 1px 5px;
       border-radius: 20px;
       vertical-align: super;
+      margin-right: 6px;
     }
 
-    /* ============ Stats Bar ============ */
-    .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+    .header-actions {
+      display: flex;
       gap: 6px;
-      margin-bottom: 12px;
-      flex-shrink: 0;
-    }
-
-    @media (max-width: 480px) {
-      .stats-bar {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    .stat-card {
-      border-radius: var(--radius-sm);
-      padding: 6px 4px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--c1), var(--c2));
-      opacity: 0.12;
-    }
-
-    .stat-num {
-      font-size: 1.1rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--c1), var(--c2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1;
-    }
-
-    .stat-lbl {
-      font-size: 0.55rem;
-      font-weight: 700;
-      color: var(--muted);
-      margin-top: 2px;
-      text-transform: uppercase;
+      align-items: center;
     }
 
     /* ============ Main Grid ============ */
@@ -289,6 +249,10 @@
       transition: all 0.2s ease;
     }
 
+    .tab:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
     .tab.on {
       background: linear-gradient(135deg, var(--primary), #4f46e5);
       color: #fff;
@@ -320,6 +284,7 @@
       outline: none;
       border-color: var(--primary);
       background: rgba(255, 255, 255, 0.09);
+      box-shadow: 0 0 8px rgba(124, 58, 237, 0.2);
     }
 
     textarea.inp {
@@ -328,6 +293,24 @@
     }
 
     select.inp {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23c4b5fd' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: left 10px center;
+      padding-left: 28px;
+    }
+
+    input[type="color"] {
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      height: 40px;
+      width: 100%;
+    }
+
+    input[type="range"] {
+      width: 100%;
       cursor: pointer;
     }
 
@@ -349,6 +332,11 @@
 
     .btn:hover:not(:disabled) {
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
     }
 
     .btn-p {
@@ -417,6 +405,7 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
+      animation: fadeIn 0.3s ease;
     }
 
     .qr-img-wrap img {
@@ -424,6 +413,7 @@
       max-height: 100%;
       object-fit: contain;
       border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(124, 58, 237, 0.2);
     }
 
     .qr-ph {
@@ -434,6 +424,17 @@
     .qr-ph-icon {
       font-size: 2rem;
       margin-bottom: 8px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .spin {
@@ -475,10 +476,12 @@
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
+      padding: 6px 10px;
     }
 
     .hist-item:hover {
       background: rgba(255, 255, 255, 0.08);
+      transform: translateX(-4px);
     }
 
     .hist-item button {
@@ -489,6 +492,7 @@
       cursor: pointer;
       font-size: 1rem;
       transition: all 0.2s ease;
+      flex-shrink: 0;
     }
 
     .hist-item button:hover {
@@ -505,7 +509,7 @@
       backdrop-filter: blur(12px);
       border: 1px solid var(--primary);
       color: #fff;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border-radius: 50px;
       font-size: 0.8rem;
       font-weight: 700;
@@ -513,6 +517,7 @@
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       opacity: 0;
       pointer-events: none;
+      max-width: 90%;
     }
 
     .toast.show {
@@ -520,11 +525,11 @@
       opacity: 1;
     }
 
-    /* ============ Modals ============ */
+    /* ============ Scanner Modal ============ */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
       backdrop-filter: blur(10px);
       z-index: 2000;
       display: flex;
@@ -535,11 +540,43 @@
 
     .modal-card {
       width: 100%;
-      max-width: 450px;
+      max-width: 500px;
       border-radius: 24px;
       overflow: hidden;
       background: var(--bg2);
       border: 1px solid var(--border);
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      color: var(--pink);
+    }
+
+    #scanner-video {
+      width: 100%;
+      max-height: 400px;
+      border-radius: 12px;
+      background: #000;
     }
 
     /* ============ Vue Utilities ============ */
@@ -565,6 +602,15 @@
       .scroll-sec {
         padding: 12px;
       }
+
+      .logo-text {
+        font-size: 1.2rem;
+      }
+
+      .logo-badge {
+        font-size: 0.4rem;
+        padding: 0px 3px;
+      }
     }
   </style>
 </head>
@@ -586,7 +632,7 @@
         <span class="logo-text">QR Studio</span>
         <span class="logo-badge">PRO</span>
       </div>
-      <div style="display: flex; gap: 6px">
+      <div class="header-actions">
         <button class="btn btn-ghost btn-sm" @click="toggleTheme" title="تێما بگۆڕە">
           {{ lightTheme ? '🌙' : '☀️' }}
         </button>
@@ -620,7 +666,7 @@
           </button>
           <button 
             :class="['tab', { on: tab === 'scan' }]" 
-            @click="startScan" 
+            @click="openScanner" 
             style="color: var(--accent)"
             title="QR سکان بکە">
             🔍 سکان
@@ -652,48 +698,92 @@
           </div>
 
           <div v-if="tab === 'wifi'" style="display: grid; gap: 8px">
-            <input class="inp" v-model="inputs.ssid" placeholder="ناوی تۆڕ (SSID)" />
-            <input 
-              class="inp" 
-              :type="showPass ? 'text' : 'password'" 
-              v-model="inputs.wpass" 
-              placeholder="وشەی نهێنی" />
-            <select class="inp" v-model="inputs.wsec">
-              <option value="WPA">WPA/WPA2</option>
-              <option value="WEP">WEP</option>
-              <option value="nopass">بێ نهێنی</option>
-            </select>
+            <div>
+              <label class="lbl">📶 ناوی تۆڕ (SSID)</label>
+              <input class="inp" v-model="inputs.ssid" placeholder="ناوی تۆڕ" />
+            </div>
+            <div>
+              <label class="lbl">🔐 وشەی نهێنی</label>
+              <div style="display: flex; gap: 6px">
+                <input 
+                  class="inp" 
+                  :type="showPass ? 'text' : 'password'" 
+                  v-model="inputs.wpass" 
+                  placeholder="وشەی نهێنی"
+                  style="flex: 1" />
+                <button class="btn btn-ghost" @click="showPass = !showPass" style="flex-shrink: 0">
+                  {{ showPass ? '👁️' : '👁️‍🗨️' }}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label class="lbl">🔒 جۆری سیکیوریتی</label>
+              <select class="inp" v-model="inputs.wsec">
+                <option value="WPA">WPA/WPA2</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">بێ نهێنی</option>
+              </select>
+            </div>
           </div>
 
           <div v-if="tab === 'vcard'" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
             <div style="grid-column: span 2">
+              <label class="lbl">👤 ناوی تەواو</label>
               <input class="inp" v-model="inputs.vcName" placeholder="ناوی تەواو" />
             </div>
-            <input class="inp" v-model="inputs.vcPhone" placeholder="مۆبایل" />
-            <input class="inp" v-model="inputs.vcEmail" placeholder="ئیمەیل" />
+            <div>
+              <label class="lbl">📱 مۆبایل</label>
+              <input class="inp" v-model="inputs.vcPhone" placeholder="مۆبایل" />
+            </div>
+            <div>
+              <label class="lbl">📧 ئیمەیل</label>
+              <input class="inp" v-model="inputs.vcEmail" placeholder="ئیمەیل" />
+            </div>
           </div>
 
           <div v-if="tab === 'maps'" style="display: flex; flex-direction: column; gap: 8px">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
-              <input class="inp" v-model="inputs.lat" placeholder="Latitude" />
-              <input class="inp" v-model="inputs.lng" placeholder="Longitude" />
+              <div>
+                <label class="lbl">📍 Latitude</label>
+                <input class="inp" v-model="inputs.lat" placeholder="36.1901" />
+              </div>
+              <div>
+                <label class="lbl">📍 Longitude</label>
+                <input class="inp" v-model="inputs.lng" placeholder="44.0091" />
+              </div>
             </div>
-            <button class="btn btn-ghost btn-sm" @click="getLocation">📍 شوێنی ئێستام</button>
+            <button class="btn btn-ghost" @click="getLocation" style="width: 100%">📍 شوێنی ئێستام</button>
           </div>
 
           <div v-if="tab === 'email'" style="display: grid; gap: 8px">
-            <input class="inp" v-model="inputs.eTo" placeholder="بۆ" />
-            <input class="inp" v-model="inputs.eSubj" placeholder="بابەت" />
-            <textarea class="inp" v-model="inputs.eBody" placeholder="پەیام"></textarea>
+            <div>
+              <label class="lbl">📧 بۆ</label>
+              <input class="inp" v-model="inputs.eTo" placeholder="example@email.com" />
+            </div>
+            <div>
+              <label class="lbl">📌 بابەت</label>
+              <input class="inp" v-model="inputs.eSubj" placeholder="بابەت" />
+            </div>
+            <div>
+              <label class="lbl">💬 پەیام</label>
+              <textarea class="inp" v-model="inputs.eBody" placeholder="پەیام"></textarea>
+            </div>
           </div>
 
           <div v-if="tab === 'sms'" style="display: grid; gap: 8px">
-            <input class="inp" v-model="inputs.smsTo" placeholder="ژمارە" />
-            <textarea class="inp" v-model="inputs.smsBody" placeholder="پەیام"></textarea>
+            <div>
+              <label class="lbl">📱 ژمارە</label>
+              <input class="inp" v-model="inputs.smsTo" placeholder="ژمارە" />
+            </div>
+            <div>
+              <label class="lbl">💬 پەیام</label>
+              <textarea class="inp" v-model="inputs.smsBody" placeholder="پەیام"></textarea>
+            </div>
           </div>
 
           <div v-if="tab === 'phone'">
-            <input class="inp" v-model="inputs.phone" placeholder="ژمارەی تەلەفۆن" />
+            <label class="lbl">☎️ ژمارەی تەلەفۆن</label>
+            <input class="inp" v-model="inputs.phone" placeholder="+964..." />
           </div>
 
           <!-- History Section -->
@@ -703,11 +793,10 @@
             </div>
             <div v-else style="display: grid; gap: 6px">
               <div 
-                v-for="(h, i) in history.slice(0, 10)" 
+                v-for="(h, i) in history.slice(0, 20)" 
                 :key="i" 
                 class="hist-item" 
-                @click="loadHistory(h)" 
-                style="padding: 6px 10px">
+                @click="loadHistory(h)">
                 <div style="flex: 1; overflow: hidden; font-size: 0.7rem">
                   <b>{{ h.type }}</b>: {{ h.label }}
                 </div>
@@ -718,15 +807,15 @@
         </div>
 
         <!-- Action Buttons -->
-        <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px">
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 12px">
           <button class="btn btn-p" @click="generateQR" :disabled="loading">
-            ✨ دروستکردن
+            ✨ {{ loading ? 'دروستکردن...' : 'دروستکردن' }}
           </button>
           <button class="btn btn-ghost" @click="resetDesign" title="ڕیسێت">🔄</button>
         </div>
 
         <!-- Design Controls -->
-        <div class="design-card" style="margin-top: 20px">
+        <div class="design-card">
           <h3>🎨 دیزاین و ڕەنگ</h3>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
             <div>
@@ -740,22 +829,24 @@
               </select>
             </div>
             <div>
-              <label class="lbl">📏 قەبارە</label>
-              <input type="range" v-model="size" min="150" max="500" step="10" />
+              <label class="lbl">📏 قەبارە: {{ size }}px</label>
+              <input type="range" v-model.number="size" min="150" max="500" step="10" />
             </div>
             <div>
-              <label class="lbl">🎨 ڕەنگ</label>
-              <div style="display: flex; gap: 5px">
-                <input type="color" v-model="darkColor" title="ڕەنگی تاریک" />
-                <input type="color" v-model="lightColor" title="ڕەنگی ڕووناک" />
-              </div>
+              <label class="lbl">🎨 ڕەنگی تاریک</label>
+              <input type="color" v-model="darkColor" />
             </div>
             <div>
-              <label class="lbl">🛡️ ECC</label>
+              <label class="lbl">🎨 ڕەنگی ڕووناک</label>
+              <input type="color" v-model="lightColor" />
+            </div>
+            <div style="grid-column: span 2">
+              <label class="lbl">🛡️ ECC (Error Correction)</label>
               <select class="inp" v-model="ecc">
-                <option value="L">نزم</option>
-                <option value="M">مامناوەند</option>
-                <option value="H">بەرز</option>
+                <option value="L">نزم (7%)</option>
+                <option value="M">مامناوەند (15%)</option>
+                <option value="Q">بەرز (25%)</option>
+                <option value="H">زۆر بەرز (30%)</option>
               </select>
             </div>
           </div>
@@ -780,12 +871,33 @@
             <div style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: center">
               <button class="btn btn-g btn-sm" @click="downloadPNG" title="PNG دابەزاندن">📥 PNG</button>
               <button class="btn btn-c btn-sm" @click="copyLink" title="لینک کۆپی بکە">📋 کۆپی</button>
-              <button class="btn btn-ghost btn-sm" @click="shareNative" title="ناردن">📤 ناردن</button>
+              <button class="btn btn-o btn-sm" @click="shareNative" title="ناردن">📤 ناردن</button>
             </div>
           </div>
         </div>
       </section>
     </main>
+  </div>
+
+  <!-- Scanner Modal -->
+  <div v-if="showScanner" class="modal-overlay" @click.self="closeScanner">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 style="font-size: 1rem; font-weight: 800">🔍 QR سکانەر</h2>
+        <button class="close-btn" @click="closeScanner">✕</button>
+      </div>
+      <div class="modal-body">
+        <video 
+          id="scanner-video" 
+          ref="scannerVideo"
+          playsinline
+          style="width: 100%; border-radius: 12px; background: #000">
+        </video>
+        <p style="text-align: center; margin-top: 12px; font-size: 0.75rem; color: var(--muted)">
+          کامێرا بۆ QR کۆد ئاماده بکە
+        </p>
+      </div>
+    </div>
   </div>
 
   <!-- Toast Notification -->
@@ -802,7 +914,7 @@
         const lightTheme = ref(false);
         const loading = ref(false);
         const qrUrl = ref('');
-        const showShortcuts = ref(false);
+        const showScanner = ref(false);
         const showPass = ref(false);
         const size = ref(220);
         const frameType = ref('modern');
@@ -810,9 +922,8 @@
         const lightColor = ref('#ffffff');
         const ecc = ref('M');
         const history = ref([]);
-        const selTemplate = ref('');
-        const selScheme = ref('classic');
-        let debTimer = null;
+        const scannerVideo = ref(null);
+        let scannerInterval = null;
 
         // ============ Input Fields ============
         const inputs = reactive({
@@ -859,47 +970,17 @@
             email: 'ئیمەیل',
             sms: 'SMS',
             phone: 'تەلەفۆن',
-            history: 'مێژوو'
+            history: 'مێژوو',
+            scan: 'سکان'
           };
           return labels[tab.value] || tab.value;
         });
-
-        // ============ Templates ============
-        const templates = [
-          {
-            id: 'biz',
-            icon: '🏢',
-            name: 'بیزنس',
-            tab: 'url',
-            data: { url: 'https://yourwebsite.com' }
-          },
-          {
-            id: 'wifi_home',
-            icon: '📶',
-            name: 'WiFi',
-            tab: 'wifi',
-            data: { ssid: 'HomeWiFi', wsec: 'WPA' }
-          },
-          {
-            id: 'contact',
-            icon: '👤',
-            name: 'پەیوەندی',
-            tab: 'vcard',
-            data: { vcName: 'ناوت' }
-          },
-          {
-            id: 'location',
-            icon: '📍',
-            name: 'شوێن',
-            tab: 'maps',
-            data: { lat: '36.1901', lng: '44.0091' }
-          }
-        ];
 
         // ============ Methods ============
         function toggleTheme() {
           lightTheme.value = !lightTheme.value;
           document.body.classList.toggle('light', lightTheme.value);
+          localStorage.setItem('qr_theme', lightTheme.value ? 'light' : 'dark');
         }
 
         function buildData() {
@@ -909,8 +990,10 @@
             case 'url':
               return inputs.url.trim();
             case 'wifi':
+              if (!inputs.ssid) return '';
               return `WIFI:T:${inputs.wsec};S:${inputs.ssid};P:${inputs.wpass};;`;
             case 'vcard':
+              if (!inputs.vcName) return '';
               return `BEGIN:VCARD\nVERSION:3.0\nFN:${inputs.vcName}\nTEL:${inputs.vcPhone}\nEMAIL:${inputs.vcEmail}\nEND:VCARD`;
             case 'maps':
               return inputs.lat && inputs.lng
@@ -934,14 +1017,14 @@
         function generateQR() {
           const data = buildData();
           if (!data) {
-            showToast('⚠️ زانیاری بنووسە!');
+            showToast('⚠️ تکایە زانیاری بنووسە!');
             return;
           }
 
           loading.value = true;
           qrUrl.value = '';
 
-          const s = Math.min(size.value, 350);
+          const s = Math.min(parseInt(size.value), 350);
           const dc = darkColor.value.replace('#', '');
           const lc = lightColor.value.replace('#', '');
           const url = `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(data)}&color=${dc}&bgcolor=${lc}&format=png&ecc=${ecc.value}`;
@@ -951,10 +1034,11 @@
             qrUrl.value = url;
             loading.value = false;
             saveHist(data, url);
+            showToast('✅ QR کۆد دروست کرا');
           };
           img.onerror = () => {
             loading.value = false;
-            showToast('❌ هەڵەیەک ڕوویدا');
+            showToast('❌ هەڵەیەک ڕوویدا، دووبارە هەوڵ بدە');
           };
           img.src = url;
         }
@@ -964,20 +1048,17 @@
           frameType.value = 'modern';
           darkColor.value = '#000000';
           lightColor.value = '#ffffff';
+          ecc.value = 'M';
           showToast('✅ ڕیسێت کرا');
-        }
-
-        function applyTemplate(t) {
-          selTemplate.value = t.id;
-          tab.value = t.tab;
-          Object.assign(inputs, t.data);
-          showToast(`✅ تێمپلێت: ${t.name}`);
         }
 
         function copyLink() {
           if (qrUrl.value) {
-            navigator.clipboard.writeText(qrUrl.value);
-            showToast('📋 کۆپی کرا');
+            navigator.clipboard.writeText(qrUrl.value).then(() => {
+              showToast('📋 لینکەکە کۆپی کرا');
+            }).catch(() => {
+              showToast('❌ کۆپی کردن سەرکەوتوو نەبوو');
+            });
           }
         }
 
@@ -985,11 +1066,15 @@
           if (qrUrl.value && navigator.share) {
             try {
               await navigator.share({
-                title: 'QR',
+                title: 'QR Code',
+                text: 'QR Studio Pro',
                 url: qrUrl.value
               });
+              showToast('📤 ناردن سەرکەوتوو بوو');
             } catch (err) {
-              // User cancelled share
+              if (err.name !== 'AbortError') {
+                copyLink();
+              }
             }
           } else {
             copyLink();
@@ -1000,8 +1085,10 @@
           if (qrUrl.value) {
             const a = document.createElement('a');
             a.href = qrUrl.value;
-            a.download = 'qr-code.png';
+            a.download = `qr-code-${Date.now()}.png`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             showToast('📥 دابەزاندن دەست پێکرد');
           }
         }
@@ -1009,11 +1096,12 @@
         function saveHist(data, url) {
           history.value.unshift({
             type: tab.value,
-            label: data.slice(0, 30),
+            label: data.slice(0, 40),
             url,
-            date: new Date().toLocaleDateString('ku')
+            date: new Date().toLocaleDateString('ku'),
+            timestamp: Date.now()
           });
-          if (history.value.length > 20) {
+          if (history.value.length > 50) {
             history.value.pop();
           }
           localStorage.setItem('qr_h_fit', JSON.stringify(history.value));
@@ -1027,6 +1115,7 @@
         function removeHistory(i) {
           history.value.splice(i, 1);
           localStorage.setItem('qr_h_fit', JSON.stringify(history.value));
+          showToast('🗑️ سڕینەوە کرا');
         }
 
         function getLocation() {
@@ -1034,13 +1123,15 @@
             showToast('❌ GPS بەردەست نییە');
             return;
           }
+          showToast('📍 شوێن دۆزینەوە...');
           navigator.geolocation.getCurrentPosition(
             p => {
               inputs.lat = p.coords.latitude.toFixed(6);
               inputs.lng = p.coords.longitude.toFixed(6);
               showToast('✅ شوێن دۆزرایەوە');
             },
-            () => showToast('❌ هەڵە لە دۆزینەوەی شوێن')
+            () => showToast('❌ هەڵە لە دۆزینەوەی شوێن'),
+            { enableHighAccuracy: true, timeout: 10000 }
           );
         }
 
@@ -1052,12 +1143,74 @@
           setTimeout(() => el.classList.remove('show'), 2500);
         }
 
-        function startScan() {
-          showToast('🔍 سکان فیچەری بەرز دێت');
+        async function openScanner() {
+          showScanner.value = true;
+          tab.value = 'scan';
+          
+          await nextTick();
+          
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: 'environment' }
+            });
+            
+            if (scannerVideo.value) {
+              scannerVideo.value.srcObject = stream;
+              scannerVideo.value.play();
+              
+              startScanning();
+            }
+          } catch (err) {
+            showToast('❌ کامێرا بەردەست نییە');
+            closeScanner();
+          }
+        }
+
+        function startScanning() {
+          if (scannerInterval) clearInterval(scannerInterval);
+          
+          scannerInterval = setInterval(() => {
+            if (scannerVideo.value && showScanner.value) {
+              const canvas = document.createElement('canvas');
+              const context = canvas.getContext('2d');
+              canvas.width = scannerVideo.value.videoWidth;
+              canvas.height = scannerVideo.value.videoHeight;
+              
+              if (canvas.width > 0 && canvas.height > 0) {
+                context.drawImage(scannerVideo.value, 0, 0);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                
+                if (code) {
+                  handleScannedCode(code.data);
+                }
+              }
+            }
+          }, 500);
+        }
+
+        function handleScannedCode(data) {
+          closeScanner();
+          inputs.text = data;
+          tab.value = 'text';
+          showToast('✅ QR کۆد خوێندرا');
+          generateQR();
+        }
+
+        function closeScanner() {
+          showScanner.value = false;
+          if (scannerInterval) {
+            clearInterval(scannerInterval);
+            scannerInterval = null;
+          }
+          if (scannerVideo.value && scannerVideo.value.srcObject) {
+            scannerVideo.value.srcObject.getTracks().forEach(track => track.stop());
+          }
         }
 
         // ============ Lifecycle Hooks ============
         onMounted(() => {
+          // Load history
           const s = localStorage.getItem('qr_h_fit');
           if (s) {
             try {
@@ -1066,6 +1219,33 @@
               console.error('Error loading history:', err);
             }
           }
+
+          // Load theme
+          const theme = localStorage.getItem('qr_theme');
+          if (theme === 'light') {
+            lightTheme.value = true;
+            document.body.classList.add('light');
+          }
+
+          // PWA manifest
+          const manifest = {
+            name: 'QR Studio Pro',
+            short_name: 'QR Studio',
+            description: 'پرۆفیشناڵترین دروستکەری QR کۆد',
+            start_url: '/',
+            display: 'standalone',
+            background_color: '#05040f',
+            theme_color: '#7c3aed',
+            icons: [
+              { src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect fill="%237c3aed" width="192" height="192"/><text x="50%" y="50%" font-size="80" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">QR</text></svg>', sizes: '192x192', type: 'image/svg+xml' }
+            ]
+          };
+          document.getElementById('pwa-manifest').href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifest));
+        });
+
+        onUnmounted(() => {
+          if (scannerInterval) clearInterval(scannerInterval);
+          closeScanner();
         });
 
         // ============ Return Public API ============
@@ -1084,20 +1264,19 @@
           history,
           loadHistory,
           removeHistory,
-          templates,
-          selTemplate,
-          showShortcuts,
           showPass,
           stats,
           currentTabLabel,
           generateQR,
           resetDesign,
-          applyTemplate,
           copyLink,
           shareNative,
           downloadPNG,
           getLocation,
-          startScan
+          showScanner,
+          openScanner,
+          closeScanner,
+          scannerVideo
         };
       }
     }).mount('#app');
