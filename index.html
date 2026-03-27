@@ -300,17 +300,7 @@ textarea.inp{min-height:60px}
         </div>
       </div>
 
-      <!-- TEMPLATES (Small Grid) -->
-      <div class="glass design-card">
-        <h3 style="font-size:.75rem;font-weight:900;margin-bottom:8px;color:var(--muted)">🎭 تێمپلێتەکان</h3>
-        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;scrollbar-width:none">
-          <div v-for="t in templates" :key="t.id" 
-               class="tpl-card" :style="{minWidth:'80px', border:selTemplate===t.id?'1px solid var(--primary)':''}" @click="applyTemplate(t)">
-            <div class="tpl-icon" style="font-size:1.2rem">{{ t.icon }}</div>
-            <div class="tpl-name" style="font-size:.55rem">{{ t.name }}</div>
-          </div>
-        </div>
-      </div>
+  
     </section>
   </main>
 
