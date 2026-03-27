@@ -567,13 +567,35 @@ body.light .stat-card::before{opacity:.07}
 
       <!-- DOWNLOAD BUTTONS -->
       <div v-if="qrUrl && !loading" class="float-in glass" style="border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px">
-        <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">💾 داگرتن</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <button class="btn btn-g" @click="downloadPNG">📥 PNG</button>
-          <button class="btn btn-r" @click="downloadSVG">📄 SVG</button>
-          <button class="btn btn-o" @click="downloadJPG">🖼️ JPG</button>
-          <button class="btn btn-c" @click="copyLink">🔗 لینک کۆپی</button>
+        <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">💾 داگرتن</div>
+
+        <!-- With frame -->
+        <div style="margin-bottom:8px">
+          <div style="font-size:.65rem;font-weight:700;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:5px">
+            <span style="background:linear-gradient(135deg,var(--primary),#4f46e5);width:8px;height:8px;border-radius:2px;display:inline-block"></span>
+            بە چوارچێوە
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
+            <button class="btn btn-g" @click="downloadPNG(true)">📥 PNG</button>
+            <button class="btn btn-o" @click="downloadJPG(true)">🖼️ JPG</button>
+            <button class="btn btn-r" @click="downloadSVG">📄 SVG</button>
+          </div>
         </div>
+
+        <!-- Without frame -->
+        <div style="padding-top:8px;border-top:1px solid var(--border2)">
+          <div style="font-size:.65rem;font-weight:700;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:5px">
+            <span style="background:rgba(255,255,255,.2);width:8px;height:8px;border-radius:2px;display:inline-block"></span>
+            بەبێ چوارچێوە
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
+            <button class="btn btn-ghost" style="font-size:.72rem" @click="downloadPNG(false)">📥 PNG</button>
+            <button class="btn btn-ghost" style="font-size:.72rem" @click="downloadJPG(false)">🖼️ JPG</button>
+            <button class="btn btn-ghost" style="font-size:.72rem" @click="downloadSVGPlain">📄 SVG</button>
+          </div>
+        </div>
+
+        <button class="btn btn-c" style="width:100%;margin-top:9px" @click="copyLink">🔗 لینکی QR کۆپی بکە</button>
       </div>
 
       <!-- SHARE -->
@@ -881,12 +903,180 @@ createApp({
       r.readAsDataURL(f);
     }
 
-    function downloadPNG(){
+    // ── FRAME STYLES for canvas rendering ──
+    const frameStyles = {
+      none:     { pad:0,   bg:null,           radius:0,  border:null,        shadow:null },
+      modern:   { pad:20,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.5)' },
+      elegant:  { pad:20,  bg:'#ffffff',       radius:14, border:{w:3,c:'#7c3aed'}, shadow:'rgba(124,58,237,0.4)' },
+      classic:  { pad:20,  bg:'#ffffff',       radius:4,  border:{w:7,c:'#1a1040'}, shadow:null },
+      rounded:  { pad:24,  bg:'#7c3aed',       radius:40, border:null,        shadow:'rgba(124,58,237,0.5)' },
+      shadow:   { pad:20,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.8)' },
+      neon:     { pad:20,  bg:'#000000',       radius:16, border:{w:2,c:'#7c3aed'}, shadow:'rgba(124,58,237,0.8)' },
+      gradient: { pad:24,  bg:'gradient',      radius:24, border:null,        shadow:null },
+      gold:     { pad:22,  bg:'#ffd700',       radius:16, border:{w:3,c:'#b8860b'}, shadow:'rgba(255,215,0,0.5)' },
+      cosmic:   { pad:22,  bg:'#0f0c29',       radius:20, border:{w:2,c:'#7c3aed'}, shadow:'rgba(124,58,237,0.4)' },
+      rose:     { pad:22,  bg:'#fff0f3',       radius:20, border:{w:2,c:'#ffb3c6'}, shadow:'rgba(236,72,153,0.3)' },
+    };
+
+    function renderToCanvas(withFrame){
+      return new Promise((resolve, reject)=>{
+        if(!qrUrl.value){ reject('no qr'); return; }
+        const qrImg = new Image();
+        qrImg.crossOrigin = 'anonymous';
+        qrImg.onerror = ()=>reject('load error');
+        qrImg.onload = ()=>{
+          const qrW = qrImg.width;
+          const qrH = qrImg.height;
+
+          if(!withFrame || frameType.value === 'none'){
+            // ── Plain canvas: just QR (+ optional logo) ──
+            const c = document.createElement('canvas');
+            const captionH = caption.value ? 36 : 0;
+            c.width = qrW;
+            c.height = qrH + captionH;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = lightColor.value || '#ffffff';
+            ctx.fillRect(0,0,c.width,c.height);
+            ctx.drawImage(qrImg, 0, 0, qrW, qrH);
+            if(logoDataUrl.value) drawLogo(ctx, qrW, qrH, 0, 0, ()=>finishCanvas(ctx, c, captionH, qrW, qrH, 0, resolve));
+            else finishCanvas(ctx, c, captionH, qrW, qrH, 0, resolve);
+            return;
+          }
+
+          // ── With frame ──
+          const fr = frameStyles[frameType.value] || frameStyles.modern;
+          const pad = fr.pad;
+          const shadowBlur = fr.shadow ? 28 : 0;
+          const shadowOff  = fr.shadow ? 12 : 0;
+          const captionH   = caption.value ? 40 : 0;
+
+          const totalW = qrW + pad*2 + (fr.border ? fr.border.w*2 : 0);
+          const totalH = qrH + pad*2 + (fr.border ? fr.border.w*2 : 0) + captionH;
+          const canvasW = totalW + shadowBlur*2 + shadowOff;
+          const canvasH = totalH + shadowBlur*2 + shadowOff;
+
+          const c = document.createElement('canvas');
+          c.width = canvasW; c.height = canvasH;
+          const ctx = c.getContext('2d');
+          ctx.clearRect(0,0,canvasW,canvasH);
+
+          const ox = shadowBlur; // offset x for shadow room
+          const oy = shadowBlur; // offset y
+
+          // Shadow
+          if(fr.shadow){
+            ctx.save();
+            ctx.shadowColor = fr.shadow;
+            ctx.shadowBlur  = shadowBlur;
+            ctx.shadowOffsetX = shadowOff/2;
+            ctx.shadowOffsetY = shadowOff;
+            roundRect(ctx, ox, oy, totalW, totalH, fr.radius);
+            ctx.fillStyle = fr.bg === 'gradient' ? '#ffffff' : (fr.bg||'#ffffff');
+            ctx.fill();
+            ctx.restore();
+          }
+
+          // Background fill
+          if(fr.bg === 'gradient'){
+            const grad = ctx.createLinearGradient(ox, oy, ox+totalW, oy+totalH);
+            grad.addColorStop(0,'#ff6b6b');
+            grad.addColorStop(0.33,'#4ecdc4');
+            grad.addColorStop(0.66,'#45b7d1');
+            grad.addColorStop(1,'#96ceb4');
+            ctx.save();
+            roundRect(ctx, ox, oy, totalW, totalH - captionH, fr.radius);
+            ctx.fillStyle = grad; ctx.fill();
+            ctx.restore();
+          } else {
+            ctx.save();
+            roundRect(ctx, ox, oy, totalW, totalH, fr.radius);
+            ctx.fillStyle = fr.bg || '#ffffff'; ctx.fill();
+            ctx.restore();
+          }
+
+          // Border
+          if(fr.border){
+            ctx.save();
+            roundRect(ctx, ox, oy, totalW, totalH, fr.radius);
+            ctx.strokeStyle = fr.border.c;
+            ctx.lineWidth   = fr.border.w;
+            ctx.stroke();
+            ctx.restore();
+          }
+
+          // QR image
+          const bw = fr.border ? fr.border.w : 0;
+          const qrX = ox + pad + bw;
+          const qrY = oy + pad + bw;
+          ctx.drawImage(qrImg, qrX, qrY, qrW, qrH);
+
+          // Logo overlay
+          if(logoDataUrl.value){
+            drawLogo(ctx, qrW, qrH, qrX, qrY, ()=>finishCanvas(ctx, c, captionH, totalW, totalH, ox, oy, resolve));
+          } else {
+            finishCanvas(ctx, c, captionH, totalW, totalH, ox, oy, resolve);
+          }
+        };
+        qrImg.src = qrUrl.value;
+      });
+    }
+
+    function drawLogo(ctx, qrW, qrH, qrX, qrY, cb){
+      const logoImg = new Image();
+      logoImg.onload = ()=>{
+        const lSize = Math.round(qrW * 0.22);
+        const lX = qrX + (qrW - lSize)/2;
+        const lY = qrY + (qrH - lSize)/2;
+        const pad2 = 4;
+        // White bg for logo
+        ctx.save();
+        roundRect(ctx, lX - pad2, lY - pad2, lSize + pad2*2, lSize + pad2*2, 8);
+        ctx.fillStyle = '#ffffff'; ctx.fill();
+        ctx.restore();
+        ctx.drawImage(logoImg, lX, lY, lSize, lSize);
+        cb();
+      };
+      logoImg.onerror = cb;
+      logoImg.src = logoDataUrl.value;
+    }
+
+    function finishCanvas(ctx, c, captionH, totalW, totalH, ox=0, oy=0, resolve){
+      // Caption text
+      if(caption.value && captionH){
+        const textY = oy + totalH - captionH/2;
+        ctx.font = 'bold 16px "Noto Kufi Arabic", Arial';
+        ctx.fillStyle = '#555555';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(caption.value, ox + totalW/2, textY);
+      }
+      resolve(c);
+    }
+
+    function roundRect(ctx, x, y, w, h, r){
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.lineTo(x+w-r, y);
+      ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+      ctx.lineTo(x+w, y+h-r);
+      ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+      ctx.lineTo(x+r, y+h);
+      ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+      ctx.lineTo(x, y+r);
+      ctx.quadraticCurveTo(x, y, x+r, y);
+      ctx.closePath();
+    }
+
+    async function downloadPNG(withFrame = true){
       if(!qrUrl.value) return;
-      const a = document.createElement('a');
-      a.href = qrUrl.value; a.download = `qr-${tab.value}-${Date.now()}.png`; a.target = '_blank';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      showToast('✅ PNG داگیرا!');
+      try{
+        const c = await renderToCanvas(withFrame);
+        const a = document.createElement('a');
+        a.href = c.toDataURL('image/png');
+        a.download = `qr-${tab.value}-${withFrame&&frameType.value!=='none'?'framed-':''}${Date.now()}.png`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        showToast(withFrame ? '✅ PNG بە چوارچێوە داگیرا!' : '✅ PNG بەبێ چوارچێوە داگیرا!');
+      } catch{ showToast('❌ هەڵە — دووبارە هەوڵ بدە'); }
     }
 
     function downloadSVG(){
@@ -896,31 +1086,40 @@ createApp({
       const lc = lightColor.value.replace('#','');
       const url = `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(data)}&color=${dc}&bgcolor=${lc}&format=svg`;
       const a = document.createElement('a');
-      a.href = url; a.download = `qr-${tab.value}-${Date.now()}.svg`; a.target = '_blank';
+      a.href = url; a.download = `qr-${tab.value}-framed-${Date.now()}.svg`; a.target = '_blank';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       showToast('✅ SVG داگیرا!');
     }
 
-    function downloadJPG(){
+    function downloadSVGPlain(){
+      const data = lastBuilt || buildData(); if(!data) return;
+      const s = Math.min(size.value, 350);
+      const dc = darkColor.value.replace('#','');
+      const lc = lightColor.value.replace('#','');
+      const url = `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${encodeURIComponent(data)}&color=${dc}&bgcolor=${lc}&format=svg`;
+      const a = document.createElement('a');
+      a.href = url; a.download = `qr-${tab.value}-plain-${Date.now()}.svg`; a.target = '_blank';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      showToast('✅ SVG بەبێ چوارچێوە داگیرا!');
+    }
+
+    async function downloadJPG(withFrame = true){
       if(!qrUrl.value) return;
-      // Convert via canvas
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = ()=>{
-        const c = document.createElement('canvas');
-        c.width = img.width; c.height = img.height;
-        const ctx = c.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0,0,c.width,c.height);
-        ctx.drawImage(img,0,0);
+      try{
+        const c = await renderToCanvas(withFrame);
+        // JPG needs white bg
+        const c2 = document.createElement('canvas');
+        c2.width = c.width; c2.height = c.height;
+        const ctx2 = c2.getContext('2d');
+        ctx2.fillStyle = '#ffffff';
+        ctx2.fillRect(0,0,c2.width,c2.height);
+        ctx2.drawImage(c,0,0);
         const a = document.createElement('a');
-        a.href = c.toDataURL('image/jpeg', 0.95);
-        a.download = `qr-${tab.value}-${Date.now()}.jpg`;
+        a.href = c2.toDataURL('image/jpeg', 0.95);
+        a.download = `qr-${tab.value}-${withFrame&&frameType.value!=='none'?'framed-':''}${Date.now()}.jpg`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        showToast('✅ JPG داگیرا!');
-      };
-      img.onerror = ()=>showToast('❌ هەڵە ڕوویدا — PNG بەکاربهێنە');
-      img.src = qrUrl.value;
+        showToast(withFrame ? '✅ JPG بە چوارچێوە داگیرا!' : '✅ JPG بەبێ چوارچێوە داگیرا!');
+      } catch{ showToast('❌ هەڵە — دووبارە هەوڵ بدە'); }
     }
 
     async function copyLink(){
@@ -1119,7 +1318,7 @@ createApp({
       selTemplate, selScheme, colorSchemes, templates, shortcuts,
       showShortcuts,
       stats, currentTabLabel, isValidUrl,
-      generateQR, downloadPNG, downloadSVG, downloadJPG, copyLink,
+      generateQR, downloadPNG, downloadSVG, downloadSVGPlain, downloadJPG, copyLink,
       shareWhatsApp, shareTelegram, shareTwitter, shareNative,
       uploadLogo, resetDesign, applyScheme, applyTemplate,
       startScan, closeScan, scanFromFile, copyScanResult, useScanResult, openScanResult,
