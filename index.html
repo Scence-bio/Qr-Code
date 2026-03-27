@@ -725,7 +725,6 @@ createApp({
       r.readAsDataURL(f);
     }
 
-    // ── FRAME STYLES for canvas rendering ──
     const frameStyles = {
       none:     { pad:0,   bg:null,           radius:0,  border:null,        shadow:null },
       modern:   { pad:40,  bg:'#ffffff',      radius:30, border:null,        shadow:'0 20px 50px rgba(0,0,0,0.3)' },
@@ -752,7 +751,6 @@ createApp({
         canvas.width = s + (pad * 2);
         canvas.height = s + (pad * 2) + (caption.value ? 60 : 0);
 
-        // Draw Background
         ctx.fillStyle = f.bg === 'gradient' ? darkColor.value : (f.bg || lightColor.value);
         if(f.radius > 0){
           ctx.beginPath();
@@ -762,10 +760,8 @@ createApp({
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        // Draw QR
         ctx.drawImage(qrImg, pad, pad, s, s);
 
-        // Draw Logo if exists
         if(logoDataUrl.value){
           const lImg = new Image();
           lImg.src = logoDataUrl.value;
@@ -795,8 +791,6 @@ createApp({
     }
 
     function downloadSVG(){ showToast('🚀 ئەم تایبەتمەندییە بەم زووانە زیاد دەکرێت'); }
-    function downloadSVGPlain(){ /* ... */ }
-    function downloadJPG(){ /* ... */ }
 
     function copyLink(){
       if(!qrUrl.value) return;
@@ -855,7 +849,6 @@ createApp({
       }, options);
     }
 
-    // ── jsQR SCAN ──
     async function startScan(){
       showScanModal.value = true;
       scanResult.value = '';
@@ -931,7 +924,6 @@ createApp({
     function toggleTheme(){ lightTheme.value = !lightTheme.value; document.body.style.filter = lightTheme.value ? 'invert(0.9) hue-rotate(180deg)' : 'none'; }
     function installPWA(){ if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>deferredPrompt=null); } }
 
-    // ── KEYBOARD SHORTCUTS ──
     function handleKey(e){
       if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
       const tabKeys = {1:'text',2:'url',3:'wifi',4:'vcard',5:'maps',6:'email',7:'sms',8:'phone'};
@@ -955,8 +947,6 @@ createApp({
       window.addEventListener('keydown', handleKey);
       window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; pwaReady.value=true; });
       window.addEventListener('appinstalled', ()=>{ pwaInstalled.value=true; pwaReady.value=false; });
-      
-
     });
     onUnmounted(()=>{ window.removeEventListener('keydown',handleKey); closeScan(); });
 
@@ -972,8 +962,8 @@ createApp({
       selTemplate, selScheme, colorSchemes, templates, shortcuts,
       showShortcuts,
       stats, currentTabLabel, isValidUrl,
-      generateQR, downloadPNG, downloadSVG, downloadSVGPlain, downloadJPG, copyLink,
-      shareWhatsApp, shareTelegram, shareTwitter, shareNative,
+      generateQR, downloadPNG, downloadSVG, copyLink,
+      shareNative,
       uploadLogo, resetDesign, applyScheme, applyTemplate,
       startScan, closeScan, scanFromFile, copyScanResult, useScanResult, openScanResult,
       getLocation
