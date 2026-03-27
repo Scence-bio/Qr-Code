@@ -918,11 +918,20 @@ createApp({
       rose:     { pad:22,  bg:'#fff0f3',       radius:20, border:{w:2,c:'#ffb3c6'}, shadow:'rgba(236,72,153,0.3)' },
     };
 
+    async function fetchQRBlob(url){
+      try{
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('failed');
+        const blob = await res.blob();
+        return URL.createObjectURL(blob);
+      } catch { return url; }
+    }
+
     function renderToCanvas(withFrame){
-      return new Promise((resolve, reject)=>{
+      return new Promise(async (resolve, reject)=>{
         if(!qrUrl.value){ reject('no qr'); return; }
+        const src = await fetchQRBlob(qrUrl.value);
         const qrImg = new Image();
-        qrImg.crossOrigin = 'anonymous';
         qrImg.onerror = ()=>reject('load error');
         qrImg.onload = ()=>{
           const qrW = qrImg.width;
@@ -938,8 +947,8 @@ createApp({
             ctx.fillStyle = lightColor.value || '#ffffff';
             ctx.fillRect(0,0,c.width,c.height);
             ctx.drawImage(qrImg, 0, 0, qrW, qrH);
-            if(logoDataUrl.value) drawLogo(ctx, qrW, qrH, 0, 0, ()=>finishCanvas(ctx, c, captionH, qrW, qrH, 0, resolve));
-            else finishCanvas(ctx, c, captionH, qrW, qrH, 0, resolve);
+            if(logoDataUrl.value) drawLogo(ctx, qrW, qrH, 0, 0, ()=>finishCanvas(ctx, c, captionH, qrW, qrH, 0, 0, resolve));
+            else finishCanvas(ctx, c, captionH, qrW, qrH, 0, 0, resolve);
             return;
           }
 
@@ -1017,7 +1026,7 @@ createApp({
             finishCanvas(ctx, c, captionH, totalW, totalH, ox, oy, resolve);
           }
         };
-        qrImg.src = qrUrl.value;
+        qrImg.src = src;
       });
     }
 
