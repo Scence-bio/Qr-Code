@@ -218,6 +218,44 @@ body.light .bg-orb{opacity:.15}
 body.light .bg-grid{background-image:linear-gradient(rgba(124,58,237,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.05) 1px,transparent 1px)}
 body.light .share-btn,.body.light .tpl-card,.body.light .hist-item{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
 body.light .stat-card::before{opacity:.07}
+
+/* لە style تاگی سەرەوەی HTML-ەکەت */
+.icon-wrap {
+  position: relative; /* پێویستە بۆ tooltip */
+}
+
+.tooltip-label {
+  position: absolute;
+  bottom: calc(100% + 8px);   /* سەرەوەی ئایکۆن */
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: #1a1a2e;
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s, transform .2s;
+}
+
+/* سووکانەی تیری خوارەوە */
+.tooltip-label::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1a1a2e;
+}
+
+/* کاتی hover دیار بێت */
+.icon-wrap:hover .tooltip-label {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
 </style>
 </head>
 <body>
