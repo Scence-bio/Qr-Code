@@ -892,13 +892,19 @@ createApp({
     }
 
     function getAPIs(data){
-      const s = Math.min(size.value, 350);
+      const s = Math.min(size.value, 500); // زیادکردنی قەبارەی ڕێگەپێدراو
       const dc = darkColor.value.replace('#','');
       const lc = lightColor.value.replace('#','');
       const enc = encodeURIComponent(data);
+      
+      // بەکارهێنانی باشترین و نازدارترین API-یەکان
       return [
-        `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${enc}&color=${dc}&bgcolor=${lc}&format=png&ecc=${ecc.value}`,
-        `https://quickchart.io/qr?text=${enc}&size=${s}&dark=${dc}&light=${lc}&ecLevel=${ecc.value}&format=png`
+        // 1. QuickChart (باشترین بۆ کوالێتی و دیزاین)
+        `https://quickchart.io/qr?text=${enc}&size=${s}&dark=${dc}&light=${lc}&ecLevel=${ecc.value}&format=png&margin=1`,
+        // 2. Dub.co (خێرا و مۆدێرن)
+        `https://api.dub.co/qr?url=${enc}&size=${s}&color=${dc}`,
+        // 3. QRServer (وەک یەدەگ)
+        `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${enc}&color=${dc}&bgcolor=${lc}&format=png&ecc=${ecc.value}`
       ];
     }
 
