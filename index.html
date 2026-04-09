@@ -892,18 +892,15 @@ createApp({
     }
 
     function getAPIs(data){
-      const s = Math.min(size.value, 500); // زیادکردنی قەبارەی ڕێگەپێدراو
+      // زیادکردنی قەبارە بۆ 1000 بۆ کوالێتی زۆر بەرز (High Quality)
+      const s = Math.min(size.value * 4, 1200); 
       const dc = darkColor.value.replace('#','');
       const lc = lightColor.value.replace('#','');
       const enc = encodeURIComponent(data);
       
-      // بەکارهێنانی باشترین و نازدارترین API-یەکان
       return [
-        // 1. QuickChart (باشترین بۆ کوالێتی و دیزاین)
         `https://quickchart.io/qr?text=${enc}&size=${s}&dark=${dc}&light=${lc}&ecLevel=${ecc.value}&format=png&margin=1`,
-        // 2. Dub.co (خێرا و مۆدێرن)
         `https://api.dub.co/qr?url=${enc}&size=${s}&color=${dc}`,
-        // 3. QRServer (وەک یەدەگ)
         `https://api.qrserver.com/v1/create-qr-code/?size=${s}x${s}&data=${enc}&color=${dc}&bgcolor=${lc}&format=png&ecc=${ecc.value}`
       ];
     }
@@ -992,21 +989,24 @@ createApp({
         const qrImg = new Image();
         qrImg.onerror = ()=>reject('load error');
         qrImg.onload = ()=>{
-          const qrW = qrImg.width;
-          const qrH = qrImg.height;
+          // زیادکردنی کوالێتی ڕەندەرکردن بۆ 2 ئەوەندە (Super Sampling)
+          const scale = 2;
+          const qrW = qrImg.width * scale;
+          const qrH = qrImg.height * scale;
 
           if(!withFrame || frameType.value === 'none'){
-            // ── Plain canvas: just QR (+ optional logo) ──
             const c = document.createElement('canvas');
-            const captionH = caption.value ? 36 : 0;
+            const captionH = (caption.value ? 40 : 0) * scale;
             c.width = qrW;
             c.height = qrH + captionH;
             const ctx = c.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             ctx.fillStyle = lightColor.value || '#ffffff';
             ctx.fillRect(0,0,c.width,c.height);
             ctx.drawImage(qrImg, 0, 0, qrW, qrH);
-            if(logoDataUrl.value) drawLogo(ctx, qrW, qrH, 0, 0, ()=>finishCanvas(ctx, c, captionH, qrW, qrH, 0, 0, resolve));
-            else finishCanvas(ctx, c, captionH, qrW, qrH, 0, 0, resolve);
+            if(logoDataUrl.value) drawLogo(ctx, qrW, qrH, 0, 0, ()=>finishCanvas(ctx, c, captionH, qrW, qrH, 0, 0, resolve, scale));
+            else finishCanvas(ctx, c, captionH, qrW, qrH, 0, 0, resolve, scale);
             return;
           }
 
@@ -1107,11 +1107,12 @@ createApp({
       logoImg.src = logoDataUrl.value;
     }
 
-    function finishCanvas(ctx, c, captionH, totalW, totalH, ox=0, oy=0, resolve){
+    function finishCanvas(ctx, c, captionH, totalW, totalH, ox=0, oy=0, resolve, scale=1){
       // Caption text
       if(caption.value && captionH){
         const textY = oy + totalH - captionH/2;
-        ctx.font = 'bold 16px "Noto Kufi Arabic", Arial';
+        const fontSize = Math.round(18 * scale);
+        ctx.font = `bold ${fontSize}px "Noto Kufi Arabic", Arial`;
         ctx.fillStyle = '#555555';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
