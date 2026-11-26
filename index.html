@@ -348,7 +348,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
   padding:18px;text-align:center;background:var(--bg2);cursor:pointer;transition:border-color .15s, background .15s;
 }
 .logo-drop:hover,.logo-drop.drag{border-color:var(--primary);background:rgba(15,118,110,.06)}
-.logo-drop img{width:72px;height:72px;object-fit:contain;border-radius:12px;background:#fff;padding:6px;border:1px solid var(--border2);display:block}
+.logo-drop img{width:80px;height:80px;object-fit:contain;border-radius:18px;background:#fff;padding:8px;border:1px solid rgba(15,118,110,.18);display:block;box-shadow:0 6px 16px rgba(15,23,42,.1)}
 .logo-drop .title{font-size:.9rem;font-weight:800;color:var(--text);margin-top:8px}
 .logo-drop .sub{font-size:.74rem;color:var(--muted);margin-top:4px;line-height:1.45;max-width:32ch}
 
@@ -620,11 +620,14 @@ body.dark .mobile-dock{background:rgba(18,21,26,.92);border-top-color:var(--bord
               <span class="lbl" style="margin:0">قەبارەی وێنە</span>
               <span style="font-size:.72rem;font-weight:800;color:var(--primary)">{{logoSize}}%</span>
             </div>
-            <input type="range" v-model.number="logoSize" min="12" max="28"/>
+            <input type="range" v-model.number="logoSize" min="14" max="30"/>
             <div class="url-actions" style="margin-top:8px">
+              <button type="button" class="chip" :class="{on:logoShape==='rounded'}" @click.stop="logoShape='rounded'">نەرم</button>
+              <button type="button" class="chip" :class="{on:logoShape==='circle'}" @click.stop="logoShape='circle'">بازنە</button>
+              <button type="button" class="chip" :class="{on:logoShape==='square'}" @click.stop="logoShape='square'">چوارگۆشە</button>
               <button type="button" class="chip" @click.stop="clearLogo">لابردنی وێنە</button>
             </div>
-            <div class="hint">{{ canGenerate ? 'وێنەکە خۆکار دەچێتە ناو QR' : 'ئێستا بەستەر بنووسە تا QR لەگەڵ وێنەکە دروست ببێت' }}</div>
+            <div class="hint">{{ canGenerate ? 'وێنەکە بە بادجی سپی و سێبەر دەچێتە ناوەڕاستی QR' : 'ئێستا بەستەر بنووسە تا QR لەگەڵ وێنەکە دروست ببێت' }}</div>
           </div>
         </div>
 
@@ -955,7 +958,8 @@ createApp({
     const scanning = ref(false);
     const caption = ref('');
     const logoDataUrl = ref('');
-    const logoSize = ref(20);
+    const logoSize = ref(22);
+    const logoShape = ref('rounded');
     const logoDragging = ref(false);
     const logoFileInput = ref(null);
     const showPass = ref(false);
@@ -1263,24 +1267,81 @@ createApp({
         logoImg.onload = ()=>{
           try{
             const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             const dim = canvas.width;
-            const ratio = Math.min(28, Math.max(12, Number(logoSize.value) || 20)) / 100;
+            const ratio = Math.min(30, Math.max(12, Number(logoSize.value) || 22)) / 100;
             const lSize = Math.round(dim * ratio);
-            const lX = Math.round((dim - lSize) / 2);
-            const lY = Math.round((dim - lSize) / 2);
-            const pad = Math.max(6, Math.round(lSize * 0.1));
-            const radius = Math.max(6, Math.round(lSize * 0.14));
+            const cx = dim / 2;
+            const cy = dim / 2;
+
+            // بادجی سپی + قەراغی ئارام بۆ سکان و جوانی
+            const quiet = Math.max(10, Math.round(lSize * 0.2));
+            const badge = lSize + quiet * 2;
+            const bx = Math.round(cx - badge / 2);
+            const by = Math.round(cy - badge / 2);
+            const shape = logoShape.value || 'rounded';
+            const badgeR = shape === 'circle' ? badge / 2
+              : shape === 'square' ? Math.max(4, Math.round(badge * 0.06))
+              : Math.round(badge * 0.22);
+
+            // سێبەری نەرم
             ctx.save();
-            roundRect(ctx, lX - pad, lY - pad, lSize + pad * 2, lSize + pad * 2, radius);
+            ctx.shadowColor = 'rgba(15, 23, 42, 0.22)';
+            ctx.shadowBlur = Math.max(10, Math.round(lSize * 0.14));
+            ctx.shadowOffsetY = Math.max(4, Math.round(lSize * 0.05));
+            roundRect(ctx, bx, by, badge, badge, badgeR);
             ctx.fillStyle = '#ffffff';
             ctx.fill();
             ctx.restore();
-            const iw = logoImg.naturalWidth || lSize;
-            const ih = logoImg.naturalHeight || lSize;
-            const fit = Math.min(lSize / iw, lSize / ih);
+
+            // پڕکردنەوەی سپی + چوارچێوەی تەنک
+            ctx.save();
+            roundRect(ctx, bx, by, badge, badge, badgeR);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(15, 118, 110, 0.16)';
+            ctx.lineWidth = Math.max(1.5, dim * 0.0045);
+            ctx.stroke();
+            ctx.restore();
+
+            // ناوەڕۆکی خاکستریی زۆر کاڵ
+            const inset = Math.max(3, Math.round(quiet * 0.28));
+            ctx.save();
+            roundRect(ctx, bx + inset, by + inset, badge - inset * 2, badge - inset * 2, Math.max(4, badgeR - inset));
+            ctx.fillStyle = '#f8fafc';
+            ctx.fill();
+            ctx.restore();
+
+            // وێنە بە clipی خولاو/چوارگۆشە
+            const inner = Math.max(3, Math.round(lSize * 0.07));
+            const avail = Math.max(8, lSize - inner * 2);
+            const iw = logoImg.naturalWidth || avail;
+            const ih = logoImg.naturalHeight || avail;
+            const fit = Math.min(avail / iw, avail / ih);
             const dw = Math.max(1, iw * fit);
             const dh = Math.max(1, ih * fit);
-            ctx.drawImage(logoImg, lX + (lSize - dw)/2, lY + (lSize - dh)/2, dw, dh);
+            const lx = Math.round(cx - lSize / 2);
+            const ly = Math.round(cy - lSize / 2);
+            const imgR = shape === 'circle' ? lSize / 2
+              : shape === 'square' ? Math.max(3, Math.round(lSize * 0.08))
+              : Math.round(lSize * 0.18);
+
+            ctx.save();
+            roundRect(ctx, lx, ly, lSize, lSize, imgR);
+            ctx.clip();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(lx, ly, lSize, lSize);
+            ctx.drawImage(logoImg, cx - dw / 2, cy - dh / 2, dw, dh);
+            ctx.restore();
+
+            // هێڵی سپی بۆ تیشک
+            ctx.save();
+            roundRect(ctx, bx + 1, by + 1, badge - 2, badge - 2, Math.max(0, badgeR - 1));
+            ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+            ctx.lineWidth = Math.max(1, dim * 0.003);
+            ctx.stroke();
+            ctx.restore();
           } catch(e){ console.error(e); }
           resolve(canvas);
         };
@@ -1319,7 +1380,7 @@ createApp({
       clearTimeout(debTimer);
       debTimer = setTimeout(()=>{ if(buildData()) generateQR(); }, 420);
     }
-    watch([size, darkColor, lightColor, ecc, logoDataUrl, logoSize], schedRegen);
+    watch([size, darkColor, lightColor, ecc, logoDataUrl, logoSize, logoShape], schedRegen);
     watch(inputs, schedRegen, { deep:true });
     watch(caption, ()=>{ /* caption is export-only overlay; no regen needed */ });
     watch(logoDataUrl, (v)=>{ if(v && ecc.value !== 'H'){ ecc.value = 'H'; showToast('پاراستن بۆ لۆگۆ کرا بە H'); } });
@@ -1327,7 +1388,7 @@ createApp({
     function resetDesign(){
       size.value = 220; frameType.value = 'modern';
       darkColor.value = '#000000'; lightColor.value = '#ffffff';
-      ecc.value = 'M'; caption.value = ''; logoDataUrl.value = ''; logoSize.value = 20;
+      ecc.value = 'M'; caption.value = ''; logoDataUrl.value = ''; logoSize.value = 22; logoShape.value = 'rounded';
       applyScheme(colorSchemes[0]);
       showToast('✓ دیزاین ڕیسێت کرا');
     }
@@ -1445,15 +1506,18 @@ createApp({
       return Array.isArray(out) ? out[0] : out;
     }
     function rasterizeDrawable(drawable, w, h){
-      const side = 512;
+      const side = 768;
       const c = document.createElement('canvas');
       c.width = side; c.height = side;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0,0,side,side);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      // پشتێنەی شەفاف — بادجی QR خۆی سپی دەکات
+      ctx.clearRect(0,0,side,side);
       const iw = w || drawable.naturalWidth || drawable.width || side;
       const ih = h || drawable.naturalHeight || drawable.height || side;
-      const scale = Math.min(side / iw, side / ih);
+      const pad = side * 0.06;
+      const scale = Math.min((side - pad*2) / iw, (side - pad*2) / ih);
       const dw = Math.max(1, iw * scale);
       const dh = Math.max(1, ih * scale);
       ctx.drawImage(drawable, (side - dw)/2, (side - dh)/2, dw, dh);
@@ -2291,7 +2355,7 @@ createApp({
       tab, lightTheme, toggleTheme,
       loading, error, qrUrl, lastBuilt, canGenerate,
       inputs, size, frameType, darkColor, lightColor, ecc,
-      caption, logoDataUrl, logoSize, logoDragging, logoFileInput, showPass, designOpen, urlInput, tabsEl, previewEl,
+      caption, logoDataUrl, logoSize, logoShape, logoDragging, logoFileInput, showPass, designOpen, urlInput, tabsEl, previewEl,
       history, loadHistory, removeHistory, clearHistory,
       showScanModal, scanResult, scanStatus, scanning,
       videoEl, videoCanvas, scanCanvas,
