@@ -627,7 +627,7 @@ body.dark .mobile-dock{background:rgba(18,21,26,.92);border-top-color:var(--bord
               <button type="button" class="chip" :class="{on:logoShape==='square'}" @click.stop="logoShape='square'">چوارگۆشە</button>
               <button type="button" class="chip" @click.stop="clearLogo">لابردنی وێنە</button>
             </div>
-            <div class="hint">{{ canGenerate ? 'وێنەکە بێ پاشبنەما دەچێتە ناوەڕاستی QR' : 'ئێستا بەستەر بنووسە تا QR لەگەڵ وێنەکە دروست ببێت' }}</div>
+            <div class="hint">{{ canGenerate ? 'پاشبنەمای سپی لادەبرێت — تەنها وێنەکە دەمێنێتەوە' : 'ئێستا بەستەر بنووسە تا QR لەگەڵ وێنەکە دروست ببێت' }}</div>
           </div>
         </div>
 
@@ -1260,6 +1260,38 @@ createApp({
       return { canvas, qr, cell, margin, count, dim };
     }
 
+    function makeLogoTransparent(drawable, w, h){
+      // لابردنی پاشبنەمای سپی/کاڵ لە خودی وێنەکە — تەنها لۆگۆ دەمێنێتەوە
+      const tw = Math.max(1, Math.round(w || drawable.naturalWidth || drawable.width || 256));
+      const th = Math.max(1, Math.round(h || drawable.naturalHeight || drawable.height || 256));
+      const c = document.createElement('canvas');
+      c.width = tw; c.height = th;
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.clearRect(0, 0, tw, th);
+      ctx.drawImage(drawable, 0, 0, tw, th);
+      const img = ctx.getImageData(0, 0, tw, th);
+      const d = img.data;
+      const [lr, lg, lb] = hexToRgb(lightColor.value || '#ffffff');
+      for(let i = 0; i < d.length; i += 4){
+        const r = d[i], g = d[i+1], b = d[i+2], a = d[i+3];
+        if(a < 8){ d[i+3] = 0; continue; }
+        // سپی / خۆڵەمێشی زۆر کاڵ
+        const maxc = Math.max(r, g, b);
+        const minc = Math.min(r, g, b);
+        const nearWhite = maxc > 232 && (maxc - minc) < 28;
+        // نزیک لە ڕەنگی پاشبنەمای QR
+        const nearLight = Math.abs(r - lr) < 26 && Math.abs(g - lg) < 26 && Math.abs(b - lb) < 26
+          && maxc > 200;
+        if(nearWhite || nearLight){
+          const dist = nearWhite ? (255 - minc) : Math.max(Math.abs(r-lr), Math.abs(g-lg), Math.abs(b-lb));
+          if(dist < 10) d[i+3] = 0;
+          else if(dist < 26) d[i+3] = Math.round(a * (dist / 26));
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      return c;
+    }
+
     function bakeLogoOntoCanvas(canvas){
       return new Promise((resolve)=>{
         if(!logoDataUrl.value){ resolve(canvas); return; }
@@ -1281,25 +1313,18 @@ createApp({
               : shape === 'square' ? Math.max(2, Math.round(lSize * 0.06))
               : Math.round(lSize * 0.16);
 
-            // تەنها خاوێنکردنەوەی مۆدیوڵەکانی ژێر وێنە بە ڕەنگی پاشبنەمای QR — بێ بادج/سێبەر
-            const clearPad = Math.max(2, Math.round(lSize * 0.04));
-            ctx.save();
-            roundRect(ctx, lx - clearPad, ly - clearPad, lSize + clearPad * 2, lSize + clearPad * 2, imgR + clearPad);
-            ctx.fillStyle = lightColor.value || '#ffffff';
-            ctx.fill();
-            ctx.restore();
+            const srcW = logoImg.naturalWidth || lSize;
+            const srcH = logoImg.naturalHeight || lSize;
+            const clean = makeLogoTransparent(logoImg, srcW, srcH);
+            const fit = Math.min(lSize / srcW, lSize / srcH);
+            const dw = Math.max(1, srcW * fit);
+            const dh = Math.max(1, srcH * fit);
 
-            const iw = logoImg.naturalWidth || lSize;
-            const ih = logoImg.naturalHeight || lSize;
-            const fit = Math.min(lSize / iw, lSize / ih);
-            const dw = Math.max(1, iw * fit);
-            const dh = Math.max(1, ih * fit);
-
+            // بێ هیچ پاشبنەمایەک — تەنها پێکسڵە شەفافەکان لەسەر QR
             ctx.save();
             roundRect(ctx, lx, ly, lSize, lSize, imgR);
             ctx.clip();
-            // بێ پاشبنەما — تەنها وێنە (شەفاف دەمێنێتەوە)
-            ctx.drawImage(logoImg, cx - dw / 2, cy - dh / 2, dw, dh);
+            ctx.drawImage(clean, cx - dw / 2, cy - dh / 2, dw, dh);
             ctx.restore();
           } catch(e){ console.error(e); }
           resolve(canvas);
@@ -1466,20 +1491,21 @@ createApp({
     }
     function rasterizeDrawable(drawable, w, h){
       const side = 768;
+      const iw = w || drawable.naturalWidth || drawable.width || side;
+      const ih = h || drawable.naturalHeight || drawable.height || side;
+      // سەرەتا پاشبنەما لابە، پاشان لەسەر کانڤاسی شەفاف دایبنێ
+      const clean = makeLogoTransparent(drawable, iw, ih);
       const c = document.createElement('canvas');
       c.width = side; c.height = side;
       const ctx = c.getContext('2d');
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-      // پشتێنەی شەفاف — بادجی QR خۆی سپی دەکات
       ctx.clearRect(0,0,side,side);
-      const iw = w || drawable.naturalWidth || drawable.width || side;
-      const ih = h || drawable.naturalHeight || drawable.height || side;
-      const pad = side * 0.06;
+      const pad = side * 0.04;
       const scale = Math.min((side - pad*2) / iw, (side - pad*2) / ih);
       const dw = Math.max(1, iw * scale);
       const dh = Math.max(1, ih * scale);
-      ctx.drawImage(drawable, (side - dw)/2, (side - dh)/2, dw, dh);
+      ctx.drawImage(clean, (side - dw)/2, (side - dh)/2, dw, dh);
       return c.toDataURL('image/png');
     }
     async function decodeLogoBlob(blob, preferHeic){
@@ -1809,16 +1835,12 @@ createApp({
     function drawLogo(ctx, qrW, qrH, qrX, qrY, cb){
       const logoImg = new Image();
       logoImg.onload = ()=>{
-        const ratio = Math.min(28, Math.max(12, logoSize.value || 20)) / 100;
+        const ratio = Math.min(30, Math.max(12, logoSize.value || 22)) / 100;
         const lSize = Math.round(qrW * ratio);
         const lX = qrX + (qrW - lSize)/2;
         const lY = qrY + (qrH - lSize)/2;
-        const pad2 = Math.max(4, Math.round(lSize * 0.1));
-        ctx.save();
-        roundRect(ctx, lX - pad2, lY - pad2, lSize + pad2*2, lSize + pad2*2, Math.round(lSize*0.14));
-        ctx.fillStyle = '#ffffff'; ctx.fill();
-        ctx.restore();
-        ctx.drawImage(logoImg, lX, lY, lSize, lSize);
+        const clean = makeLogoTransparent(logoImg, logoImg.naturalWidth || lSize, logoImg.naturalHeight || lSize);
+        ctx.drawImage(clean, lX, lY, lSize, lSize);
         cb();
       };
       logoImg.onerror = cb;
