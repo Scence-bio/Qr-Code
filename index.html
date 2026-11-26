@@ -207,18 +207,25 @@ body.dark .toast{background:#eef0f3;color:#121417}
 .payload-box{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);font-size:.72rem;color:var(--muted);word-break:break-all;direction:ltr;text-align:left}
 
 .logo-drop{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:120px;
+  box-sizing:border-box;
   border:1.5px dashed var(--border);
   border-radius:var(--radius-sm);
-  padding:14px;
+  padding:16px;
   text-align:center;
   background:var(--bg2);
   cursor:pointer;
   transition:border-color .15s, background .15s;
 }
 .logo-drop:hover,.logo-drop.drag{border-color:var(--primary);background:rgba(15,118,110,.06)}
-.logo-drop img{width:64px;height:64px;object-fit:contain;border-radius:10px;background:#fff;padding:4px;border:1px solid var(--border2)}
-.logo-drop .title{font-size:.82rem;font-weight:800;color:var(--text);margin-top:6px}
-.logo-drop .sub{font-size:.7rem;color:var(--muted);margin-top:3px}
+.logo-drop img{width:72px;height:72px;object-fit:contain;border-radius:12px;background:#fff;padding:6px;border:1px solid var(--border2);display:block}
+.logo-drop .title{font-size:.86rem;font-weight:800;color:var(--text);margin-top:8px}
+.logo-drop .sub{font-size:.72rem;color:var(--muted);margin-top:4px;line-height:1.45;max-width:28ch}
 </style>
 </head>
 <body>
@@ -433,22 +440,19 @@ body.dark .toast{background:#eef0f3;color:#121417}
       <div v-if="!['history','scan','templates'].includes(tab)" style="margin-top:18px;display:flex;flex-direction:column;gap:12px">
 
         <div>
-          <label class="lbl">وێنە لەناو QR</label>
-          <label class="logo-drop" :class="{drag:logoDragging}"
-                 @dragover.prevent="logoDragging=true"
-                 @dragleave.prevent="logoDragging=false"
-                 @drop.prevent="onLogoDrop">
-            <input type="file" accept="image/*" style="display:none" @change="uploadLogo"/>
-            <template v-if="logoDataUrl">
-              <img :src="logoDataUrl" alt="logo"/>
-              <div class="title">وێنە دانرا</div>
-              <div class="sub">کلیک بکە بۆ گۆڕین · خۆکارانە دەچێتە ناوەڕاستی QR</div>
-            </template>
-            <template v-else>
-              <div class="title">وێنەکەت لێرە دابنێ</div>
-              <div class="sub">کلیک یان ڕاکێشان · PNG / JPG / SVG</div>
-            </template>
-          </label>
+          <div class="lbl">وێنە لەناو QR</div>
+          <input ref="logoFileInput" type="file" accept="image/*,.png,.jpg,.jpeg,.webp,.gif,.svg" style="display:none" @change="uploadLogo"/>
+          <div class="logo-drop" :class="{drag:logoDragging}"
+               role="button" tabindex="0"
+               @click="pickLogo"
+               @keydown.enter.prevent="pickLogo"
+               @dragover.prevent="logoDragging=true"
+               @dragleave.prevent="logoDragging=false"
+               @drop.prevent="onLogoDrop">
+            <img v-if="logoDataUrl" :src="logoDataUrl" alt="logo"/>
+            <div class="title">{{ logoDataUrl ? 'وێنە دانرا' : 'وێنەکەت لێرە دابنێ' }}</div>
+            <div class="sub">{{ logoDataUrl ? 'کلیک بۆ گۆڕین — خۆکار دەچێتە ناوەڕاستی QR' : 'کلیک یان ڕاکێشان · PNG / JPG / WEBP' }}</div>
+          </div>
           <div v-if="logoDataUrl" style="margin-top:10px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
               <span class="lbl" style="margin:0">قەبارەی وێنە</span>
@@ -456,17 +460,17 @@ body.dark .toast{background:#eef0f3;color:#121417}
             </div>
             <input type="range" v-model.number="logoSize" min="12" max="28"/>
             <div class="url-actions" style="margin-top:8px">
-              <button type="button" class="chip" @click="logoDataUrl=''; showToast('وێنە لابرا')">لابردنی وێنە</button>
+              <button type="button" class="chip" @click.stop="clearLogo">لابردنی وێنە</button>
             </div>
-            <div class="hint">پاراستنی QR خۆکار دەبێت بە H تا سکان کار بکات</div>
+            <div class="hint">{{ canGenerate ? 'وێنەکە خۆکار دەچێتە ناو QR' : 'ئێستا بەستەر بنووسە تا QR لەگەڵ وێنەکە دروست ببێت' }}</div>
           </div>
         </div>
 
         <div class="panel-soft" style="border-radius:var(--radius-sm);padding:14px;display:flex;flex-direction:column;gap:12px">
-          <button type="button" class="design-toggle" @click="designOpen=!designOpen">
-            <span>ڕێکخستنی زیاتر {{designOpen?'▾':'▸'}}</span>
-            <span class="btn btn-sm btn-ghost" style="font-size:.62rem;padding:3px 8px" @click.stop="resetDesign">ڕیسێت</span>
-          </button>
+          <div class="design-toggle">
+            <button type="button" style="background:none;border:none;font:inherit;color:inherit;cursor:pointer;padding:0;font-weight:800" @click="designOpen=!designOpen">ڕێکخستنی زیاتر {{designOpen?'▾':'▸'}}</button>
+            <button type="button" class="btn btn-sm btn-ghost" style="font-size:.62rem;padding:3px 8px" @click="resetDesign">ڕیسێت</button>
+          </div>
           <div v-show="designOpen" style="display:flex;flex-direction:column;gap:12px">
             <div>
               <label class="lbl">تێکستی ژێرەوە</label>
@@ -543,7 +547,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
             <div style="background:rgba(15,118,110,.1);border:1px solid rgba(15,118,110,.25);border-radius:8px;padding:3px 12px;font-size:.65rem;font-weight:800;color:var(--text2);letter-spacing:.5px">
               <span class="live-dot" v-if="!loading"></span>{{currentTabLabel}}
             </div>
-            <div v-if="lastBuilt" class="payload-box">{{lastBuilt.length>120?lastBuilt.slice(0,120)+'…':lastBuilt}}</div>
+            <div v-if="lastBuilt" class="payload-box">{{ String(lastBuilt).length>120 ? String(lastBuilt).slice(0,120)+'…' : lastBuilt }}</div>
           </div>
         </div>
       </div>
@@ -695,6 +699,7 @@ createApp({
     const logoDataUrl = ref('');
     const logoSize = ref(20);
     const logoDragging = ref(false);
+    const logoFileInput = ref(null);
     const showPass = ref(false);
     const designOpen = ref(false);
     const urlInput = ref(null);
@@ -892,20 +897,27 @@ createApp({
         if(!logoDataUrl.value){ resolve(canvas); return; }
         const logoImg = new Image();
         logoImg.onload = ()=>{
-          const ctx = canvas.getContext('2d');
-          const dim = canvas.width;
-          const ratio = Math.min(28, Math.max(12, logoSize.value || 20)) / 100;
-          const lSize = Math.round(dim * ratio);
-          const lX = Math.round((dim - lSize) / 2);
-          const lY = Math.round((dim - lSize) / 2);
-          const pad = Math.max(6, Math.round(lSize * 0.1));
-          const radius = Math.max(6, Math.round(lSize * 0.14));
-          ctx.save();
-          roundRect(ctx, lX - pad, lY - pad, lSize + pad * 2, lSize + pad * 2, radius);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
-          ctx.restore();
-          ctx.drawImage(logoImg, lX, lY, lSize, lSize);
+          try{
+            const ctx = canvas.getContext('2d');
+            const dim = canvas.width;
+            const ratio = Math.min(28, Math.max(12, Number(logoSize.value) || 20)) / 100;
+            const lSize = Math.round(dim * ratio);
+            const lX = Math.round((dim - lSize) / 2);
+            const lY = Math.round((dim - lSize) / 2);
+            const pad = Math.max(6, Math.round(lSize * 0.1));
+            const radius = Math.max(6, Math.round(lSize * 0.14));
+            ctx.save();
+            roundRect(ctx, lX - pad, lY - pad, lSize + pad * 2, lSize + pad * 2, radius);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.restore();
+            const iw = logoImg.naturalWidth || lSize;
+            const ih = logoImg.naturalHeight || lSize;
+            const fit = Math.min(lSize / iw, lSize / ih);
+            const dw = Math.max(1, iw * fit);
+            const dh = Math.max(1, ih * fit);
+            ctx.drawImage(logoImg, lX + (lSize - dw)/2, lY + (lSize - dh)/2, dw, dh);
+          } catch(e){ console.error(e); }
           resolve(canvas);
         };
         logoImg.onerror = ()=>resolve(canvas);
@@ -967,15 +979,56 @@ createApp({
       showToast(`✓ قاڵبی "${t.name}" هەڵبژێردرا`);
     }
 
+    function isImageFile(f){
+      if(!f) return false;
+      if(f.type && f.type.startsWith('image/')) return true;
+      return /\.(png|jpe?g|gif|webp|svg)$/i.test(f.name || '');
+    }
+    function pickLogo(){
+      if(logoFileInput.value) logoFileInput.value.click();
+    }
+    function clearLogo(){
+      logoDataUrl.value = '';
+      showToast('وێنە لابرا');
+      if(buildData()) schedRegen();
+    }
     function readLogoFile(f){
-      if(!f || !f.type.startsWith('image/')){ showToast('تەنها وێنە قبوڵە'); return; }
-      if(f.size > 4 * 1024 * 1024){ showToast('وێنەکە زۆر گەورەیە (زۆرینە 4MB)'); return; }
+      if(!isImageFile(f)){ showToast('تەنها وێنە قبوڵە'); return; }
+      if(f.size > 6 * 1024 * 1024){ showToast('وێنەکە زۆر گەورەیە (زۆرینە 6MB)'); return; }
       const r = new FileReader();
       r.onload = ev => {
-        logoDataUrl.value = ev.target.result;
-        if(ecc.value !== 'H') ecc.value = 'H';
-        showToast('✓ وێنە خرایە ناو QR');
+        const raw = ev.target.result;
+        // Normalize to raster so SVG/odd formats bake reliably into QR canvas
+        const img = new Image();
+        img.onload = ()=>{
+          try{
+            const side = 512;
+            const c = document.createElement('canvas');
+            c.width = side; c.height = side;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0,0,side,side);
+            const scale = Math.min(side / (img.naturalWidth || side), side / (img.naturalHeight || side));
+            const dw = Math.max(1, (img.naturalWidth || side) * scale);
+            const dh = Math.max(1, (img.naturalHeight || side) * scale);
+            ctx.drawImage(img, (side-dw)/2, (side-dh)/2, dw, dh);
+            logoDataUrl.value = c.toDataURL('image/png');
+          } catch(e){
+            logoDataUrl.value = raw;
+          }
+          if(ecc.value !== 'H') ecc.value = 'H';
+          showToast(canGenerate.value ? '✓ وێنە خرایە ناو QR' : '✓ وێنە دانرا — بەستەر بنووسە');
+          if(buildData()) schedRegen();
+        };
+        img.onerror = ()=>{
+          logoDataUrl.value = raw;
+          if(ecc.value !== 'H') ecc.value = 'H';
+          showToast(canGenerate.value ? '✓ وێنە خرایە ناو QR' : '✓ وێنە دانرا — بەستەر بنووسە');
+          if(buildData()) schedRegen();
+        };
+        img.src = raw;
       };
+      r.onerror = ()=> showToast('× خوێندنەوەی وێنە سەرکەوتوو نەبوو');
       r.readAsDataURL(f);
     }
     function uploadLogo(e){
@@ -1544,7 +1597,7 @@ createApp({
       tab, lightTheme, toggleTheme,
       loading, error, qrUrl, lastBuilt, canGenerate,
       inputs, size, frameType, darkColor, lightColor, ecc,
-      caption, logoDataUrl, logoSize, logoDragging, showPass, designOpen, urlInput,
+      caption, logoDataUrl, logoSize, logoDragging, logoFileInput, showPass, designOpen, urlInput,
       history, loadHistory, removeHistory, clearHistory,
       showScanModal, scanResult, scanStatus, scanning,
       videoEl, videoCanvas, scanCanvas,
@@ -1553,7 +1606,7 @@ createApp({
       stats, currentTabLabel, isValidUrl, looksLikeDomain, pasteUrl, prefixUrl,
       generateQR, downloadPNG, downloadSVG, downloadSVGPlain, downloadJPG, copyLink, copyImage,
       shareWhatsApp, shareTelegram, shareTwitter, shareNative,
-      uploadLogo, onLogoDrop, resetDesign, applyScheme, applyTemplate,
+      uploadLogo, onLogoDrop, pickLogo, clearLogo, resetDesign, applyScheme, applyTemplate,
       startScan, closeScan, scanFromFile, copyScanResult, useScanResult, openScanResult,
       getLocation
     };
