@@ -147,8 +147,34 @@ input[type=color]{-webkit-appearance:none;width:36px;height:36px;border:1px soli
 .fr-rose{padding:16px;background:#fff1f2;border-radius:14px;border:1.5px solid #fda4af}
 .fr-paper{padding:16px;background:#faf7f2;border-radius:6px;border:1px solid #e7e0d5;box-shadow:0 1px 0 #fff inset,0 8px 20px rgba(28,25,23,.08)}
 .fr-soft{padding:16px;background:#ecfdf5;border-radius:18px;border:1px solid #a7f3d0}
+.fr-polaroid{padding:12px 12px 28px;background:#fff;border-radius:4px;box-shadow:0 12px 28px rgba(0,0,0,.16);border:1px solid #e5e7eb}
+.fr-ticket{padding:14px;background:#fffbeb;border-radius:10px;border:1.5px dashed #d97706;box-shadow:0 8px 20px rgba(180,83,9,.12)}
+.fr-glass{padding:16px;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(204,251,241,.55));border-radius:18px;border:1px solid rgba(15,118,110,.28);backdrop-filter:blur(6px);box-shadow:0 10px 28px rgba(15,118,110,.12)}
+.fr-marble{padding:16px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 35%,#f1f5f9 60%,#cbd5e1 100%);border-radius:14px;border:1px solid #94a3b8;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.fr-film{padding:14px 18px;background:#111827;border-radius:6px;border:3px solid #0f172a;box-shadow:inset 0 0 0 2px #334155;position:relative}
+.fr-film::before,.fr-film::after{content:'';position:absolute;top:6px;bottom:6px;width:7px;background:repeating-linear-gradient(#111827 0 5px,#f8fafc 5px 9px);opacity:.9}
+.fr-film::before{left:4px}.fr-film::after{right:4px}
+.fr-badge{padding:18px;background:radial-gradient(circle at 35% 30%,#ccfbf1,#0f766e 70%);border-radius:50%;border:3px solid #134e4a;box-shadow:0 10px 24px rgba(15,118,110,.28)}
+.fr-corner{
+  padding:16px;background:#fff;border-radius:8px;position:relative;
+  background-image:
+    linear-gradient(var(--primary),var(--primary)),linear-gradient(var(--primary),var(--primary)),
+    linear-gradient(var(--primary),var(--primary)),linear-gradient(var(--primary),var(--primary)),
+    linear-gradient(var(--primary),var(--primary)),linear-gradient(var(--primary),var(--primary)),
+    linear-gradient(var(--primary),var(--primary)),linear-gradient(var(--primary),var(--primary));
+  background-repeat:no-repeat;
+  background-size:14px 2.5px,2.5px 14px,14px 2.5px,2.5px 14px,14px 2.5px,2.5px 14px,14px 2.5px,2.5px 14px;
+  background-position:6px 6px,6px 6px,calc(100% - 6px) 6px,calc(100% - 6px) 6px,6px calc(100% - 6px),6px calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) calc(100% - 14px);
+}
+.fr-mesh{padding:16px;background:#fff;border-radius:14px;border:2px dotted #0f766e;box-shadow:0 0 0 6px rgba(15,118,110,.06)}
+.fr-ink{padding:16px;background:radial-gradient(circle at 30% 20%,#1e293b,#020617 75%);border-radius:16px;border:1px solid #334155;box-shadow:0 14px 30px rgba(2,6,23,.45)}
+.fr-aurora{padding:18px;background:linear-gradient(125deg,#042f2e,#0f766e 35%,#7c3aed 70%,#db2777);border-radius:18px;box-shadow:0 12px 28px rgba(124,58,237,.22)}
+.fr-stamp{padding:14px;background:#fff;border-radius:8px;border:3px dashed #be123c;box-shadow:inset 0 0 0 4px #fff,0 0 0 1px #fda4af}
+.fr-metal{padding:16px;background:linear-gradient(160deg,#f8fafc,#94a3b8 45%,#e2e8f0 70%,#64748b);border-radius:12px;border:1px solid #475569;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 10px 22px rgba(15,23,42,.18)}
+.fr-folio{padding:14px;background:#fff;border-radius:10px;border:1px solid #0f766e;box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 6px #99f6e4,0 8px 20px rgba(15,118,110,.12)}
+.fr-hologram{padding:16px;background:#0b1220;border-radius:16px;border:2px solid transparent;background-image:linear-gradient(#0b1220,#0b1220),linear-gradient(120deg,#67e8f9,#a78bfa,#fb7185,#fbbf24,#67e8f9);background-origin:border-box;background-clip:padding-box,border-box;box-shadow:0 10px 28px rgba(167,139,250,.25)}
 
-.frame-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.frame-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:320px;overflow-y:auto;padding:2px;scrollbar-gutter:stable}
 @media(min-width:420px){.frame-grid{grid-template-columns:repeat(4,1fr)}}
 .frame-opt{
   display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -158,14 +184,14 @@ input[type=color]{-webkit-appearance:none;width:36px;height:36px;border:1px soli
 }
 .frame-opt:hover{border-color:rgba(15,118,110,.35);background:rgba(15,118,110,.05);transform:translateY(-1px)}
 .frame-opt.sel{border-color:var(--primary);background:rgba(15,118,110,.1);box-shadow:0 0 0 1px rgba(15,118,110,.15)}
+.frame-opt.adv .frame-name{color:var(--primary)}
 .frame-mini{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden}
-.frame-mini .fr-none,
-.frame-mini .fr-modern,.frame-mini .fr-elegant,.frame-mini .fr-classic,
-.frame-mini .fr-rounded,.frame-mini .fr-shadow,.frame-mini .fr-gold,
-.frame-mini .fr-neon,.frame-mini .fr-gradient,.frame-mini .fr-cosmic,
-.frame-mini .fr-rose,.frame-mini .fr-paper,.frame-mini .fr-soft{
+.frame-mini [class^="fr-"]{
   padding:5px;width:100%;height:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box
 }
+.frame-mini .fr-polaroid{padding:4px 4px 12px}
+.frame-mini .fr-film{padding:4px 8px}
+.frame-mini .fr-badge{padding:8px}
 .frame-fake{
   width:62%;height:62%;border-radius:2px;
   background:
@@ -179,7 +205,7 @@ input[type=color]{-webkit-appearance:none;width:36px;height:36px;border:1px soli
   background-position:4% 4%,96% 4%,4% 96%,center,center,center;
   background-size:28% 28%,28% 28%,28% 28%,100% 100%,100% 100%,100% 100%;
 }
-.fr-rounded .frame-fake,.fr-neon .frame-fake,.fr-cosmic .frame-fake{filter:none}
+.fr-badge .frame-fake{border-radius:50%}
 .frame-name{font-size:.62rem;font-weight:700;line-height:1.2;text-align:center;color:inherit}
 
 .color-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -564,9 +590,10 @@ body.dark .toast{background:#eef0f3;color:#121417}
               <label class="lbl" style="margin:0">چوارچێوە</label>
               <span style="font-size:.68rem;font-weight:700;color:var(--primary)">{{ currentFrameLabel }}</span>
             </div>
+            <div class="hint" style="margin:-2px 0 8px">٢٧ شێواز — پۆلارۆید، فیلم، هۆلۆگرام، شەفەق و زیاتر</div>
             <div class="frame-grid" role="listbox" aria-label="چوارچێوە">
               <button type="button" class="frame-opt" v-for="f in frames" :key="f.id"
-                      :class="{sel:frameType===f.id}" role="option" :aria-selected="frameType===f.id"
+                      :class="{sel:frameType===f.id, adv:!!f.adv}" role="option" :aria-selected="frameType===f.id"
                       @click="setFrame(f.id)" :title="f.name">
                 <span class="frame-mini"><span :class="'fr-'+f.id"><span class="frame-fake"></span></span></span>
                 <span class="frame-name">{{ f.name }}</span>
@@ -910,6 +937,20 @@ createApp({
       {id:'neon', name:'نیۆن'},
       {id:'cosmic', name:'ئاسمان'},
       {id:'gradient', name:'گرادیێنت'},
+      {id:'polaroid', name:'پۆلارۆید', adv:true},
+      {id:'ticket', name:'بلیت', adv:true},
+      {id:'glass', name:'شووشە', adv:true},
+      {id:'marble', name:'مەڕمەڕ', adv:true},
+      {id:'film', name:'فیلم', adv:true},
+      {id:'badge', name:'نیشان', adv:true},
+      {id:'corner', name:'گۆشە', adv:true},
+      {id:'mesh', name:'تۆڕ', adv:true},
+      {id:'ink', name:'مەرەکەب', adv:true},
+      {id:'aurora', name:'شەفەق', adv:true},
+      {id:'stamp', name:'مۆر', adv:true},
+      {id:'metal', name:'کانزا', adv:true},
+      {id:'folio', name:'دەفتەر', adv:true},
+      {id:'hologram', name:'هۆلۆگرام', adv:true},
     ];
 
     const stats = computed(()=>{
@@ -1373,20 +1414,167 @@ createApp({
 
     // ── FRAME STYLES for canvas rendering ──
     const frameStyles = {
-      none:     { pad:0,   bg:null,           radius:0,  border:null,        shadow:null },
-      modern:   { pad:20,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.45)' },
-      elegant:  { pad:20,  bg:'#ffffff',       radius:14, border:{w:2,c:'#0f766e'}, shadow:'rgba(15,118,110,0.22)' },
-      classic:  { pad:20,  bg:'#ffffff',       radius:4,  border:{w:7,c:'#1f2937'}, shadow:null },
-      rounded:  { pad:24,  bg:'#0f766e',       radius:40, border:null,        shadow:'rgba(15,118,110,0.28)' },
-      shadow:   { pad:22,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.72)' },
-      soft:     { pad:22,  bg:'#ecfdf5',       radius:28, border:{w:1,c:'#a7f3d0'}, shadow:'rgba(15,118,110,0.12)' },
-      paper:    { pad:22,  bg:'#faf7f2',       radius:8,  border:{w:1,c:'#e7e0d5'}, shadow:'rgba(28,25,23,0.12)' },
-      neon:     { pad:20,  bg:'#0b1220',       radius:16, border:{w:2,c:'#67e8f9'}, shadow:'rgba(34,211,238,0.4)' },
-      gradient: { pad:24,  bg:'gradient',      radius:24, border:null,        shadow:null },
-      gold:     { pad:22,  bg:'#f8e7b0',       radius:16, border:{w:2,c:'#b45309'}, shadow:'rgba(180,83,9,0.28)' },
-      cosmic:   { pad:22,  bg:'#111827',       radius:20, border:{w:1,c:'#475569'}, shadow:'rgba(15,23,42,0.45)' },
-      rose:     { pad:22,  bg:'#fff1f2',       radius:20, border:{w:2,c:'#fda4af'}, shadow:'rgba(244,63,94,0.2)' },
+      none:      { pad:0,  bg:null,        radius:0,  border:null, shadow:null },
+      modern:    { pad:20, bg:'#ffffff',    radius:16, border:null, shadow:'rgba(0,0,0,0.45)' },
+      elegant:   { pad:20, bg:'#ffffff',    radius:14, border:{w:2,c:'#0f766e'}, shadow:'rgba(15,118,110,0.22)' },
+      classic:   { pad:20, bg:'#ffffff',    radius:4,  border:{w:7,c:'#1f2937'}, shadow:null },
+      rounded:   { pad:24, bg:'#0f766e',    radius:40, border:null, shadow:'rgba(15,118,110,0.28)' },
+      shadow:    { pad:22, bg:'#ffffff',    radius:16, border:null, shadow:'rgba(0,0,0,0.72)' },
+      soft:      { pad:22, bg:'#ecfdf5',    radius:28, border:{w:1,c:'#a7f3d0'}, shadow:'rgba(15,118,110,0.12)' },
+      paper:     { pad:22, bg:'#faf7f2',    radius:8,  border:{w:1,c:'#e7e0d5'}, shadow:'rgba(28,25,23,0.12)' },
+      neon:      { pad:20, bg:'#0b1220',    radius:16, border:{w:2,c:'#67e8f9'}, shadow:'rgba(34,211,238,0.4)' },
+      gradient:  { pad:24, bg:'gradient',   radius:24, border:null, shadow:null },
+      gold:      { pad:22, bg:'#f8e7b0',    radius:16, border:{w:2,c:'#b45309'}, shadow:'rgba(180,83,9,0.28)' },
+      cosmic:    { pad:22, bg:'#111827',    radius:20, border:{w:1,c:'#475569'}, shadow:'rgba(15,23,42,0.45)' },
+      rose:      { pad:22, bg:'#fff1f2',    radius:20, border:{w:2,c:'#fda4af'}, shadow:'rgba(244,63,94,0.2)' },
+      polaroid:  { pad:18, bg:'#ffffff',    radius:6,  border:{w:1,c:'#e5e7eb'}, shadow:'rgba(0,0,0,0.35)', extraBottom:56, captionTone:'#6b7280' },
+      ticket:    { pad:22, bg:'#fffbeb',    radius:12, border:{w:2,c:'#d97706', dash:[8,6]}, shadow:'rgba(180,83,9,0.18)' },
+      glass:     { pad:22, bg:'glass',      radius:22, border:{w:1,c:'rgba(15,118,110,0.35)'}, shadow:'rgba(15,118,110,0.16)' },
+      marble:    { pad:22, bg:'marble',     radius:16, border:{w:1,c:'#94a3b8'}, shadow:'rgba(100,116,139,0.2)' },
+      film:      { pad:26, bg:'#111827',    radius:8,  border:{w:3,c:'#0f172a'}, shadow:'rgba(15,23,42,0.5)', effect:'film', sideStrip:16 },
+      badge:     { pad:28, bg:'badge',      radius:999, border:{w:4,c:'#134e4a'}, shadow:'rgba(15,118,110,0.3)' },
+      corner:    { pad:26, bg:'#ffffff',    radius:10, border:null, shadow:null, effect:'corners', cornerColor:'#0f766e' },
+      mesh:      { pad:22, bg:'#ffffff',    radius:16, border:{w:2,c:'#0f766e', dash:[2,5]}, shadow:'rgba(15,118,110,0.1)', ring:6, ringColor:'rgba(15,118,110,0.08)' },
+      ink:       { pad:22, bg:'ink',        radius:18, border:{w:1,c:'#334155'}, shadow:'rgba(2,6,23,0.5)', captionTone:'#cbd5e1' },
+      aurora:    { pad:24, bg:'aurora',     radius:20, border:null, shadow:'rgba(124,58,237,0.28)', captionTone:'#f5f3ff' },
+      stamp:     { pad:20, bg:'#ffffff',    radius:10, border:{w:3,c:'#be123c', dash:[7,5]}, shadow:null, inset:4, insetColor:'#fda4af' },
+      metal:     { pad:22, bg:'metal',      radius:14, border:{w:1,c:'#475569'}, shadow:'rgba(15,23,42,0.22)' },
+      folio:     { pad:22, bg:'#ffffff',    radius:12, border:{w:1,c:'#0f766e'}, shadow:'rgba(15,118,110,0.14)', effect:'double', doubleGap:5, doubleColor:'#99f6e4' },
+      hologram:  { pad:22, bg:'#0b1220',    radius:18, border:{w:3,c:'hologram'}, shadow:'rgba(167,139,250,0.3)', captionTone:'#e2e8f0' },
     };
+
+    function fillFrameBg(ctx, fr, x, y, w, h, radius){
+      ctx.save();
+      roundRect(ctx, x, y, w, h, radius);
+      ctx.clip();
+      if(fr.bg === 'gradient'){
+        const g = ctx.createLinearGradient(x, y, x+w, y+h);
+        g.addColorStop(0,'#99f6e4'); g.addColorStop(0.45,'#a5f3fc'); g.addColorStop(1,'#c4b5fd');
+        ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
+      } else if(fr.bg === 'aurora'){
+        const g = ctx.createLinearGradient(x, y, x+w, y+h);
+        g.addColorStop(0,'#042f2e'); g.addColorStop(0.35,'#0f766e'); g.addColorStop(0.7,'#7c3aed'); g.addColorStop(1,'#db2777');
+        ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
+      } else if(fr.bg === 'glass'){
+        const g = ctx.createLinearGradient(x, y, x+w, y+h);
+        g.addColorStop(0,'#f0fdfa'); g.addColorStop(1,'#ccfbf1');
+        ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
+        ctx.fillStyle = 'rgba(255,255,255,0.35)';
+        ctx.fillRect(x, y, w, h*0.45);
+      } else if(fr.bg === 'marble'){
+        const g = ctx.createLinearGradient(x, y, x+w, y+h);
+        g.addColorStop(0,'#f8fafc'); g.addColorStop(0.35,'#e2e8f0'); g.addColorStop(0.6,'#f1f5f9'); g.addColorStop(1,'#cbd5e1');
+        ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
+        ctx.strokeStyle = 'rgba(148,163,184,0.45)';
+        ctx.lineWidth = 1.2;
+        for(let i=0;i<7;i++){
+          ctx.beginPath();
+          ctx.moveTo(x + w*(0.05+i*0.12), y);
+          ctx.bezierCurveTo(x+w*0.3, y+h*(0.2+i*0.08), x+w*0.7, y+h*(0.4+i*0.05), x+w, y+h*(0.15+i*0.1));
+          ctx.stroke();
+        }
+      } else if(fr.bg === 'metal'){
+        const g = ctx.createLinearGradient(x, y, x, y+h);
+        g.addColorStop(0,'#f8fafc'); g.addColorStop(0.45,'#94a3b8'); g.addColorStop(0.7,'#e2e8f0'); g.addColorStop(1,'#64748b');
+        ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
+        ctx.fillStyle = 'rgba(255,255,255,0.18)';
+        for(let i=0;i<18;i++){
+          ctx.fillRect(x, y + (h/18)*i, w, 1.5);
+        }
+      } else if(fr.bg === 'ink'){
+        const g = ctx.createRadialGradient(x+w*0.3, y+h*0.2, 4, x+w*0.5, y+h*0.5, Math.max(w,h)*0.75);
+        g.addColorStop(0,'#1e293b'); g.addColorStop(1,'#020617');
+        ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
+      } else if(fr.bg === 'badge'){
+        const g = ctx.createRadialGradient(x+w*0.35, y+h*0.3, 4, x+w*0.5, y+h*0.55, Math.max(w,h)*0.55);
+        g.addColorStop(0,'#ccfbf1'); g.addColorStop(1,'#0f766e');
+        ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
+      } else {
+        ctx.fillStyle = fr.bg || '#ffffff';
+        ctx.fillRect(x,y,w,h);
+      }
+      ctx.restore();
+    }
+
+    function strokeFrameBorder(ctx, fr, x, y, w, h, radius){
+      if(!fr.border) return;
+      ctx.save();
+      roundRect(ctx, x, y, w, h, radius);
+      if(fr.border.c === 'hologram'){
+        const g = ctx.createLinearGradient(x, y, x+w, y+h);
+        g.addColorStop(0,'#67e8f9'); g.addColorStop(0.25,'#a78bfa'); g.addColorStop(0.5,'#fb7185'); g.addColorStop(0.75,'#fbbf24'); g.addColorStop(1,'#67e8f9');
+        ctx.strokeStyle = g;
+      } else {
+        ctx.strokeStyle = fr.border.c;
+      }
+      ctx.lineWidth = fr.border.w;
+      if(fr.border.dash) ctx.setLineDash(fr.border.dash);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function paintFrameExtras(ctx, fr, x, y, w, h, radius){
+      if(fr.ring){
+        ctx.save();
+        roundRect(ctx, x - fr.ring, y - fr.ring, w + fr.ring*2, h + fr.ring*2, radius + 4);
+        ctx.strokeStyle = fr.ringColor || 'rgba(15,118,110,0.1)';
+        ctx.lineWidth = fr.ring;
+        ctx.stroke();
+        ctx.restore();
+      }
+      if(fr.inset){
+        ctx.save();
+        roundRect(ctx, x + fr.inset, y + fr.inset, w - fr.inset*2, h - fr.inset*2, Math.max(0, radius - 2));
+        ctx.strokeStyle = fr.insetColor || '#fda4af';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+      }
+      if(fr.effect === 'double'){
+        ctx.save();
+        const gap = fr.doubleGap || 5;
+        roundRect(ctx, x + gap, y + gap, w - gap*2, h - gap*2, Math.max(0, radius - 2));
+        ctx.strokeStyle = fr.doubleColor || '#99f6e4';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+      }
+      if(fr.effect === 'corners'){
+        const len = Math.max(18, Math.min(w,h) * 0.12);
+        const t = 3;
+        const c = fr.cornerColor || '#0f766e';
+        ctx.save();
+        ctx.strokeStyle = c; ctx.lineWidth = t; ctx.lineCap = 'square';
+        const pts = [
+          [x+8,y+8+len, x+8,y+8, x+8+len,y+8],
+          [x+w-8-len,y+8, x+w-8,y+8, x+w-8,y+8+len],
+          [x+8,y+h-8-len, x+8,y+h-8, x+8+len,y+h-8],
+          [x+w-8-len,y+h-8, x+w-8,y+h-8, x+w-8,y+h-8-len]
+        ];
+        pts.forEach(p=>{
+          ctx.beginPath();
+          ctx.moveTo(p[0], p[1]);
+          ctx.lineTo(p[2], p[3]);
+          ctx.lineTo(p[4], p[5]);
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+      if(fr.effect === 'film'){
+        const strip = fr.sideStrip || 16;
+        const hole = 7;
+        ctx.save();
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x, y, strip, h);
+        ctx.fillRect(x + w - strip, y, strip, h);
+        ctx.fillStyle = '#f8fafc';
+        for(let yy = y + 10; yy < y + h - 8; yy += hole + 6){
+          ctx.fillRect(x + 4, yy, strip - 8, hole);
+          ctx.fillRect(x + w - strip + 4, yy, strip - 8, hole);
+        }
+        ctx.restore();
+      }
+    }
 
     async function fetchQRBlob(url){
       // Client-side QR returns data: URLs — no CORS issues for canvas export
@@ -1430,70 +1618,81 @@ createApp({
           // ── With frame ──
           const fr = frameStyles[frameType.value] || frameStyles.modern;
           const pad = fr.pad;
+          const sideStrip = fr.sideStrip || 0;
           const shadowBlur = fr.shadow ? 28 : 0;
           const shadowOff  = fr.shadow ? 12 : 0;
-          const captionH   = caption.value ? 40 : 0;
+          const extraBottom = fr.extraBottom || 0;
+          const captionH = caption.value ? (extraBottom ? 0 : 40) : 0;
+          // بۆ پۆلارۆید: تێکست دەچێتە ناو فریمی خوارەوە
+          const polaroidCaption = !!(caption.value && extraBottom);
 
-          const totalW = qrW + pad*2 + (fr.border ? fr.border.w*2 : 0);
-          const totalH = qrH + pad*2 + (fr.border ? fr.border.w*2 : 0) + captionH;
-          const canvasW = totalW + shadowBlur*2 + shadowOff;
-          const canvasH = totalH + shadowBlur*2 + shadowOff;
+          const bw = fr.border ? fr.border.w : 0;
+          const totalW = qrW + pad*2 + bw*2 + sideStrip*2;
+          const totalH = qrH + pad*2 + bw*2 + captionH + extraBottom;
+          const canvasW = totalW + shadowBlur*2 + shadowOff + (fr.ring ? fr.ring*2 : 0);
+          const canvasH = totalH + shadowBlur*2 + shadowOff + (fr.ring ? fr.ring*2 : 0);
 
           const c = document.createElement('canvas');
           c.width = canvasW; c.height = canvasH;
           const ctx = c.getContext('2d');
           ctx.clearRect(0,0,canvasW,canvasH);
 
-          const ox = shadowBlur; // offset x for shadow room
-          const oy = shadowBlur; // offset y
+          const ox = shadowBlur + (fr.ring || 0);
+          const oy = shadowBlur + (fr.ring || 0);
+          const radius = fr.radius >= 900 ? Math.min(totalW, totalH) / 2 : fr.radius;
 
-          // Shadow
           if(fr.shadow){
             ctx.save();
             ctx.shadowColor = fr.shadow;
             ctx.shadowBlur  = shadowBlur;
             ctx.shadowOffsetX = shadowOff/2;
             ctx.shadowOffsetY = shadowOff;
-            roundRect(ctx, ox, oy, totalW, totalH, fr.radius);
-            ctx.fillStyle = fr.bg === 'gradient' ? '#ffffff' : (fr.bg||'#ffffff');
+            roundRect(ctx, ox, oy, totalW, totalH, radius);
+            ctx.fillStyle = '#ffffff';
             ctx.fill();
             ctx.restore();
           }
 
-          // Background fill
-          if(fr.bg === 'gradient'){
-            const grad = ctx.createLinearGradient(ox, oy, ox+totalW, oy+totalH);
-            grad.addColorStop(0,'#99f6e4');
-            grad.addColorStop(0.45,'#a5f3fc');
-            grad.addColorStop(1,'#c4b5fd');
-            ctx.save();
-            roundRect(ctx, ox, oy, totalW, totalH - captionH, fr.radius);
-            ctx.fillStyle = grad; ctx.fill();
-            ctx.restore();
-          } else {
-            ctx.save();
-            roundRect(ctx, ox, oy, totalW, totalH, fr.radius);
-            ctx.fillStyle = fr.bg || '#ffffff'; ctx.fill();
-            ctx.restore();
-          }
+          fillFrameBg(ctx, fr, ox, oy, totalW, totalH, radius);
+          strokeFrameBorder(ctx, fr, ox, oy, totalW, totalH, radius);
+          paintFrameExtras(ctx, fr, ox, oy, totalW, totalH, radius);
 
-          // Border
-          if(fr.border){
-            ctx.save();
-            roundRect(ctx, ox, oy, totalW, totalH, fr.radius);
-            ctx.strokeStyle = fr.border.c;
-            ctx.lineWidth   = fr.border.w;
-            ctx.stroke();
-            ctx.restore();
-          }
-
-          // QR image
-          const bw = fr.border ? fr.border.w : 0;
-          const qrX = ox + pad + bw;
+          const qrX = ox + pad + bw + sideStrip;
           const qrY = oy + pad + bw;
+          // بۆ چوارچێوە تاریکەکان: پاکێتی سپی لە پشت QR
+          if(['neon','cosmic','ink','aurora','hologram','film','badge','rounded'].includes(frameType.value)){
+            ctx.save();
+            roundRect(ctx, qrX - 8, qrY - 8, qrW + 16, qrH + 16, 10);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.restore();
+          }
           ctx.drawImage(qrImg, qrX, qrY, qrW, qrH);
 
-          finishCanvas(ctx, c, captionH, totalW, totalH, ox, oy, resolve);
+          if(polaroidCaption){
+            ctx.save();
+            ctx.font = `bold ${Math.round(18 * scale)}px "Noto Kufi Arabic", Arial`;
+            ctx.fillStyle = fr.captionTone || '#6b7280';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(caption.value, ox + totalW/2, oy + totalH - extraBottom/2);
+            ctx.restore();
+            resolve(c);
+          } else {
+            const tone = fr.captionTone;
+            if(tone && caption.value && captionH){
+              ctx.save();
+              ctx.font = `bold ${Math.round(18 * scale)}px "Noto Kufi Arabic", Arial`;
+              ctx.fillStyle = tone;
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(caption.value, ox + totalW/2, oy + totalH - captionH/2);
+              ctx.restore();
+              resolve(c);
+            } else {
+              finishCanvas(ctx, c, captionH, totalW, totalH, ox, oy, resolve, scale);
+            }
+          }
         };
         qrImg.src = src;
       });
@@ -1599,18 +1798,30 @@ createApp({
           : '';
         let defs = '';
         let fill = lightColor.value || '#ffffff';
+        const svgBgMap = {
+          gradient:'url(#frg)', aurora:'url(#fra)', glass:'#ccfbf1', marble:'#e2e8f0',
+          metal:'#94a3b8', ink:'#0f172a', badge:'#0f766e'
+        };
         if(frameType.value !== 'none'){
           if(fr.bg === 'gradient'){
             defs = `<defs><linearGradient id="frg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#99f6e4"/><stop offset="45%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient></defs>`;
             fill = 'url(#frg)';
+          } else if(fr.bg === 'aurora'){
+            defs = `<defs><linearGradient id="fra" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#042f2e"/><stop offset="35%" stop-color="#0f766e"/><stop offset="70%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#db2777"/></linearGradient></defs>`;
+            fill = 'url(#fra)';
+          } else if(svgBgMap[fr.bg]){
+            fill = svgBgMap[fr.bg];
           } else {
             fill = fr.bg || '#ffffff';
           }
         }
+        const rx = (fr.radius||0) >= 900 ? Math.min(tw, th)/2 : (fr.radius||0);
+        const dash = (fr.border && fr.border.dash) ? ` stroke-dasharray="${fr.border.dash.join(' ')}"` : '';
+        const stroke = fr.border ? (fr.border.c === 'hologram' ? '#a78bfa' : fr.border.c) : '';
         const borderSvg = (frameType.value !== 'none' && fr.border)
-          ? `<rect x="${bw/2}" y="${bw/2}" width="${tw-bw}" height="${th-bw}" rx="${fr.radius||0}" fill="none" stroke="${fr.border.c}" stroke-width="${fr.border.w}"/>`
+          ? `<rect x="${bw/2}" y="${bw/2}" width="${tw-bw}" height="${th-bw}" rx="${rx}" fill="none" stroke="${stroke}" stroke-width="${fr.border.w}"${dash}/>`
           : '';
-        const framed = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${tw}" height="${th}" viewBox="0 0 ${tw} ${th}">${defs}<rect width="100%" height="100%" rx="${fr.radius||0}" fill="${fill}"/>${borderSvg}<g transform="translate(${pad},${pad})">${body}</g>${captionSvg}</svg>`;
+        const framed = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${tw}" height="${th}" viewBox="0 0 ${tw} ${th}">${defs}<rect width="100%" height="100%" rx="${rx}" fill="${fill}"/>${borderSvg}<g transform="translate(${pad},${pad})">${body}</g>${captionSvg}</svg>`;
         const blob = new Blob([framed], {type:'image/svg+xml;charset=utf-8'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
