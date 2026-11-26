@@ -479,7 +479,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
         </div>
         <label style="display:block;cursor:pointer">
           <div class="btn btn-c" style="width:100%">وێنەی QR ئەپلۆد بکە</div>
-          <input type="file" accept="image/*" style="display:none" @change="scanFromFile"/>
+          <input type="file" accept="image/*,.heic,.heif,.heics,.avif,.bmp,.tif,.tiff,.png,.jpg,.jpeg,.jfif,.webp,.gif" style="display:none" @change="scanFromFile"/>
         </label>
         <div v-if="scanResult" class="float-in" style="margin-top:14px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:var(--radius-sm);padding:13px">
           <div style="font-size:.68rem;color:#10b981;font-weight:800;text-transform:uppercase;margin-bottom:6px;letter-spacing:.5px">✓ دۆزرایەوە</div>
@@ -498,7 +498,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
 
         <div>
           <div class="lbl">وێنە لەناو QR</div>
-          <input ref="logoFileInput" type="file" accept="image/*,.png,.jpg,.jpeg,.webp,.gif,.svg" style="display:none" @change="uploadLogo"/>
+          <input ref="logoFileInput" type="file" accept="image/*,.heic,.heif,.heics,.avif,.bmp,.tif,.tiff,.png,.jpg,.jpeg,.jfif,.webp,.gif,.svg,.ico" style="display:none" @change="uploadLogo"/>
           <div class="logo-drop" :class="{drag:logoDragging}"
                role="button" tabindex="0"
                @click="pickLogo"
@@ -508,7 +508,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
                @drop.prevent="onLogoDrop">
             <img v-if="logoDataUrl" :src="logoDataUrl" alt="logo"/>
             <div class="title">{{ logoDataUrl ? 'وێنە دانرا' : 'وێنەکەت لێرە دابنێ' }}</div>
-            <div class="sub">{{ logoDataUrl ? 'کلیک بۆ گۆڕین — خۆکار دەچێتە ناوەڕاستی QR' : 'کلیک یان ڕاکێشان · PNG / JPG / WEBP' }}</div>
+            <div class="sub">{{ logoDataUrl ? 'کلیک بۆ گۆڕین — خۆکار دەچێتە ناوەڕاستی QR' : 'کلیک یان ڕاکێشان · PNG / JPG / HEIC / WEBP — گونجاو بۆ ئایفۆن' }}</div>
           </div>
           <div v-if="logoDataUrl" style="margin-top:10px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
@@ -1165,10 +1165,25 @@ createApp({
       showToast(`✓ قاڵبی "${t.name}" هەڵبژێردرا`);
     }
 
+    const IMAGE_EXT_RE = /\.(png|jpe?g|jfif|gif|webp|svg|bmp|tif|tiff|avif|ico|heic|heif|heics)$/i;
+    const HEIC_EXT_RE = /\.(heic|heif|heics)$/i;
+    const HEIC_MIME_RE = /^image\/(heic|heif|heic-sequence|heif-sequence)$/i;
+    let heic2anyLoader = null;
+
+    function isHeicLike(f){
+      if(!f) return false;
+      if(f.type && HEIC_MIME_RE.test(f.type)) return true;
+      return HEIC_EXT_RE.test(f.name || '');
+    }
     function isImageFile(f){
       if(!f) return false;
-      if(f.type && f.type.startsWith('image/')) return true;
-      return /\.(png|jpe?g|gif|webp|svg)$/i.test(f.name || '');
+      // iPhone/Photos sometimes send empty MIME — trust extension too
+      if(f.type && (f.type.startsWith('image/') || f.type === 'application/octet-stream')){
+        if(f.type === 'application/octet-stream') return IMAGE_EXT_RE.test(f.name || '') || isHeicLike(f);
+        return true;
+      }
+      if(!f.type) return IMAGE_EXT_RE.test(f.name || '');
+      return IMAGE_EXT_RE.test(f.name || '');
     }
     function pickLogo(){
       if(logoFileInput.value) logoFileInput.value.click();
@@ -1178,44 +1193,85 @@ createApp({
       showToast('وێنە لابرا');
       if(buildData()) schedRegen();
     }
-    function readLogoFile(f){
-      if(!isImageFile(f)){ showToast('تەنها وێنە قبوڵە'); return; }
-      if(f.size > 6 * 1024 * 1024){ showToast('وێنەکە زۆر گەورەیە (زۆرینە 6MB)'); return; }
-      const r = new FileReader();
-      r.onload = ev => {
-        const raw = ev.target.result;
-        // Normalize to raster so SVG/odd formats bake reliably into QR canvas
+    function readAsDataURL(blob){
+      return new Promise((resolve, reject)=>{
+        const r = new FileReader();
+        r.onload = ()=> resolve(r.result);
+        r.onerror = ()=> reject(new Error('read'));
+        r.readAsDataURL(blob);
+      });
+    }
+    function loadHtmlImage(url){
+      return new Promise((resolve, reject)=>{
         const img = new Image();
-        img.onload = ()=>{
-          try{
-            const side = 512;
-            const c = document.createElement('canvas');
-            c.width = side; c.height = side;
-            const ctx = c.getContext('2d');
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0,0,side,side);
-            const scale = Math.min(side / (img.naturalWidth || side), side / (img.naturalHeight || side));
-            const dw = Math.max(1, (img.naturalWidth || side) * scale);
-            const dh = Math.max(1, (img.naturalHeight || side) * scale);
-            ctx.drawImage(img, (side-dw)/2, (side-dh)/2, dw, dh);
-            logoDataUrl.value = c.toDataURL('image/png');
-          } catch(e){
-            logoDataUrl.value = raw;
-          }
-          if(ecc.value !== 'H') ecc.value = 'H';
-          showToast(canGenerate.value ? '✓ وێنە خرایە ناو QR' : '✓ وێنە دانرا — بەستەر بنووسە');
-          if(buildData()) schedRegen();
+        img.onload = ()=> resolve(img);
+        img.onerror = ()=> reject(new Error('decode'));
+        img.src = url;
+      });
+    }
+    function ensureHeic2Any(){
+      if(window.heic2any) return Promise.resolve(window.heic2any);
+      if(heic2anyLoader) return heic2anyLoader;
+      heic2anyLoader = new Promise((resolve, reject)=>{
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+        s.async = true;
+        s.onload = ()=>{
+          if(window.heic2any) resolve(window.heic2any);
+          else reject(new Error('heic'));
         };
-        img.onerror = ()=>{
-          logoDataUrl.value = raw;
-          if(ecc.value !== 'H') ecc.value = 'H';
-          showToast(canGenerate.value ? '✓ وێنە خرایە ناو QR' : '✓ وێنە دانرا — بەستەر بنووسە');
-          if(buildData()) schedRegen();
-        };
-        img.src = raw;
-      };
-      r.onerror = ()=> showToast('× خوێندنەوەی وێنە سەرکەوتوو نەبوو');
-      r.readAsDataURL(f);
+        s.onerror = ()=>{ heic2anyLoader = null; reject(new Error('heic-cdn')); };
+        document.head.appendChild(s);
+      });
+      return heic2anyLoader;
+    }
+    async function convertHeicToPngBlob(file){
+      showToast('گۆڕینی وێنەی ئایفۆن...');
+      const heic2any = await ensureHeic2Any();
+      const out = await heic2any({ blob: file, toType: 'image/png', quality: 0.92 });
+      return Array.isArray(out) ? out[0] : out;
+    }
+    function rasterizeDrawable(drawable, w, h){
+      const side = 512;
+      const c = document.createElement('canvas');
+      c.width = side; c.height = side;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,side,side);
+      const iw = w || drawable.naturalWidth || drawable.width || side;
+      const ih = h || drawable.naturalHeight || drawable.height || side;
+      const scale = Math.min(side / iw, side / ih);
+      const dw = Math.max(1, iw * scale);
+      const dh = Math.max(1, ih * scale);
+      ctx.drawImage(drawable, (side - dw)/2, (side - dh)/2, dw, dh);
+      return c.toDataURL('image/png');
+    }
+    async function decodeLogoBlob(blob, preferHeic){
+      const { drawable, w, h, cleanup } = await decodeToDrawable(blob, preferHeic);
+      try{
+        return rasterizeDrawable(drawable, w, h);
+      } finally {
+        cleanup();
+      }
+    }
+    async function readLogoFile(f){
+      if(!isImageFile(f)){ showToast('تەنها وێنە قبوڵە (PNG / JPG / HEIC / …)'); return; }
+      // ئایفۆن وێنەی گەورە دەنێرێت؛ دوای نۆرمالایز دەبێتە 512px
+      if(f.size > 20 * 1024 * 1024){ showToast('وێنەکە زۆر گەورەیە (زۆرینە 20MB)'); return; }
+      try{
+        const dataUrl = await decodeLogoBlob(f, isHeicLike(f));
+        logoDataUrl.value = dataUrl;
+        if(ecc.value !== 'H') ecc.value = 'H';
+        showToast(canGenerate.value ? '✓ وێنە خرایە ناو QR' : '✓ وێنە دانرا — بەستەر بنووسە');
+        if(buildData()) schedRegen();
+      } catch(err){
+        console.error(err);
+        if(isHeicLike(f)){
+          showToast('× وێنەی HEIC نەخوێندرایەوە — لە Photos وەک JPEG پاشەکەوت بکە');
+        } else {
+          showToast('× خوێندنەوەی وێنە سەرکەوتوو نەبوو');
+        }
+      }
     }
     function uploadLogo(e){
       const f = e.target.files && e.target.files[0];
@@ -1720,29 +1776,65 @@ createApp({
       showScanModal.value = false;
     }
 
-    function scanFromFile(e){
-      const f = e.target.files[0]; if(!f) return;
-      const reader = new FileReader();
-      reader.onload = ev=>{
-        const img = new Image();
-        img.onload = ()=>{
-          const c = scanCanvas.value || document.createElement('canvas');
-          c.width = img.width; c.height = img.height;
-          const ctx = c.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          const imgData = ctx.getImageData(0,0,c.width,c.height);
-          const code = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'attemptBoth'});
-          if(code){
-            scanResult.value = code.data;
-            showToast('✓ QR کۆد دۆزرایەوە!');
-          } else {
-            showToast('× هیچ QR کۆدێک نەدۆزرایەوە');
-          }
+    async function decodeToDrawable(blob, preferHeic){
+      if(typeof createImageBitmap === 'function'){
+        try{
+          const bmp = await createImageBitmap(blob);
+          return {
+            drawable: bmp,
+            w: bmp.width,
+            h: bmp.height,
+            cleanup: ()=>{ if(bmp.close) bmp.close(); }
+          };
+        } catch(_){ /* continue */ }
+      }
+      const objUrl = URL.createObjectURL(blob);
+      try{
+        const img = await loadHtmlImage(objUrl);
+        return {
+          drawable: img,
+          w: img.naturalWidth || img.width,
+          h: img.naturalHeight || img.height,
+          cleanup: ()=> URL.revokeObjectURL(objUrl)
         };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(f);
+      } catch(_){
+        URL.revokeObjectURL(objUrl);
+      }
+      if(preferHeic || isHeicLike(blob) || HEIC_EXT_RE.test(blob.name || '')){
+        const pngBlob = await convertHeicToPngBlob(blob);
+        return decodeToDrawable(pngBlob, false);
+      }
+      const raw = await readAsDataURL(blob);
+      const img = await loadHtmlImage(raw);
+      return { drawable: img, w: img.naturalWidth || img.width, h: img.naturalHeight || img.height, cleanup: ()=>{} };
+    }
+
+    async function scanFromFile(e){
+      const f = e.target.files && e.target.files[0];
       e.target.value = '';
+      if(!f) return;
+      if(!isImageFile(f)){ showToast('تەنها وێنە قبوڵە (PNG / JPG / HEIC / …)'); return; }
+      try{
+        const { drawable, w, h, cleanup } = await decodeToDrawable(f, isHeicLike(f));
+        const c = scanCanvas.value || document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(drawable, 0, 0);
+        cleanup();
+        const imgData = ctx.getImageData(0,0,c.width,c.height);
+        const code = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'attemptBoth'});
+        if(code){
+          scanResult.value = code.data;
+          showToast('✓ QR کۆد دۆزرایەوە!');
+        } else {
+          showToast('× هیچ QR کۆدێک نەدۆزرایەوە');
+        }
+      } catch(err){
+        console.error(err);
+        showToast(isHeicLike(f)
+          ? '× وێنەی HEIC نەخوێندرایەوە — وەک JPEG پاشەکەوت بکە'
+          : '× خوێندنەوەی وێنە سەرکەوتوو نەبوو');
+      }
     }
 
     async function copyScanResult(){ try{await navigator.clipboard.writeText(scanResult.value); showToast('✓ کۆپی کرا');}catch{} }
