@@ -1,5 +1,5 @@
 /* QR Studio Pro — offline shell */
-const CACHE = 'qrstudio-v7';
+const CACHE = 'qrstudio-v8';
 const SHELL = [
   './',
   './index.html',

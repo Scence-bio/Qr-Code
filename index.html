@@ -113,17 +113,63 @@ input[type=color]{-webkit-appearance:none;width:36px;height:36px;border:1px soli
 .spin{width:34px;height:34px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:rot .7s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 
-.fr-none{}
+.fr-none{padding:8px;background:transparent;border-radius:8px;border:1px dashed var(--border)}
 .fr-modern{padding:14px;background:#fff;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.12)}
 .fr-elegant{padding:14px;background:#fff;border-radius:10px;border:2px solid var(--primary)}
 .fr-classic{padding:14px;background:#fff;border:6px solid #1f2937;border-radius:4px}
 .fr-rounded{padding:18px;background:var(--primary);border-radius:28px}
-.fr-shadow{padding:14px;background:#fff;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.2)}
+.fr-shadow{padding:14px;background:#fff;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.22)}
 .fr-gold{padding:16px;background:#f8e7b0;border-radius:12px;border:2px solid #b45309}
-.fr-neon{padding:15px;background:#0b1220;border-radius:12px;border:1px solid #67e8f9}
-.fr-gradient{padding:18px;background:linear-gradient(135deg,#99f6e4,#a5f3fc);border-radius:16px}
-.fr-cosmic{padding:18px;background:#111827;border-radius:14px;border:1px solid #334155}
-.fr-rose{padding:16px;background:#fff1f2;border-radius:14px;border:1px solid #fecdd3}
+.fr-neon{padding:15px;background:#0b1220;border-radius:12px;border:1.5px solid #67e8f9;box-shadow:0 0 0 1px rgba(103,232,249,.15),0 8px 24px rgba(6,182,212,.18)}
+.fr-gradient{padding:18px;background:linear-gradient(135deg,#99f6e4,#a5f3fc 45%,#c4b5fd);border-radius:16px}
+.fr-cosmic{padding:18px;background:#111827;border-radius:14px;border:1px solid #475569;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.fr-rose{padding:16px;background:#fff1f2;border-radius:14px;border:1.5px solid #fda4af}
+.fr-paper{padding:16px;background:#faf7f2;border-radius:6px;border:1px solid #e7e0d5;box-shadow:0 1px 0 #fff inset,0 8px 20px rgba(28,25,23,.08)}
+.fr-soft{padding:16px;background:#ecfdf5;border-radius:18px;border:1px solid #a7f3d0}
+
+.frame-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:420px){.frame-grid{grid-template-columns:repeat(4,1fr)}}
+.frame-opt{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:8px 6px 7px;border-radius:10px;cursor:pointer;font-family:inherit;
+  background:var(--bg2);border:1.5px solid var(--border2);color:var(--text2);
+  transition:border-color .15s,background .15s,transform .15s,box-shadow .15s;
+}
+.frame-opt:hover{border-color:rgba(15,118,110,.35);background:rgba(15,118,110,.05);transform:translateY(-1px)}
+.frame-opt.sel{border-color:var(--primary);background:rgba(15,118,110,.1);box-shadow:0 0 0 1px rgba(15,118,110,.15)}
+.frame-mini{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden}
+.frame-mini .fr-none,
+.frame-mini .fr-modern,.frame-mini .fr-elegant,.frame-mini .fr-classic,
+.frame-mini .fr-rounded,.frame-mini .fr-shadow,.frame-mini .fr-gold,
+.frame-mini .fr-neon,.frame-mini .fr-gradient,.frame-mini .fr-cosmic,
+.frame-mini .fr-rose,.frame-mini .fr-paper,.frame-mini .fr-soft{
+  padding:5px;width:100%;height:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box
+}
+.frame-fake{
+  width:62%;height:62%;border-radius:2px;
+  background:
+    linear-gradient(#111 25%,transparent 25%) 0 0/40% 40%,
+    linear-gradient(#111 25%,transparent 25%) 100% 0/40% 40%,
+    linear-gradient(#111 25%,transparent 25%) 0 100%/40% 40%,
+    repeating-linear-gradient(90deg,#111 0 2px,transparent 2px 5px),
+    repeating-linear-gradient(#111 0 2px,transparent 2px 5px),
+    #fff;
+  background-repeat:no-repeat,no-repeat,no-repeat,repeat,repeat,no-repeat;
+  background-position:4% 4%,96% 4%,4% 96%,center,center,center;
+  background-size:28% 28%,28% 28%,28% 28%,100% 100%,100% 100%,100% 100%;
+}
+.fr-rounded .frame-fake,.fr-neon .frame-fake,.fr-cosmic .frame-fake{filter:none}
+.frame-name{font-size:.62rem;font-weight:700;line-height:1.2;text-align:center;color:inherit}
+
+.color-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.contrast-bar{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.contrast-ok{background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.28);color:#047857}
+.contrast-bad{background:rgba(190,18,60,.08);border:1px solid rgba(190,18,60,.25);color:#9f1239}
+body.dark .contrast-ok{color:#6ee7b7;background:rgba(5,150,105,.15)}
+body.dark .contrast-bad{color:#fda4af;background:rgba(190,18,60,.15)}
+.color-pick{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 8px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2)}
+.color-pick .lbl{margin:0}
+.color-hex{font-size:.62rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.02em;direction:ltr}
 
 .hist-item{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s,background .15s}
 .hist-item:hover{background:rgba(15,118,110,.06);border-color:rgba(15,118,110,.28)}
@@ -160,12 +206,23 @@ input[type=color]{-webkit-appearance:none;width:36px;height:36px;border:1px soli
 .prog-bar{height:3px;border-radius:2px;background:var(--border);overflow:hidden;margin-top:6px}
 .prog-fill{height:100%;background:var(--primary);transition:width .25s;border-radius:2px}
 
-.scheme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.scheme-opt{height:28px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:border-color .15s,transform .15s}
-.scheme-opt.sel{border-color:var(--text)}
-.scheme-opt:hover{transform:translateY(-1px)}
-.scheme-opt.sel::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-.scheme-opt{position:relative}
+.scheme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+@media(min-width:380px){.scheme-grid{grid-template-columns:repeat(3,1fr)}}
+.scheme-opt{
+  position:relative;display:flex;align-items:center;gap:8px;
+  padding:7px 8px;border-radius:9px;cursor:pointer;text-align:start;
+  background:var(--bg2);border:1.5px solid var(--border2);
+  transition:border-color .15s,background .15s,transform .15s;font-family:inherit;color:var(--text2);
+}
+.scheme-opt:hover{border-color:rgba(15,118,110,.35);background:rgba(15,118,110,.05);transform:translateY(-1px)}
+.scheme-opt.sel{border-color:var(--primary);background:rgba(15,118,110,.1);box-shadow:0 0 0 1px rgba(15,118,110,.12)}
+.scheme-swatch{
+  width:28px;height:28px;border-radius:7px;flex-shrink:0;
+  border:1px solid rgba(0,0,0,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+}
+.scheme-meta{display:flex;flex-direction:column;gap:1px;min-width:0}
+.scheme-name{font-size:.68rem;font-weight:800;color:var(--text);line-height:1.2}
+.scheme-pair{font-size:.58rem;font-weight:600;color:var(--muted);direction:ltr;letter-spacing:.01em}
 
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:rgba(91,101,117,.45);border-radius:2px}
@@ -466,10 +523,73 @@ body.dark .toast{background:#eef0f3;color:#121417}
           </div>
         </div>
 
-        <div class="panel-soft" style="border-radius:var(--radius-sm);padding:14px;display:flex;flex-direction:column;gap:12px">
-          <div class="design-toggle">
-            <button type="button" style="background:none;border:none;font:inherit;color:inherit;cursor:pointer;padding:0;font-weight:800" @click="designOpen=!designOpen">ڕێکخستنی زیاتر {{designOpen?'▾':'▸'}}</button>
+        <div class="panel-soft" style="border-radius:var(--radius-sm);padding:14px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <div>
+              <div style="font-size:.78rem;font-weight:800;color:var(--text2)">چوارچێوە و ڕەنگ</div>
+              <div class="hint" style="margin-top:2px">هەڵبژێرە — گۆڕانکارییەکان ڕاستەوخۆ دەردەکەون</div>
+            </div>
             <button type="button" class="btn btn-sm btn-ghost" style="font-size:.62rem;padding:3px 8px" @click="resetDesign">ڕیسێت</button>
+          </div>
+
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <label class="lbl" style="margin:0">چوارچێوە</label>
+              <span style="font-size:.68rem;font-weight:700;color:var(--primary)">{{ currentFrameLabel }}</span>
+            </div>
+            <div class="frame-grid" role="listbox" aria-label="چوارچێوە">
+              <button type="button" class="frame-opt" v-for="f in frames" :key="f.id"
+                      :class="{sel:frameType===f.id}" role="option" :aria-selected="frameType===f.id"
+                      @click="setFrame(f.id)" :title="f.name">
+                <span class="frame-mini"><span :class="'fr-'+f.id"><span class="frame-fake"></span></span></span>
+                <span class="frame-name">{{ f.name }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <label class="lbl" style="margin:0">پالتی ڕەنگ</label>
+              <span style="font-size:.68rem;font-weight:700;color:var(--muted)">{{ currentSchemeLabel }}</span>
+            </div>
+            <div class="scheme-grid" role="listbox" aria-label="ڕەنگ">
+              <button type="button" class="scheme-opt" v-for="s in colorSchemes" :key="s.id"
+                      :class="{sel:selScheme===s.id}" role="option" :aria-selected="selScheme===s.id"
+                      @click="applyScheme(s)">
+                <span class="scheme-swatch" :style="{background:`linear-gradient(135deg,${s.dark} 48%,${s.light} 52%)`}"></span>
+                <span class="scheme-meta">
+                  <span class="scheme-name">{{ s.name }}</span>
+                  <span class="scheme-pair">{{ s.dark }} · {{ s.light }}</span>
+                </span>
+              </button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+              <div class="color-pick">
+                <span class="lbl">ڕەنگی QR</span>
+                <input type="color" v-model="darkColor" @input="markCustomColors" aria-label="ڕەنگی QR"/>
+                <span class="color-hex">{{ darkColor }}</span>
+              </div>
+              <div class="color-pick">
+                <span class="lbl">پاشبنەما</span>
+                <input type="color" v-model="lightColor" @input="markCustomColors" aria-label="پاشبنەما"/>
+                <span class="color-hex">{{ lightColor }}</span>
+              </div>
+            </div>
+
+            <div class="color-actions">
+              <button type="button" class="chip" @click="swapColors">گۆڕینی ڕەنگەکان</button>
+              <button type="button" class="chip" @click="invertColors">پێچەوانە</button>
+            </div>
+
+            <div class="contrast-bar" :class="contrastOk ? 'contrast-ok' : 'contrast-bad'">
+              <span>{{ contrastOk ? 'کۆنتراست باشە بۆ سکان' : 'کۆنتراست لاوازە — سکان قورس دەبێت' }}</span>
+              <span style="direction:ltr;opacity:.85">{{ contrastRatioText }}</span>
+            </div>
+          </div>
+
+          <div class="design-toggle">
+            <button type="button" style="background:none;border:none;font:inherit;color:inherit;cursor:pointer;padding:0;font-weight:800" @click="designOpen=!designOpen">قەبارە و تێکست {{designOpen?'▾':'▸'}}</button>
           </div>
           <div v-show="designOpen" style="display:flex;flex-direction:column;gap:12px">
             <div>
@@ -482,29 +602,6 @@ body.dark .toast{background:#eef0f3;color:#121417}
                 <span style="font-size:.72rem;font-weight:800;color:var(--primary)">{{size}}px</span>
               </div>
               <input type="range" v-model.number="size" min="150" max="350"/>
-            </div>
-            <div>
-              <label class="lbl">چوارچێوە</label>
-              <select class="inp" v-model="frameType" style="padding:7px 9px;font-size:.77rem">
-                <option value="none">بەبێ</option>
-                <option value="modern">مۆدێرن</option>
-                <option value="elegant">جوان</option>
-                <option value="classic">کلاسیک</option>
-                <option value="rounded">خولاوی</option>
-                <option value="shadow">سێبەر</option>
-              </select>
-            </div>
-            <div>
-              <label class="lbl">ڕەنگ</label>
-              <div class="scheme-grid" style="margin-bottom:10px">
-                <div class="scheme-opt" v-for="s in colorSchemes" :key="s.id" :class="{sel:selScheme===s.id}"
-                     :style="{background:`linear-gradient(135deg,${s.dark},${s.light})`}"
-                     @click="applyScheme(s)" :title="s.name"></div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;text-align:center">
-                <div><span class="lbl">ڕەنگی QR</span><div style="display:flex;justify-content:center"><input type="color" v-model="darkColor"/></div></div>
-                <div><span class="lbl">پاشبنەما</span><div style="display:flex;justify-content:center"><input type="color" v-model="lightColor"/></div></div>
-              </div>
             </div>
           </div>
         </div>
@@ -726,6 +823,22 @@ createApp({
       phone:''
     });
 
+    const frames = [
+      {id:'none', name:'بەبێ'},
+      {id:'modern', name:'مۆدێرن'},
+      {id:'elegant', name:'جوان'},
+      {id:'classic', name:'کلاسیک'},
+      {id:'rounded', name:'خولاو'},
+      {id:'shadow', name:'سێبەر'},
+      {id:'soft', name:'نەرم'},
+      {id:'paper', name:'کاغەز'},
+      {id:'gold', name:'زێڕ'},
+      {id:'rose', name:'گوڵ'},
+      {id:'neon', name:'نیۆن'},
+      {id:'cosmic', name:'ئاسمان'},
+      {id:'gradient', name:'گرادیێنت'},
+    ];
+
     const stats = computed(()=>{
       const today = todayKey();
       const todayCount = history.value.filter(h=>(h.dateKey||h.date)===today || h.date===today).length;
@@ -738,18 +851,59 @@ createApp({
       return m[tab.value] || tab.value;
     });
 
+    const currentFrameLabel = computed(()=>{
+      const f = frames.find(x=>x.id===frameType.value);
+      return f ? f.name : frameType.value;
+    });
+
     const colorSchemes = [
       {id:'classic',name:'کلاسیک',dark:'#000000',light:'#ffffff'},
       {id:'teal',name:'تیل',dark:'#134e4a',light:'#f0fdfa'},
       {id:'ocean',name:'دەریا',dark:'#0c4a6e',light:'#e0f2fe'},
-      {id:'forest',name:'دار',dark:'#14532d',light:'#f0fdf4'},
+      {id:'forest',name:'دارستان',dark:'#14532d',light:'#f0fdf4'},
+      {id:'slate',name:'بەرد',dark:'#1e293b',light:'#f8fafc'},
       {id:'fire',name:'ئاگر',dark:'#7f1d1d',light:'#fff7ed'},
       {id:'night',name:'شەو',dark:'#111827',light:'#f3f4f6'},
       {id:'gold',name:'زێڕ',dark:'#78350f',light:'#fffbeb'},
       {id:'rose',name:'گوڵ',dark:'#881337',light:'#fff1f2'},
+      {id:'indigo',name:'نیلی',dark:'#312e81',light:'#eef2ff'},
       {id:'cyber',name:'دیجیتاڵ',dark:'#155e75',light:'#cffafe'},
-      {id:'mono',name:'خۆیی',dark:'#374151',light:'#f9fafb'},
+      {id:'mono',name:'خۆڵەمێشی',dark:'#374151',light:'#f9fafb'},
     ];
+
+    const currentSchemeLabel = computed(()=>{
+      if(selScheme.value === 'custom') return 'دەستی';
+      const s = colorSchemes.find(x=>x.id===selScheme.value);
+      return s ? s.name : 'دەستی';
+    });
+
+    function hexToRgb(hex){
+      const h = String(hex||'').replace('#','').trim();
+      if(h.length === 3){
+        return [
+          parseInt(h[0]+h[0],16),
+          parseInt(h[1]+h[1],16),
+          parseInt(h[2]+h[2],16)
+        ];
+      }
+      if(h.length !== 6) return [0,0,0];
+      return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+    }
+    function relLuminance(hex){
+      const [r,g,b] = hexToRgb(hex).map(v=>{
+        const c = v/255;
+        return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+      });
+      return 0.2126*r + 0.7152*g + 0.0722*b;
+    }
+    function contrastRatio(a,b){
+      const L1 = relLuminance(a), L2 = relLuminance(b);
+      const hi = Math.max(L1,L2), lo = Math.min(L1,L2);
+      return (hi + 0.05) / (lo + 0.05);
+    }
+    const contrastValue = computed(()=> contrastRatio(darkColor.value, lightColor.value));
+    const contrastOk = computed(()=> contrastValue.value >= 4.5);
+    const contrastRatioText = computed(()=> contrastValue.value.toFixed(1) + ':1');
 
     const templates = [
       {id:'biz',icon:'B',name:'بیزنس',tab:'url',data:{url:'https://yourwebsite.com'},caption:'وێبسایتمان سەردان بکە'},
@@ -965,10 +1119,42 @@ createApp({
       showToast('✓ دیزاین ڕیسێت کرا');
     }
 
+    function setFrame(id){
+      frameType.value = id;
+    }
+
     function applyScheme(s){
       selScheme.value = s.id;
       darkColor.value = s.dark;
       lightColor.value = s.light;
+    }
+
+    function markCustomColors(){
+      const match = colorSchemes.find(s =>
+        s.dark.toLowerCase() === String(darkColor.value).toLowerCase() &&
+        s.light.toLowerCase() === String(lightColor.value).toLowerCase()
+      );
+      selScheme.value = match ? match.id : 'custom';
+    }
+
+    function swapColors(){
+      const d = darkColor.value;
+      darkColor.value = lightColor.value;
+      lightColor.value = d;
+      markCustomColors();
+      showToast('✓ ڕەنگەکان گۆڕدران');
+    }
+
+    function invertColors(){
+      const flip = (hex)=>{
+        const [r,g,b] = hexToRgb(hex);
+        const to = (n)=> n.toString(16).padStart(2,'0');
+        return '#' + to(255-r) + to(255-g) + to(255-b);
+      };
+      darkColor.value = flip(darkColor.value);
+      lightColor.value = flip(lightColor.value);
+      markCustomColors();
+      showToast('✓ ڕەنگەکان پێچەوانە کران');
     }
 
     function applyTemplate(t){
@@ -1045,16 +1231,18 @@ createApp({
     // ── FRAME STYLES for canvas rendering ──
     const frameStyles = {
       none:     { pad:0,   bg:null,           radius:0,  border:null,        shadow:null },
-      modern:   { pad:20,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.5)' },
-      elegant:  { pad:20,  bg:'#ffffff',       radius:14, border:{w:2,c:'#0f766e'}, shadow:'rgba(15,118,110,0.25)' },
-      classic:  { pad:20,  bg:'#ffffff',       radius:4,  border:{w:7,c:'#1a1040'}, shadow:null },
-      rounded:  { pad:24,  bg:'#0f766e',       radius:40, border:null,        shadow:'rgba(15,118,110,0.3)' },
-      shadow:   { pad:20,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.8)' },
-      neon:     { pad:20,  bg:'#000000',       radius:16, border:{w:1,c:'#67e8f9'}, shadow:'rgba(45,212,191,0.35)' },
+      modern:   { pad:20,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.45)' },
+      elegant:  { pad:20,  bg:'#ffffff',       radius:14, border:{w:2,c:'#0f766e'}, shadow:'rgba(15,118,110,0.22)' },
+      classic:  { pad:20,  bg:'#ffffff',       radius:4,  border:{w:7,c:'#1f2937'}, shadow:null },
+      rounded:  { pad:24,  bg:'#0f766e',       radius:40, border:null,        shadow:'rgba(15,118,110,0.28)' },
+      shadow:   { pad:22,  bg:'#ffffff',       radius:16, border:null,        shadow:'rgba(0,0,0,0.72)' },
+      soft:     { pad:22,  bg:'#ecfdf5',       radius:28, border:{w:1,c:'#a7f3d0'}, shadow:'rgba(15,118,110,0.12)' },
+      paper:    { pad:22,  bg:'#faf7f2',       radius:8,  border:{w:1,c:'#e7e0d5'}, shadow:'rgba(28,25,23,0.12)' },
+      neon:     { pad:20,  bg:'#0b1220',       radius:16, border:{w:2,c:'#67e8f9'}, shadow:'rgba(34,211,238,0.4)' },
       gradient: { pad:24,  bg:'gradient',      radius:24, border:null,        shadow:null },
-      gold:     { pad:22,  bg:'#ffd700',       radius:16, border:{w:3,c:'#b8860b'}, shadow:'rgba(255,215,0,0.5)' },
-      cosmic:   { pad:22,  bg:'#0f0c29',       radius:20, border:{w:1,c:'#67e8f9'}, shadow:'rgba(15,118,110,0.25)' },
-      rose:     { pad:22,  bg:'#fff0f3',       radius:20, border:{w:2,c:'#ffb3c6'}, shadow:'rgba(236,72,153,0.3)' },
+      gold:     { pad:22,  bg:'#f8e7b0',       radius:16, border:{w:2,c:'#b45309'}, shadow:'rgba(180,83,9,0.28)' },
+      cosmic:   { pad:22,  bg:'#111827',       radius:20, border:{w:1,c:'#475569'}, shadow:'rgba(15,23,42,0.45)' },
+      rose:     { pad:22,  bg:'#fff1f2',       radius:20, border:{w:2,c:'#fda4af'}, shadow:'rgba(244,63,94,0.2)' },
     };
 
     async function fetchQRBlob(url){
@@ -1132,10 +1320,9 @@ createApp({
           // Background fill
           if(fr.bg === 'gradient'){
             const grad = ctx.createLinearGradient(ox, oy, ox+totalW, oy+totalH);
-            grad.addColorStop(0,'#ff6b6b');
-            grad.addColorStop(0.33,'#4ecdc4');
-            grad.addColorStop(0.66,'#45b7d1');
-            grad.addColorStop(1,'#96ceb4');
+            grad.addColorStop(0,'#99f6e4');
+            grad.addColorStop(0.45,'#a5f3fc');
+            grad.addColorStop(1,'#c4b5fd');
             ctx.save();
             roundRect(ctx, ox, oy, totalW, totalH - captionH, fr.radius);
             ctx.fillStyle = grad; ctx.fill();
@@ -1256,9 +1443,6 @@ createApp({
         const svg = await makeSvgString();
         const fr = frameStyles[frameType.value] || frameStyles.modern;
         const pad = (frameType.value === 'none') ? 0 : (fr.pad || 16);
-        const bg = (frameType.value === 'none')
-          ? (lightColor.value || '#ffffff')
-          : (fr.bg === 'gradient' ? '#ffffff' : (fr.bg || '#ffffff'));
         const inner = svg.replace(/<\?xml[^>]*>/i,'').trim();
         const vb = inner.match(/viewBox=["']0 0\s+(\d+)\s+(\d+)["']/i);
         const qw = vb ? Number(vb[1]) : size.value;
@@ -1266,10 +1450,24 @@ createApp({
         const body = inner.replace(/^<svg[^>]*>/i,'').replace(/<\/svg>\s*$/i,'');
         const tw = qw + pad*2;
         const th = qh + pad*2 + (caption.value ? 36 : 0);
+        const bw = fr.border ? fr.border.w : 0;
         const captionSvg = caption.value
           ? `<text x="${tw/2}" y="${qh + pad*2 + 22}" text-anchor="middle" font-family="Noto Kufi Arabic, Arial" font-size="16" font-weight="700" fill="#444">${escapeXml(caption.value)}</text>`
           : '';
-        const framed = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${tw}" height="${th}" viewBox="0 0 ${tw} ${th}"><rect width="100%" height="100%" rx="${fr.radius||0}" fill="${bg}"/><g transform="translate(${pad},${pad})">${body}</g>${captionSvg}</svg>`;
+        let defs = '';
+        let fill = lightColor.value || '#ffffff';
+        if(frameType.value !== 'none'){
+          if(fr.bg === 'gradient'){
+            defs = `<defs><linearGradient id="frg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#99f6e4"/><stop offset="45%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient></defs>`;
+            fill = 'url(#frg)';
+          } else {
+            fill = fr.bg || '#ffffff';
+          }
+        }
+        const borderSvg = (frameType.value !== 'none' && fr.border)
+          ? `<rect x="${bw/2}" y="${bw/2}" width="${tw-bw}" height="${th-bw}" rx="${fr.radius||0}" fill="none" stroke="${fr.border.c}" stroke-width="${fr.border.w}"/>`
+          : '';
+        const framed = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${tw}" height="${th}" viewBox="0 0 ${tw} ${th}">${defs}<rect width="100%" height="100%" rx="${fr.radius||0}" fill="${fill}"/>${borderSvg}<g transform="translate(${pad},${pad})">${body}</g>${captionSvg}</svg>`;
         const blob = new Blob([framed], {type:'image/svg+xml;charset=utf-8'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -1602,11 +1800,14 @@ createApp({
       showScanModal, scanResult, scanStatus, scanning,
       videoEl, videoCanvas, scanCanvas,
       pwaReady, pwaInstalled, installPWA,
-      selTemplate, selScheme, colorSchemes, templates,
-      stats, currentTabLabel, isValidUrl, looksLikeDomain, pasteUrl, prefixUrl,
+      selTemplate, selScheme, colorSchemes, frames, templates,
+      stats, currentTabLabel, currentFrameLabel, currentSchemeLabel,
+      contrastOk, contrastRatioText,
+      isValidUrl, looksLikeDomain, pasteUrl, prefixUrl,
       generateQR, downloadPNG, downloadSVG, downloadSVGPlain, downloadJPG, copyLink, copyImage,
       shareWhatsApp, shareTelegram, shareTwitter, shareNative,
-      uploadLogo, onLogoDrop, pickLogo, clearLogo, resetDesign, applyScheme, applyTemplate,
+      uploadLogo, onLogoDrop, pickLogo, clearLogo, resetDesign, setFrame,
+      applyScheme, markCustomColors, swapColors, invertColors, applyTemplate,
       startScan, closeScan, scanFromFile, copyScanResult, useScanResult, openScanResult,
       getLocation
     };
