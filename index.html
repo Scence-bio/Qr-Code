@@ -70,61 +70,84 @@ html.standalone body{
 
 .wrap{
   position:relative;z-index:10;min-height:100vh;min-height:100dvh;max-width:1100px;margin:0 auto;
-  padding-top:calc(18px + env(safe-area-inset-top, 0px));
+  padding-top:calc(14px + env(safe-area-inset-top, 0px));
   padding-bottom:calc(18px + env(safe-area-inset-bottom, 0px));
-  padding-left:calc(18px + env(safe-area-inset-left, 0px));
-  padding-right:calc(18px + env(safe-area-inset-right, 0px));
+  padding-left:calc(12px + env(safe-area-inset-left, 0px));
+  padding-right:calc(12px + env(safe-area-inset-right, 0px));
 }
 .ltr{direction:ltr;text-align:left;unicode-bidi:isolate}
+
+button,a,.chip,.tab,.frame-opt,.scheme-opt,.logo-drop,.share-btn,.theme-switch{
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
 
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
 .panel-soft{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm)}
 
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding:14px 18px}
-.logo-text{font-size:clamp(1.35rem,3vw,1.85rem);font-weight:800;color:var(--text);letter-spacing:-.02em}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:12px 14px;gap:8px}
+.logo-text{font-size:clamp(1.2rem,3vw,1.85rem);font-weight:800;color:var(--text);letter-spacing:-.02em}
 .logo-badge{display:inline-block;margin-inline-start:6px;background:var(--primary);color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:6px;vertical-align:super;letter-spacing:.04em}
 .logo-sub{font-size:.72rem;color:var(--muted);margin-top:3px;font-weight:600}
 
-.theme-switch{width:46px;height:26px;border-radius:999px;cursor:pointer;position:relative;border:1px solid var(--border);background:var(--surface2);flex-shrink:0}
-.theme-knob{position:absolute;top:2px;width:20px;height:20px;border-radius:50%;background:var(--primary);transition:inset-inline-start .2s ease;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.theme-switch{width:48px;height:30px;border-radius:999px;cursor:pointer;position:relative;border:1px solid var(--border);background:var(--surface2);flex-shrink:0}
+.theme-knob{position:absolute;top:3px;width:22px;height:22px;border-radius:50%;background:var(--primary);transition:inset-inline-start .2s ease;box-shadow:0 1px 2px rgba(0,0,0,.2)}
 
-.stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;max-width:420px}
+.stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px;max-width:420px}
 .stat-card{padding:12px 10px;text-align:center}
 .stat-num{font-size:1.35rem;font-weight:800;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
 .stat-lbl{font-size:.72rem;font-weight:600;color:var(--muted);margin-top:4px}
 
-.main-grid{display:grid;gap:16px}
-@media(min-width:800px){.main-grid{grid-template-columns:1fr 1fr}}
+.main-grid{display:grid;gap:14px}
+@media(min-width:800px){.main-grid{grid-template-columns:1fr 1fr;gap:16px}}
 
-.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2)}
-.tab{padding:7px 11px;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--muted);font-family:inherit;transition:background .15s,color .15s,border-color .15s;white-space:nowrap}
+.tabs{
+  display:flex;flex-wrap:nowrap;gap:6px;margin-bottom:14px;padding:6px;
+  border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x proximity;
+  overscroll-behavior-x:contain;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:10px 14px;min-height:44px;border-radius:9px;font-size:.8rem;font-weight:700;cursor:pointer;
+  border:1px solid transparent;background:transparent;color:var(--muted);font-family:inherit;
+  transition:background .15s,color .15s,border-color .15s;white-space:nowrap;flex:0 0 auto;scroll-snap-align:start;
+}
 .tab.on{background:var(--primary);color:#fff;border-color:var(--primary)}
 .tab:not(.on):hover{color:var(--text);background:rgba(15,118,110,.08);border-color:rgba(15,118,110,.18)}
 
 .lbl{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:5px}
-.inp{background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:10px 12px;font-size:.86rem;font-family:inherit;width:100%;transition:border-color .15s,box-shadow .15s}
+.inp{
+  background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);
+  padding:12px 14px;font-size:16px;font-family:inherit;width:100%;transition:border-color .15s,box-shadow .15s;
+  min-height:48px;
+}
 .inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,118,110,.15)}
 .inp::placeholder{color:#8b93a3}
 .inp option{background:var(--bg2);color:var(--text)}
-textarea.inp{resize:vertical;min-height:80px}
+textarea.inp{resize:vertical;min-height:96px;line-height:1.5}
 
-.btn{font-family:inherit;font-weight:700;border:1px solid transparent;cursor:pointer;border-radius:var(--radius-sm);transition:background .15s,transform .15s,box-shadow .15s,border-color .15s;font-size:.82rem;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.btn-p{background:var(--primary);color:#fff;padding:12px 16px}
+.btn{
+  font-family:inherit;font-weight:700;border:1px solid transparent;cursor:pointer;border-radius:var(--radius-sm);
+  transition:background .15s,transform .15s,box-shadow .15s,border-color .15s;font-size:.86rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;
+}
+.btn-p{background:var(--primary);color:#fff;padding:13px 16px}
 .btn-p:hover:not(:disabled){background:var(--primary2)}
 .btn-p:disabled{opacity:.45;cursor:not-allowed}
-.btn-g{background:var(--ok);color:#fff;padding:11px 14px}
+.btn-g{background:var(--ok);color:#fff;padding:12px 14px}
 .btn-g:hover{filter:brightness(1.05)}
-.btn-r{background:#9f1239;color:#fff;padding:11px 14px}
-.btn-c{background:var(--accent);color:#fff;padding:11px 14px}
-.btn-o{background:var(--warn);color:#fff;padding:11px 14px}
-.btn-sm{padding:6px 10px;font-size:.72rem;border-radius:7px}
-.btn-ghost{background:transparent;border-color:var(--border);color:var(--text2);padding:8px 12px}
+.btn-r{background:#9f1239;color:#fff;padding:12px 14px}
+.btn-c{background:var(--accent);color:#fff;padding:12px 14px}
+.btn-o{background:var(--warn);color:#fff;padding:12px 14px}
+.btn-sm{padding:8px 12px;font-size:.74rem;border-radius:7px;min-height:40px}
+.btn-ghost{background:transparent;border-color:var(--border);color:var(--text2);padding:10px 12px}
 .btn-ghost:hover{background:var(--surface2)}
 
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border);cursor:pointer;outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--primary);cursor:pointer}
+input[type=range]{-webkit-appearance:none;width:100%;height:8px;border-radius:999px;background:var(--border);cursor:pointer;outline:none;margin:10px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--primary);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 
-input[type=color]{-webkit-appearance:none;width:36px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;background:var(--bg2)}
+input[type=color]{-webkit-appearance:none;width:48px;height:48px;border:1px solid var(--border);border-radius:12px;cursor:pointer;padding:3px;background:var(--bg2)}
 
 .qr-border{padding:1px;border-radius:var(--radius);background:var(--border)}
 .qr-inner{background:var(--bg2);border-radius:calc(var(--radius) - 1px);min-height:260px;display:flex;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:12px}
@@ -305,49 +328,78 @@ body.dark .qr-inner{background:#151821}
 body.dark .toast{background:#eef0f3;color:#121417}
 
 .sticky-preview{position:sticky;top:16px}
-.url-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.chip{border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:999px;padding:5px 10px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit}
+.url-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.chip{
+  border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:999px;
+  padding:10px 14px;min-height:42px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;
+  display:inline-flex;align-items:center;justify-content:center;
+}
 .chip:hover{border-color:var(--primary);color:var(--primary);background:rgba(15,118,110,.06)}
 .chip.on{border-color:var(--primary);background:rgba(15,118,110,.12);color:var(--primary)}
-.design-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:none;cursor:pointer;font-family:inherit;padding:0;color:var(--text2);font-weight:800;font-size:.78rem}
+.design-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:none;cursor:pointer;font-family:inherit;padding:8px 0;color:var(--text2);font-weight:800;font-size:.8rem;min-height:44px}
 .hint{font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.5}
 .stats-bar{grid-template-columns:repeat(2,1fr)}
-@media(max-width:520px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
 .live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-inline-end:6px;vertical-align:middle}
 .payload-box{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);font-size:.72rem;color:var(--muted);word-break:break-all}
 
 .logo-drop{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  width:100%;
-  min-height:120px;
-  box-sizing:border-box;
-  border:1.5px dashed var(--border);
-  border-radius:var(--radius-sm);
-  padding:16px;
-  text-align:center;
-  background:var(--bg2);
-  cursor:pointer;
-  transition:border-color .15s, background .15s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;
+  min-height:132px;box-sizing:border-box;border:1.5px dashed var(--border);border-radius:var(--radius-sm);
+  padding:18px;text-align:center;background:var(--bg2);cursor:pointer;transition:border-color .15s, background .15s;
 }
 .logo-drop:hover,.logo-drop.drag{border-color:var(--primary);background:rgba(15,118,110,.06)}
 .logo-drop img{width:72px;height:72px;object-fit:contain;border-radius:12px;background:#fff;padding:6px;border:1px solid var(--border2);display:block}
-.logo-drop .title{font-size:.86rem;font-weight:800;color:var(--text);margin-top:8px}
-.logo-drop .sub{font-size:.72rem;color:var(--muted);margin-top:4px;line-height:1.45;max-width:28ch}
+.logo-drop .title{font-size:.9rem;font-weight:800;color:var(--text);margin-top:8px}
+.logo-drop .sub{font-size:.74rem;color:var(--muted);margin-top:4px;line-height:1.45;max-width:32ch}
+
+.mobile-dock{
+  display:none;position:fixed;z-index:80;left:0;right:0;bottom:0;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  background:rgba(255,255,255,.92);border-top:1px solid var(--border);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 -8px 24px rgba(18,21,26,.08);
+}
+body.dark .mobile-dock{background:rgba(18,21,26,.92);border-top-color:var(--border)}
+.mobile-dock-inner{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;max-width:560px;margin:0 auto}
+.mobile-dock .btn{width:100%;font-size:.8rem;padding:12px 8px;min-height:48px}
+
+.panel-editor{padding:16px}
+.preview-anchor{scroll-margin-top:12px}
+
+@media(max-width:799px){
+  .wrap{padding-bottom:calc(88px + env(safe-area-inset-bottom, 0px))}
+  .wrap.has-dock{padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
+  .stats-bar{display:none}
+  .logo-sub{display:none}
+  .header{padding:10px 12px;margin-bottom:10px}
+  .sticky-preview{position:static}
+  .main-grid{gap:12px}
+  .panel-editor{padding:14px}
+  .frame-grid{max-height:240px;grid-template-columns:repeat(3,1fr)}
+  .scheme-grid{grid-template-columns:repeat(2,1fr)}
+  .share-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .share-btn{min-height:56px;padding:12px 8px}
+  .qr-inner{min-height:220px;padding:16px}
+  .mobile-dock{display:block}
+  .desktop-only-actions{display:none !important}
+  .toast{bottom:calc(86px + env(safe-area-inset-bottom, 0px))}
+}
+@media(min-width:800px){
+  .mobile-dock{display:none !important}
+  .wrap{padding-left:calc(18px + env(safe-area-inset-left, 0px));padding-right:calc(18px + env(safe-area-inset-right, 0px))}
+}
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
 
-<div id="app" class="wrap">
+<div id="app" class="wrap" :class="{'has-dock': qrUrl && !loading}">
 
   <!-- HEADER -->
   <div class="panel header">
     <div style="display:flex;align-items:center;gap:9px">
       <button class="theme-switch" @click="toggleTheme" :title="lightTheme?'شەو':'ڕۆژ'" type="button" aria-label="گۆڕینی ڕووکار">
-        <span class="theme-knob" :style="lightTheme?'inset-inline-start:22px':'inset-inline-start:2px'"></span>
+        <span class="theme-knob" :style="lightTheme?'inset-inline-start:24px':'inset-inline-start:3px'"></span>
       </button>
       <span style="font-size:.7rem;font-weight:700;color:var(--muted)">{{lightTheme?'ڕۆژ':'شەو'}}</span>
     </div>
@@ -387,21 +439,21 @@ body.dark .toast{background:#eef0f3;color:#121417}
   <div class="main-grid">
 
     <!-- ══ LEFT PANEL ══ -->
-    <div class="panel" style="border-radius:var(--radius);padding:18px">
+    <div class="panel panel-editor" style="border-radius:var(--radius)">
 
       <!-- TABS -->
-      <div class="tabs">
-        <button class="tab" :class="{on:tab==='url'}"      @click="tab='url'">URL</button>
-        <button class="tab" :class="{on:tab==='text'}"     @click="tab='text'">تێکست</button>
-        <button class="tab" :class="{on:tab==='wifi'}"     @click="tab='wifi'">WiFi</button>
-        <button class="tab" :class="{on:tab==='vcard'}"    @click="tab='vcard'">کارت</button>
-        <button class="tab" :class="{on:tab==='maps'}"     @click="tab='maps'">نەخشە</button>
-        <button class="tab" :class="{on:tab==='email'}"    @click="tab='email'">ئیمەیڵ</button>
-        <button class="tab" :class="{on:tab==='sms'}"      @click="tab='sms'">SMS</button>
-        <button class="tab" :class="{on:tab==='phone'}"    @click="tab='phone'">تەلەفۆن</button>
-        <button class="tab" :class="{on:tab==='templates'}" @click="tab='templates'">قاڵب</button>
-        <button class="tab" :class="{on:tab==='history'}"  @click="tab='history'">مێژوو</button>
-        <button class="tab" :class="{on:tab==='scan'}"     @click="tab='scan'">خوێندنەوە</button>
+      <div class="tabs" ref="tabsEl">
+        <button class="tab" :class="{on:tab==='url'}"      @click="setTab('url')">URL</button>
+        <button class="tab" :class="{on:tab==='text'}"     @click="setTab('text')">تێکست</button>
+        <button class="tab" :class="{on:tab==='wifi'}"     @click="setTab('wifi')">WiFi</button>
+        <button class="tab" :class="{on:tab==='vcard'}"    @click="setTab('vcard')">کارت</button>
+        <button class="tab" :class="{on:tab==='maps'}"     @click="setTab('maps')">نەخشە</button>
+        <button class="tab" :class="{on:tab==='email'}"    @click="setTab('email')">ئیمەیڵ</button>
+        <button class="tab" :class="{on:tab==='sms'}"      @click="setTab('sms')">SMS</button>
+        <button class="tab" :class="{on:tab==='phone'}"    @click="setTab('phone')">تەلەفۆن</button>
+        <button class="tab" :class="{on:tab==='templates'}" @click="setTab('templates')">قاڵب</button>
+        <button class="tab" :class="{on:tab==='history'}"  @click="setTab('history')">مێژوو</button>
+        <button class="tab" :class="{on:tab==='scan'}"     @click="setTab('scan')">خوێندنەوە</button>
       </div>
 
       <!-- TEXT -->
@@ -670,7 +722,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
     </div>
 
     <!-- ══ RIGHT PANEL ══ -->
-    <div class="sticky-preview" style="display:flex;flex-direction:column;gap:14px">
+    <div class="sticky-preview preview-anchor" ref="previewEl" style="display:flex;flex-direction:column;gap:14px">
 
       <!-- QR DISPLAY -->
       <div class="qr-border" style="border-radius:var(--radius)">
@@ -703,8 +755,8 @@ body.dark .toast{background:#eef0f3;color:#121417}
         </div>
       </div>
 
-      <!-- DOWNLOAD BUTTONS -->
-      <div v-if="qrUrl && !loading" class="float-in panel" style="border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px">
+      <!-- DOWNLOAD BUTTONS (desktop) -->
+      <div v-if="qrUrl && !loading" class="float-in panel desktop-only-actions" style="border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px">
         <div style="font-size:.72rem;font-weight:800;color:var(--muted)">داگرتن</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
           <button class="btn btn-g" @click="downloadPNG(true)">PNG</button>
@@ -717,8 +769,8 @@ body.dark .toast{background:#eef0f3;color:#121417}
         </div>
       </div>
 
-      <!-- SHARE -->
-      <div v-if="qrUrl && !loading" class="float-in panel" style="border-radius:var(--radius);padding:14px">
+      <!-- SHARE (desktop) -->
+      <div v-if="qrUrl && !loading" class="float-in panel desktop-only-actions" style="border-radius:var(--radius);padding:14px">
         <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">بەشکردن</div>
         <div class="share-grid">
           <button class="share-btn" @click="shareWhatsApp" title="WhatsApp">
@@ -820,6 +872,15 @@ body.dark .toast{background:#eef0f3;color:#121417}
     </div>
   </div>
 
+  <!-- MOBILE DOCK -->
+  <div class="mobile-dock" v-if="qrUrl && !loading">
+    <div class="mobile-dock-inner">
+      <button type="button" class="btn btn-g" @click="downloadPNG(true)">داگرتن</button>
+      <button type="button" class="btn btn-c" @click="shareNative">بەشکردن</button>
+      <button type="button" class="btn btn-ghost" @click="scrollToPreview">بینین</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -900,6 +961,8 @@ createApp({
     const showPass = ref(false);
     const designOpen = ref(false);
     const urlInput = ref(null);
+    const tabsEl = ref(null);
+    const previewEl = ref(null);
     const size = ref(220);
     const frameType = ref('modern');
     const darkColor = ref('#000000');
@@ -1047,6 +1110,25 @@ createApp({
       lightTheme.value = !lightTheme.value;
       document.body.classList.toggle('dark', !lightTheme.value);
       syncThemeColor();
+    }
+
+    function setTab(id){
+      tab.value = id;
+      nextTick(()=>{
+        const root = tabsEl.value;
+        if(!root) return;
+        const active = root.querySelector('.tab.on');
+        if(active && active.scrollIntoView){
+          active.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+        }
+      });
+    }
+
+    function scrollToPreview(){
+      const el = previewEl.value;
+      if(el && el.scrollIntoView){
+        el.scrollIntoView({behavior:'smooth', block:'start'});
+      }
     }
 
     function buildData(){
@@ -1221,6 +1303,9 @@ createApp({
         loading.value = false;
         error.value = false;
         saveHist(data, dataUrl);
+        if(window.matchMedia('(max-width:799px)').matches){
+          nextTick(()=> setTimeout(scrollToPreview, 120));
+        }
       } catch(err){
         console.error(err);
         loading.value = false;
@@ -2206,7 +2291,7 @@ createApp({
       tab, lightTheme, toggleTheme,
       loading, error, qrUrl, lastBuilt, canGenerate,
       inputs, size, frameType, darkColor, lightColor, ecc,
-      caption, logoDataUrl, logoSize, logoDragging, logoFileInput, showPass, designOpen, urlInput,
+      caption, logoDataUrl, logoSize, logoDragging, logoFileInput, showPass, designOpen, urlInput, tabsEl, previewEl,
       history, loadHistory, removeHistory, clearHistory,
       showScanModal, scanResult, scanStatus, scanning,
       videoEl, videoCanvas, scanCanvas,
@@ -2216,6 +2301,7 @@ createApp({
       contrastOk, contrastRatioText,
       isValidUrl, looksLikeDomain, pasteUrl, prefixUrl,
       generateQR, downloadPNG, downloadSVG, downloadSVGPlain, downloadJPG, copyLink, copyImage,
+      setTab, scrollToPreview,
       shareWhatsApp, shareTelegram, shareTwitter, shareNative,
       uploadLogo, onLogoDrop, pickLogo, clearLogo, resetDesign, setFrame,
       applyScheme, markCustomColors, swapColors, invertColors, applyTemplate,
