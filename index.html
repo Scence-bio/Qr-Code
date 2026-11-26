@@ -217,7 +217,6 @@ body.dark .toast{background:#eef0f3;color:#121417}
 
     <div style="display:flex;align-items:center;gap:7px">
       <button v-if="pwaReady" class="btn btn-sm btn-ghost" @click="installPWA" title="دامەزراندن">دامەزراندن</button>
-      <button class="btn btn-sm btn-ghost" @click="showShortcuts=true" title="ئامێرەکان">کورتەکلیل</button>
     </div>
   </div>
 
@@ -256,8 +255,8 @@ body.dark .toast{background:#eef0f3;color:#121417}
 
       <!-- TABS -->
       <div class="tabs">
-        <button class="tab" :class="{on:tab==='text'}"     @click="tab='text'">تێکست</button>
         <button class="tab" :class="{on:tab==='url'}"      @click="tab='url'">URL</button>
+        <button class="tab" :class="{on:tab==='text'}"     @click="tab='text'">تێکست</button>
         <button class="tab" :class="{on:tab==='wifi'}"     @click="tab='wifi'">WiFi</button>
         <button class="tab" :class="{on:tab==='vcard'}"    @click="tab='vcard'">کارت</button>
         <button class="tab" :class="{on:tab==='maps'}"     @click="tab='maps'">نەخشە</button>
@@ -664,22 +663,6 @@ body.dark .toast{background:#eef0f3;color:#121417}
     </div>
   </div>
 
-  <!-- SHORTCUTS MODAL -->
-  <div class="modal-ov" v-if="showShortcuts" @click.self="showShortcuts=false">
-    <div class="modal-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
-        <h3 style="font-weight:800;font-size:.95rem;color:var(--text2)">کورتەکلیلەکان</h3>
-        <button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:var(--muted);border:1px solid var(--border)" @click="showShortcuts=false">✕</button>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div v-for="s in shortcuts" :key="s.key" style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(255,255,255,.04);border-radius:8px">
-          <span style="font-size:.78rem;color:var(--text)">{{s.desc}}</span>
-          <kbd style="background:rgba(15,118,110,.15);border:1px solid rgba(15,118,110,.35);border-radius:5px;padding:2px 8px;font-size:.7rem;font-weight:800;color:var(--text);font-family:ui-monospace,monospace">{{s.key}}</kbd>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <script>
@@ -694,7 +677,7 @@ const {createApp,ref,reactive,computed,watch,onMounted,onUnmounted,nextTick} = V
 
 createApp({
   setup(){
-    const tab = ref('text');
+    const tab = ref('url');
     const lightTheme = ref(true);
     const loading = ref(false);
     const error = ref(false);
@@ -703,7 +686,6 @@ createApp({
     const videoCanvas = ref(null);
     const scanCanvas = ref(null);
     const showScanModal = ref(false);
-    const showShortcuts = ref(false);
     const scanResult = ref('');
     const scanStatus = ref('');
     const scanning = ref(false);
@@ -766,14 +748,6 @@ createApp({
       {id:'social',icon:'S',name:'سۆشیال',tab:'url',data:{url:'https://linktr.ee/'},caption:'بەستەرەکانم ببینە'},
       {id:'location',icon:'M',name:'شوێن',tab:'maps',data:{lat:'36.1901',lng:'44.0091',mapName:'سلێمانی'},caption:'شوێنمان بدۆزەرەوە'},
       {id:'email_tpl',icon:'@',name:'ئیمەیڵ',tab:'email',data:{eTo:'info@company.com',eSubj:'پرسیار'},caption:'ئیمەیڵمان بنێرە'},
-    ];
-
-    const shortcuts = [
-      {key:'G',desc:'QR دروست بکە'},
-      {key:'1-8',desc:'تابەکان گۆڕین'},
-      {key:'T',desc:'ڕووکار بگۆڕە'},
-      {key:'H',desc:'مێژوو'},
-      {key:'S',desc:'خوێندنەوە'},
     ];
 
     function toggleTheme(){
@@ -1457,19 +1431,6 @@ createApp({
       }
     }
 
-    // ── KEYBOARD SHORTCUTS ──
-    function handleKey(e){
-      if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
-      const tabKeys = {1:'text',2:'url',3:'wifi',4:'vcard',5:'maps',6:'email',7:'sms',8:'phone'};
-      if(tabKeys[e.key]){ tab.value = tabKeys[e.key]; return; }
-      switch(e.key.toLowerCase()){
-        case 'g': generateQR(); break;
-        case 't': toggleTheme(); break;
-        case 'h': tab.value = 'history'; break;
-        case 's': tab.value = 'scan'; break;
-      }
-    }
-
     function showToast(msg){
       const el = document.getElementById('toast');
       el.textContent = msg; el.classList.add('show');
@@ -1478,11 +1439,10 @@ createApp({
 
     onMounted(()=>{
       loadHistData();
-      window.addEventListener('keydown', handleKey);
       window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; pwaReady.value=true; });
       window.addEventListener('appinstalled', ()=>{ pwaInstalled.value=true; pwaReady.value=false; });
     });
-    onUnmounted(()=>{ window.removeEventListener('keydown',handleKey); closeScan(); });
+    onUnmounted(()=>{ closeScan(); });
 
     return {
       tab, lightTheme, toggleTheme,
@@ -1493,8 +1453,7 @@ createApp({
       showScanModal, scanResult, scanStatus, scanning,
       videoEl, videoCanvas, scanCanvas,
       pwaReady, pwaInstalled, installPWA,
-      selTemplate, selScheme, colorSchemes, templates, shortcuts,
-      showShortcuts,
+      selTemplate, selScheme, colorSchemes, templates,
       stats, currentTabLabel, isValidUrl,
       generateQR, downloadPNG, downloadSVG, downloadSVGPlain, downloadJPG, copyLink,
       shareWhatsApp, shareTelegram, shareTwitter, shareNative,
