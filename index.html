@@ -978,6 +978,7 @@ createApp({
     const selTemplate = ref('');
     const selScheme = ref('classic');
     let mediaStream = null, debTimer = null, deferredPrompt = null, scanInterval = null;
+    let suppressRegen = false;
     const lastBuilt = ref('');
 
     const inputs = reactive({
@@ -1338,10 +1339,13 @@ createApp({
 
     function bakeLogoOntoCanvas(canvas){
       return new Promise((resolve)=>{
-        if(!logoDataUrl.value){ resolve(canvas); return; }
+        const srcLogo = logoDataUrl.value;
+        if(!srcLogo){ resolve(canvas); return; }
         const logoImg = new Image();
         logoImg.onload = ()=>{
           try{
+            // وێنە گۆڕدرا لەکاتی بارکردن — ئەم وەشانە پشتگوێ بخە
+            if(logoDataUrl.value !== srcLogo){ resolve(canvas); return; }
             const ctx = canvas.getContext('2d');
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
@@ -1381,7 +1385,7 @@ createApp({
           resolve(canvas);
         };
         logoImg.onerror = ()=>resolve(canvas);
-        logoImg.src = logoDataUrl.value;
+        logoImg.src = srcLogo;
       });
     }
 
@@ -1389,6 +1393,7 @@ createApp({
     async function generateQR(){
       const data = buildData();
       if(!data){ showToast('زانیاری بنووسە'); return; }
+      clearTimeout(debTimer);
       const token = ++genToken;
       lastBuilt.value = data;
       loading.value = true;
@@ -1396,7 +1401,7 @@ createApp({
       try{
         const { canvas } = renderQrCanvas(data);
         await bakeLogoOntoCanvas(canvas);
-        if(token !== genToken) return; // وەشانی کۆن — پشتگوێی بخە
+        if(token !== genToken) return; // وەشانی کۆن — loading لای نوێ دەمێنێتەوە
         const dataUrl = canvas.toDataURL('image/png');
         qrUrl.value = dataUrl;
         loading.value = false;
@@ -1416,13 +1421,21 @@ createApp({
     }
 
     function schedRegen(){
+      if(suppressRegen) return;
       clearTimeout(debTimer);
       debTimer = setTimeout(()=>{ if(buildData()) generateQR(); }, 380);
     }
     watch([size, darkColor, lightColor, ecc, logoDataUrl, logoSize, logoShape], schedRegen);
     watch(inputs, schedRegen, { deep:true });
     watch(caption, ()=>{ /* caption is export-only overlay; no regen needed */ });
-    watch(logoDataUrl, (v)=>{ if(v && ecc.value !== 'H'){ ecc.value = 'H'; showToast('پاراستن بۆ لۆگۆ کرا بە H'); } });
+    watch(logoDataUrl, (v)=>{
+      if(!v || ecc.value === 'H') return;
+      // ecc بگۆڕە بێ دووبارەکردنەوەی خۆکار (logoDataUrl خۆی regen دەکات)
+      suppressRegen = true;
+      ecc.value = 'H';
+      suppressRegen = false;
+      showToast('پاراستن بۆ لۆگۆ کرا بە H');
+    });
 
     function resetDesign(){
       size.value = 220; frameType.value = 'modern';
@@ -1576,11 +1589,14 @@ createApp({
       if(f.size > 20 * 1024 * 1024){ showToast('وێنەکە زۆر گەورەیە (زۆرینە 20MB)'); return; }
       try{
         const dataUrl = await decodeLogoBlob(f, isHeicLike(f));
-        logoDataUrl.value = dataUrl;
+        suppressRegen = true;
         if(ecc.value !== 'H') ecc.value = 'H';
+        logoDataUrl.value = dataUrl;
+        suppressRegen = false;
         showToast(canGenerate.value ? '✓ وێنە خرایە ناو QR' : '✓ وێنە دانرا — بەستەر بنووسە');
         if(buildData()) schedRegen();
       } catch(err){
+        suppressRegen = false;
         console.error(err);
         if(isHeicLike(f)){
           showToast('× وێنەی HEIC نەخوێندرایەوە — لە Photos وەک JPEG پاشەکەوت بکە');
@@ -1778,41 +1794,47 @@ createApp({
 
     function renderToCanvas(withFrame){
       return new Promise(async (resolve, reject)=>{
-        if(!qrUrl.value){ reject('no qr'); return; }
-        const src = await fetchQRBlob(qrUrl.value);
+        try{
+        const urlSnap = qrUrl.value;
+        const frameSnap = frameType.value;
+        const captionSnap = caption.value;
+        const lightSnap = lightColor.value || '#ffffff';
+        if(!urlSnap){ reject('no qr'); return; }
+        const src = await fetchQRBlob(urlSnap);
         const qrImg = new Image();
         qrImg.onerror = ()=>reject('load error');
         qrImg.onload = ()=>{
+          try{
           // زیادکردنی کوالێتی ڕەندەرکردن بۆ 2 ئەوەندە (Super Sampling)
           const scale = 2;
           const qrW = qrImg.width * scale;
           const qrH = qrImg.height * scale;
 
-          if(!withFrame || frameType.value === 'none'){
+          if(!withFrame || frameSnap === 'none'){
             const c = document.createElement('canvas');
-            const captionH = (caption.value ? 40 : 0) * scale;
+            const captionH = (captionSnap ? 40 : 0) * scale;
             c.width = qrW;
             c.height = qrH + captionH;
             const ctx = c.getContext('2d');
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-            ctx.fillStyle = lightColor.value || '#ffffff';
+            ctx.fillStyle = lightSnap;
             ctx.fillRect(0,0,c.width,c.height);
             ctx.drawImage(qrImg, 0, 0, qrW, qrH);
-            finishCanvas(ctx, c, captionH, qrW, qrH, 0, 0, resolve, scale);
+            finishCanvas(ctx, c, captionH, qrW, qrH, 0, 0, resolve, scale, captionSnap);
             return;
           }
 
           // ── With frame ──
-          const fr = frameStyles[frameType.value] || frameStyles.modern;
+          const fr = frameStyles[frameSnap] || frameStyles.modern;
           const pad = fr.pad;
           const sideStrip = fr.sideStrip || 0;
           const shadowBlur = fr.shadow ? 28 : 0;
           const shadowOff  = fr.shadow ? 12 : 0;
           const extraBottom = fr.extraBottom || 0;
-          const captionH = caption.value ? (extraBottom ? 0 : 40) : 0;
+          const captionH = captionSnap ? (extraBottom ? 0 : 40) : 0;
           // بۆ پۆلارۆید: تێکست دەچێتە ناو فریمی خوارەوە
-          const polaroidCaption = !!(caption.value && extraBottom);
+          const polaroidCaption = !!(captionSnap && extraBottom);
 
           const bw = fr.border ? fr.border.w : 0;
           const totalW = qrW + pad*2 + bw*2 + sideStrip*2;
@@ -1848,7 +1870,7 @@ createApp({
           const qrX = ox + pad + bw + sideStrip;
           const qrY = oy + pad + bw;
           // بۆ چوارچێوە تاریکەکان: پاکێتی سپی لە پشت QR
-          if(['neon','cosmic','ink','aurora','hologram','film','badge','rounded'].includes(frameType.value)){
+          if(['neon','cosmic','ink','aurora','hologram','film','badge','rounded'].includes(frameSnap)){
             ctx.save();
             roundRect(ctx, qrX - 8, qrY - 8, qrW + 16, qrH + 16, 10);
             ctx.fillStyle = '#ffffff';
@@ -1863,26 +1885,28 @@ createApp({
             ctx.fillStyle = fr.captionTone || '#6b7280';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(caption.value, ox + totalW/2, oy + totalH - extraBottom/2);
+            ctx.fillText(captionSnap, ox + totalW/2, oy + totalH - extraBottom/2);
             ctx.restore();
             resolve(c);
           } else {
             const tone = fr.captionTone;
-            if(tone && caption.value && captionH){
+            if(tone && captionSnap && captionH){
               ctx.save();
               ctx.font = `bold ${Math.round(18 * scale)}px "Noto Kufi Arabic", Arial`;
               ctx.fillStyle = tone;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              ctx.fillText(caption.value, ox + totalW/2, oy + totalH - captionH/2);
+              ctx.fillText(captionSnap, ox + totalW/2, oy + totalH - captionH/2);
               ctx.restore();
               resolve(c);
             } else {
-              finishCanvas(ctx, c, captionH, totalW, totalH, ox, oy, resolve, scale);
+              finishCanvas(ctx, c, captionH, totalW, totalH, ox, oy, resolve, scale, captionSnap);
             }
           }
+          } catch(e){ reject(e); }
         };
         qrImg.src = src;
+        } catch(e){ reject(e); }
       });
     }
 
@@ -1906,16 +1930,17 @@ createApp({
       logoImg.src = logoDataUrl.value;
     }
 
-    function finishCanvas(ctx, c, captionH, totalW, totalH, ox=0, oy=0, resolve, scale=1){
+    function finishCanvas(ctx, c, captionH, totalW, totalH, ox=0, oy=0, resolve, scale=1, captionText){
+      const text = captionText !== undefined ? captionText : caption.value;
       // Caption text
-      if(caption.value && captionH){
+      if(text && captionH){
         const textY = oy + totalH - captionH/2;
         const fontSize = Math.round(18 * scale);
         ctx.font = `bold ${fontSize}px "Noto Kufi Arabic", Arial`;
         ctx.fillStyle = '#555555';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(caption.value, ox + totalW/2, textY);
+        ctx.fillText(text, ox + totalW/2, textY);
       }
       resolve(c);
     }
@@ -2173,29 +2198,33 @@ createApp({
     }
 
     async function loadHistory(h){
-      if(h.dark) darkColor.value = h.dark;
-      if(h.light) lightColor.value = h.light;
-      if(h.ecc) ecc.value = h.ecc;
-      if(h.size) size.value = h.size;
-      if(h.tab) tab.value = h.tab;
-      if(h.data){
-        // Put payload back into the matching field when possible
-        if(h.tab === 'text') inputs.text = h.data;
-        else if(h.tab === 'url') inputs.url = h.data;
-        else if(h.tab === 'phone' && h.data.startsWith('tel:')) inputs.phone = h.data.slice(4);
-        lastBuilt.value = h.data;
-        loading.value = true;
-        try{
-          qrUrl.value = renderQrCanvas(h.data).canvas.toDataURL('image/png');
-          loading.value = false;
-          showToast('✓ لە مێژوو بارکرا');
-        } catch{
-          qrUrl.value = h.url || '';
-          loading.value = false;
-          showToast('✓ لە مێژوو بارکرا');
+      suppressRegen = true;
+      try{
+        if(h.dark) darkColor.value = h.dark;
+        if(h.light) lightColor.value = h.light;
+        if(h.ecc) ecc.value = h.ecc;
+        if(h.size) size.value = h.size;
+        if(h.tab) tab.value = h.tab;
+        if(h.data){
+          if(h.tab === 'text') inputs.text = h.data;
+          else if(h.tab === 'url') inputs.url = h.data;
+          else if(h.tab === 'phone' && h.data.startsWith('tel:')) inputs.phone = h.data.slice(4);
+          else if(h.tab === 'wifi' || h.tab === 'vcard' || h.tab === 'maps' || h.tab === 'email' || h.tab === 'sms'){
+            // payloadی تایبەت — وەک تێکست پیشانی بدە بۆ دووبارە دروستکردن
+            tab.value = 'text';
+            inputs.text = h.data;
+          }
+          lastBuilt.value = h.data;
         }
-      } else {
-        qrUrl.value = h.url; showToast('✓ لە مێژوو بارکرا');
+      } finally {
+        suppressRegen = false;
+      }
+      if(h.data){
+        await generateQR(); // لەگەڵ لۆگۆ و پاراستنی ECC
+        showToast('✓ لە مێژوو بارکرا');
+      } else if(h.url || h.thumb){
+        qrUrl.value = h.url || h.thumb;
+        showToast('✓ لە مێژوو بارکرا');
       }
     }
     function removeHistory(i){ history.value.splice(i,1); try{localStorage.setItem('qr_h2',JSON.stringify(history.value));}catch{} }
