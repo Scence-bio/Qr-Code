@@ -620,14 +620,14 @@ body.dark .mobile-dock{background:rgba(18,21,26,.92);border-top-color:var(--bord
               <span class="lbl" style="margin:0">قەبارەی وێنە</span>
               <span style="font-size:.72rem;font-weight:800;color:var(--primary)">{{logoSize}}%</span>
             </div>
-            <input type="range" v-model.number="logoSize" min="14" max="30"/>
+            <input type="range" v-model.number="logoSize" min="16" max="32"/>
             <div class="url-actions" style="margin-top:8px">
               <button type="button" class="chip" :class="{on:logoShape==='rounded'}" @click.stop="logoShape='rounded'">نەرم</button>
               <button type="button" class="chip" :class="{on:logoShape==='circle'}" @click.stop="logoShape='circle'">بازنە</button>
               <button type="button" class="chip" :class="{on:logoShape==='square'}" @click.stop="logoShape='square'">چوارگۆشە</button>
               <button type="button" class="chip" @click.stop="clearLogo">لابردنی وێنە</button>
             </div>
-            <div class="hint">{{ canGenerate ? 'پاشبنەمای سپی لادەبرێت — تەنها وێنەکە دەمێنێتەوە' : 'ئێستا بەستەر بنووسە تا QR لەگەڵ وێنەکە دروست ببێت' }}</div>
+            <div class="hint">{{ canGenerate ? 'وێنە دیارترە — پاشبنەما تەنها لە لێوار لادەبرێت' : 'ئێستا بەستەر بنووسە تا QR لەگەڵ وێنەکە دروست ببێت' }}</div>
           </div>
         </div>
 
