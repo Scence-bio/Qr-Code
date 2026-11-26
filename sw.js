@@ -1,5 +1,5 @@
-/* QR Studio Pro — offline shell */
-const CACHE = 'qrstudio-v9';
+/* QR Studio Pro — offline shell + auto-update */
+const CACHE = 'qrstudio-v10';
 const SHELL = [
   './',
   './index.html',
@@ -24,13 +24,19 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
 
-  // App shell: network-first for HTML, cache-first for same-origin static
+  // App shell: network-first for HTML so updates land quickly
   if (url.origin === self.location.origin) {
     if (req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
       event.respondWith(
@@ -45,22 +51,23 @@ self.addEventListener('fetch', (event) => {
       return;
     }
 
+    // Same-origin static: stale-while-revalidate (auto-refresh in background)
     event.respondWith(
-      caches.match(req).then((cached) => {
-        if (cached) return cached;
-        return fetch(req).then((res) => {
-          if (res.ok) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-          }
-          return res;
-        });
+      caches.open(CACHE).then(async (cache) => {
+        const cached = await cache.match(req);
+        const network = fetch(req)
+          .then((res) => {
+            if (res && res.ok) cache.put(req, res.clone());
+            return res;
+          })
+          .catch(() => cached);
+        return cached || network;
       })
     );
     return;
   }
 
-  // CDN libs (Vue, jsQR, qrcode-generator, fonts): cache-first after first load
+  // CDN libs (Vue, jsQR, qrcode-generator, fonts, heic2any): cache-first after first load
   if (
     url.hostname.includes('cdnjs.cloudflare.com') ||
     url.hostname.includes('cdn.jsdelivr.net') ||

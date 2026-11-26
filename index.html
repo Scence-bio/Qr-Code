@@ -2,13 +2,15 @@
 <html lang="ku" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="theme-color" content="#0f766e"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0f766e" media="(prefers-color-scheme: light)"/>
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)"/>
 <meta name="description" content="QR Studio - پڕۆفیشناڵترین دروستکەری QR کۆد"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="QR Studio"/>
+<meta name="format-detection" content="telephone=no"/>
 <link rel="manifest" href="manifest.webmanifest"/>
 <link rel="icon" href="icons/icon-192.png" type="image/png"/>
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
@@ -40,21 +42,40 @@
   --shadow:0 1px 2px rgba(18,21,26,.06), 0 8px 24px rgba(18,21,26,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{
+  scroll-behavior:smooth;
+  direction:rtl;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
 body{
   font-family:'Noto Kufi Arabic',sans-serif;
+  direction:rtl;
+  text-align:start;
   background:
     radial-gradient(1200px 500px at 100% -10%, rgba(15,118,110,.08), transparent 55%),
     radial-gradient(900px 420px at -10% 110%, rgba(14,116,144,.07), transparent 50%),
     var(--bg);
   color:var(--text);
   min-height:100vh;
+  min-height:100dvh;
   overflow-x:hidden;
+}
+html.standalone body{
+  /* پڕکردنەوەی لێواری ئایفۆن لە دۆخی ئەپ */
+  background-attachment:fixed;
 }
 ::selection{background:rgba(15,118,110,.22)}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 
-.wrap{position:relative;z-index:10;min-height:100vh;padding:18px;max-width:1100px;margin:0 auto}
+.wrap{
+  position:relative;z-index:10;min-height:100vh;min-height:100dvh;max-width:1100px;margin:0 auto;
+  padding-top:calc(18px + env(safe-area-inset-top, 0px));
+  padding-bottom:calc(18px + env(safe-area-inset-bottom, 0px));
+  padding-left:calc(18px + env(safe-area-inset-left, 0px));
+  padding-right:calc(18px + env(safe-area-inset-right, 0px));
+}
+.ltr{direction:ltr;text-align:left;unicode-bidi:isolate}
 
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
 .panel-soft{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm)}
@@ -191,7 +212,13 @@ body.dark .contrast-bad{color:#fda4af;background:rgba(190,18,60,.15)}
 .scan-line{position:absolute;left:10%;right:10%;height:2px;background:var(--primary);animation:scanl 2s ease-in-out infinite;top:20%;z-index:5;opacity:.7}
 @keyframes scanl{0%{top:10%}100%{top:85%}}
 
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:#fff;padding:11px 18px;border-radius:10px;font-size:.8rem;font-weight:650;box-shadow:var(--shadow);z-index:9999;transition:transform .3s ease;pointer-events:none;white-space:nowrap}
+.toast{
+  position:fixed;bottom:calc(24px + env(safe-area-inset-bottom, 0px));left:50%;
+  transform:translateX(-50%) translateY(100px);background:var(--text);color:#fff;
+  padding:11px 18px;border-radius:10px;font-size:.8rem;font-weight:650;box-shadow:var(--shadow);
+  z-index:9999;transition:transform .3s ease;pointer-events:none;white-space:nowrap;
+  max-width:min(92vw, 420px);text-align:center;
+}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 .modal-ov{position:fixed;inset:0;background:rgba(18,21,26,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:18px}
@@ -261,7 +288,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
 .stats-bar{grid-template-columns:repeat(2,1fr)}
 @media(max-width:520px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
 .live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-inline-end:6px;vertical-align:middle}
-.payload-box{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);font-size:.72rem;color:var(--muted);word-break:break-all;direction:ltr;text-align:left}
+.payload-box{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);font-size:.72rem;color:var(--muted);word-break:break-all}
 
 .logo-drop{
   display:flex;
@@ -355,14 +382,14 @@ body.dark .toast{background:#eef0f3;color:#121417}
       <div v-if="tab==='text'" class="fade-in">
         <label class="lbl">تێکستەکەت بنووسە</label>
         <textarea class="inp" v-model="inputs.text" placeholder="هەر تێکستێک بنووسە..." style="min-height:90px"></textarea>
-        <div style="text-align:left;font-size:.65rem;color:var(--muted);margin-top:3px">{{inputs.text.length}} پیت</div>
+        <div style="text-align:start;font-size:.65rem;color:var(--muted);margin-top:3px">{{inputs.text.length}} پیت</div>
       </div>
 
       <!-- URL -->
       <div v-if="tab==='url'" class="fade-in">
         <label class="lbl">بەستەر</label>
-        <input class="inp" ref="urlInput" v-model="inputs.url" type="url" inputmode="url" autocomplete="url"
-               placeholder="example.com یان https://..." @keydown.enter.prevent="generateQR"/>
+        <input class="inp ltr" ref="urlInput" v-model="inputs.url" type="url" inputmode="url" autocomplete="url"
+               placeholder="example.com یان https://..." @keydown.enter.prevent="generateQR" dir="ltr"/>
         <div class="url-actions">
           <button type="button" class="chip" @click="pasteUrl">لکاندن</button>
           <button type="button" class="chip" @click="inputs.url=''" :disabled="!inputs.url">پاککردنەوە</button>
@@ -380,8 +407,8 @@ body.dark .toast{background:#eef0f3;color:#121417}
         <div>
           <label class="lbl">پاسوۆرد</label>
           <div style="position:relative">
-            <input class="inp" v-model="inputs.wpass" :type="showPass?'text':'password'" placeholder="پاسوۆردەکەت" style="padding-left:40px"/>
-            <button @click="showPass=!showPass" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem">{{showPass?'شاردنەوە':'پیشاندان'}}</button>
+            <input class="inp" v-model="inputs.wpass" :type="showPass?'text':'password'" placeholder="پاسوۆردەکەت" style="padding-inline-end:72px"/>
+            <button type="button" @click="showPass=!showPass" style="position:absolute;inset-inline-end:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.72rem;font-weight:700;color:var(--primary);font-family:inherit">{{showPass?'شاردنەوە':'پیشاندان'}}</button>
           </div>
         </div>
         <div><label class="lbl">جۆری پاراستن</label>
@@ -401,7 +428,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
         </div>
         <div><label class="lbl">تەلەفۆن</label><input class="inp" v-model="inputs.vcPhone" placeholder="+964 750 000 0000"/></div>
         <div><label class="lbl">ئیمەیڵ</label><input class="inp" v-model="inputs.vcEmail" type="email" placeholder="name@example.com"/></div>
-        <div><label class="lbl">وێبسایت</label><input class="inp" v-model="inputs.vcWeb" placeholder="https://"/></div>
+        <div><label class="lbl">وێبسایت</label><input class="inp ltr" dir="ltr" v-model="inputs.vcWeb" placeholder="https://"/></div>
         <div><label class="lbl">ناونیشان</label><input class="inp" v-model="inputs.vcAddr" placeholder="شار، وڵات"/></div>
         <div><label class="lbl">لەدایکبوون</label><input class="inp" v-model="inputs.vcBday" type="date"/></div>
       </div>
@@ -418,7 +445,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
 
       <!-- EMAIL -->
       <div v-if="tab==='email'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
-        <div><label class="lbl">بۆ</label><input class="inp" v-model="inputs.eTo" type="email" placeholder="name@example.com"/></div>
+        <div><label class="lbl">بۆ</label><input class="inp ltr" dir="ltr" v-model="inputs.eTo" type="email" placeholder="name@example.com"/></div>
         <div><label class="lbl">بابەت</label><input class="inp" v-model="inputs.eSubj" placeholder="بابەتی ئیمەیڵ"/></div>
         <div><label class="lbl">پەیام</label><textarea class="inp" v-model="inputs.eBody" placeholder="ناوەڕۆکی ئیمەیڵ..."></textarea></div>
       </div>
@@ -432,7 +459,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
       <!-- PHONE -->
       <div v-if="tab==='phone'" class="fade-in">
         <label class="lbl">ژمارەی تەلەفۆن</label>
-        <input class="inp" v-model="inputs.phone" placeholder="+964 750 000 0000"/>
+        <input class="inp ltr" dir="ltr" v-model="inputs.phone" placeholder="+964 750 000 0000"/>
         <div style="margin-top:8px;font-size:.7rem;color:var(--muted)">QR کۆدەکە کلیک دەکرێت و ڕاستەوخۆ پەیوەندی دەکات</div>
       </div>
 
@@ -644,7 +671,7 @@ body.dark .toast{background:#eef0f3;color:#121417}
             <div style="background:rgba(15,118,110,.1);border:1px solid rgba(15,118,110,.25);border-radius:8px;padding:3px 12px;font-size:.65rem;font-weight:800;color:var(--text2);letter-spacing:.5px">
               <span class="live-dot" v-if="!loading"></span>{{currentTabLabel}}
             </div>
-            <div v-if="lastBuilt" class="payload-box">{{ String(lastBuilt).length>120 ? String(lastBuilt).slice(0,120)+'…' : lastBuilt }}</div>
+            <div v-if="lastBuilt" class="payload-box ltr" dir="ltr">{{ String(lastBuilt).length>120 ? String(lastBuilt).slice(0,120)+'…' : lastBuilt }}</div>
           </div>
         </div>
       </div>
@@ -769,12 +796,58 @@ body.dark .toast{background:#eef0f3;color:#121417}
 </div>
 
 <script>
-// ── PWA ──
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
+// ── PWA: standalone detect + auto-update ──
+(function setupPwaLifecycle(){
+  const standalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches ||
+    window.matchMedia('(display-mode: minimal-ui)').matches ||
+    window.navigator.standalone === true;
+  if (standalone) document.documentElement.classList.add('standalone');
+  window.__qrStandalone = standalone;
+
+  if (!('serviceWorker' in navigator)) return;
+
+  let hasController = !!navigator.serviceWorker.controller;
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hasController) {
+      hasController = true;
+      return;
+    }
+    if (refreshing) return;
+    refreshing = true;
+    location.reload();
   });
-}
+
+  const register = async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+      const check = () => { reg.update().catch(() => {}); };
+      check();
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') check();
+      });
+      window.addEventListener('focus', check);
+      setInterval(check, 60 * 60 * 1000);
+
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            nw.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    } catch (_) {}
+  };
+
+  if (document.readyState === 'complete') register();
+  else window.addEventListener('load', register);
+})();
+
 
 const {createApp,ref,reactive,computed,watch,onMounted,onUnmounted,nextTick} = Vue;
 
@@ -916,9 +989,23 @@ createApp({
       {id:'email_tpl',icon:'@',name:'ئیمەیڵ',tab:'email',data:{eTo:'info@company.com',eSubj:'پرسیار'},caption:'ئیمەیڵمان بنێرە'},
     ];
 
+    function isStandaloneApp(){
+      return !!(window.__qrStandalone ||
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        window.matchMedia('(display-mode: minimal-ui)').matches ||
+        window.navigator.standalone === true);
+    }
+
+    function syncThemeColor(){
+      const color = lightTheme.value ? '#0f766e' : '#0b1220';
+      document.querySelectorAll('meta[name="theme-color"]').forEach((m)=> m.setAttribute('content', color));
+    }
+
     function toggleTheme(){
       lightTheme.value = !lightTheme.value;
       document.body.classList.toggle('dark', !lightTheme.value);
+      syncThemeColor();
     }
 
     function buildData(){
@@ -1877,9 +1964,30 @@ createApp({
 
     onMounted(()=>{
       loadHistData();
+      syncThemeColor();
+      if(isStandaloneApp()){
+        pwaInstalled.value = true;
+        pwaReady.value = false;
+        document.documentElement.classList.add('standalone');
+      }
       nextTick(()=>{ if(urlInput.value) urlInput.value.focus(); });
-      window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; pwaReady.value=true; });
+      window.addEventListener('beforeinstallprompt', e=>{
+        e.preventDefault();
+        if(isStandaloneApp()) return;
+        deferredPrompt=e;
+        pwaReady.value=true;
+      });
       window.addEventListener('appinstalled', ()=>{ pwaInstalled.value=true; pwaReady.value=false; });
+      const mq = window.matchMedia('(display-mode: standalone)');
+      const onDisplayMode = ()=>{
+        if(isStandaloneApp()){
+          pwaInstalled.value = true;
+          pwaReady.value = false;
+          document.documentElement.classList.add('standalone');
+        }
+      };
+      if(mq.addEventListener) mq.addEventListener('change', onDisplayMode);
+      else if(mq.addListener) mq.addListener(onDisplayMode);
     });
     onUnmounted(()=>{ closeScan(); });
 
