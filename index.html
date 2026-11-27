@@ -389,9 +389,10 @@ body.dark .mobile-dock{background:rgba(18,21,26,.94);border-top-color:var(--bord
   display:block;width:min(100%, var(--qr-preview-size, 280px));
   max-width:100%;height:auto;margin-inline:auto;
 }
-.qr-frame-wrap{max-width:100%;overflow:auto;display:flex;justify-content:center}
+.qr-frame-wrap{max-width:100%;overflow:auto;display:flex;justify-content:center;-webkit-overflow-scrolling:touch}
 .main-grid > *{min-width:0;max-width:100%}
 img,svg,video,canvas{max-width:100%;height:auto}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .pwa-banner{flex-wrap:wrap;gap:8px}
 .modal-ov{padding:max(12px, var(--safe-top)) max(12px, var(--safe-right)) max(12px, var(--safe-bottom)) max(12px, var(--safe-left));align-items:flex-end}
 @media(min-width:520px){.modal-ov{align-items:center}}
@@ -411,7 +412,7 @@ img,svg,video,canvas{max-width:100%;height:auto}
   .scheme-grid{grid-template-columns:repeat(2,1fr);gap:6px}
   .share-grid{grid-template-columns:repeat(2,1fr);gap:8px}
   .share-btn{min-height:56px;padding:12px 8px}
-  .qr-inner{min-height:200px;padding:14px}
+  .qr-inner{min-height:min(52vw, 220px);padding:14px}
   .mobile-dock{display:block}
   .desktop-only-actions{display:none !important}
   .toast{
@@ -428,6 +429,11 @@ img,svg,video,canvas{max-width:100%;height:auto}
   .chip{padding:9px 12px;min-height:40px;font-size:.74rem}
   .btn{min-height:48px}
   .payload-box{font-size:.68rem}
+  .scan-video{max-height:min(52vh, 420px);object-fit:cover}
+  select.inp{font-size:16px}
+}
+@media(max-width:480px){
+  .grid-2{grid-template-columns:1fr}
 }
 @media(max-width:400px){
   :root{ --gutter:8px; }
@@ -440,9 +446,11 @@ img,svg,video,canvas{max-width:100%;height:auto}
   .mobile-dock-inner{gap:6px}
   .header{padding:8px}
   .panel-editor{padding:10px}
+  .qr-inner{min-height:min(58vw, 200px);padding:12px}
 }
 @media(max-width:340px){
   .frame-grid{grid-template-columns:repeat(2,1fr)}
+  .scheme-grid{grid-template-columns:1fr}
   .mobile-dock-inner{grid-template-columns:1fr 1fr}
   .mobile-dock-inner .btn:last-child{grid-column:1 / -1}
 }
@@ -587,7 +595,7 @@ img,svg,video,canvas{max-width:100%;height:auto}
 
       <!-- VCARD -->
       <div v-if="tab==='vcard'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+        <div class="grid-2">
           <div><label class="lbl">ناو</label><input class="inp" v-model="inputs.vcName" placeholder="ناوی تەواو"/></div>
           <div><label class="lbl">کۆمپانیا</label><input class="inp" v-model="inputs.vcOrg" placeholder="کۆمپانیا"/></div>
         </div>
@@ -600,7 +608,7 @@ img,svg,video,canvas{max-width:100%;height:auto}
 
       <!-- MAPS -->
       <div v-if="tab==='maps'" class="fade-in" style="display:flex;flex-direction:column;gap:9px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+        <div class="grid-2">
           <div><label class="lbl">Latitude</label><input class="inp" v-model="inputs.lat" type="number" step="any" placeholder="36.1901"/></div>
           <div><label class="lbl">Longitude</label><input class="inp" v-model="inputs.lng" type="number" step="any" placeholder="44.0091"/></div>
         </div>
